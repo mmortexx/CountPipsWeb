@@ -13,6 +13,7 @@ import {
   gananciaParaRecuperar,
   operacionesParaRecuperar,
 } from "@/lib/trading/recuperacion";
+import { useEnHerramienta } from "@/components/herramientas/EnHerramienta";
 
 /**
  * Recuperación de drawdown: lo que hay que ganar para volver al máximo y
@@ -26,6 +27,7 @@ const TECHO = CAIDAS[CAIDAS.length - 1] / (1 - CAIDAS[CAIDAS.length - 1]);
 
 export function DrawdownRecovery() {
   const { lang } = useLang();
+  const enHerramienta = useEnHerramienta();
   const es = lang === "es";
   const pct = (v: number, dec = 0) => `${fmtNum(v, lang, dec)}${pctSep(lang)}`;
 
@@ -114,7 +116,7 @@ export function DrawdownRecovery() {
             cambia al mover un deslizador. */}
         <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:grid-rows-[auto_1fr]">
           <div className="lg:col-start-1 lg:row-start-1">
-            <h2 data-titular-herramienta className="t-h2 m-0 max-w-[24ch] text-primary">
+            <h2 data-titular-herramienta aria-hidden={enHerramienta || undefined} className="t-h2 m-0 max-w-[24ch] text-primary">
               {es ? (
                 <>
                   Cuesta más subir que caer.
@@ -127,7 +129,7 @@ export function DrawdownRecovery() {
             </h2>
             <p className="medida mt-3 text-sm leading-relaxed text-secondary md:text-base">
               {es
-                ? "Una caída del 50\u00a0% no se recupera con un 50\u00a0%: hace falta un 100\u00a0%. Mueve tu caída y tu forma de operar."
+                ? "Una caída del 50\u00a0% no se recupera con una subida del 50\u00a0%: hace falta una del 100\u00a0%. Mueve tu caída y tu forma de operar."
                 : "A 50% drawdown is not undone by a 50% gain: it takes 100%. Set your drawdown and how you trade."}
             </p>
 

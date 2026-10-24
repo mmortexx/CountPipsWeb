@@ -19,7 +19,7 @@ import {
   heatmap as heatmapGrid,
   computeSqn,
   computeUlcerIndex,
-  computeHalfKelly,
+  medioKellySeleccion,
   computeOmega,
   INITIAL_BALANCE_CONST,
   type Trade,
@@ -87,7 +87,7 @@ function RatioCell({
 }) {
   return (
     <div className="flex flex-col gap-1 items-center text-center" title={hint}>
-      <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary">
+      <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary">
         {label}
       </span>
       <span className="font-semibold tnum text-primary text-base md:text-lg leading-none">
@@ -112,7 +112,7 @@ function KpiStripCell({
   return (
     <div className="flex items-stretch flex-1 min-w-[6rem] md:min-w-0 shrink-0 md:shrink">
       <div className="flex-1 min-w-0 flex flex-col gap-1.5 px-2 sm:px-3 items-center text-center rounded-[2px] transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
-        <div className="text-[10px] uppercase tracking-[0.14em] text-tertiary truncate">
+        <div className="text-[11px] uppercase tracking-[0.14em] text-tertiary truncate">
           {label}
         </div>
         <div className="font-semibold tnum text-primary text-lg md:text-xl leading-none">
@@ -186,7 +186,7 @@ function WinnersDonut({
             suffix={pctSep(lang)}
           />
         </div>
-        <div className="text-[10px] uppercase tracking-[0.15em] text-tertiary mt-1.5">
+        <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary mt-1.5">
           {t("winRate")}
         </div>
       </div>
@@ -391,7 +391,7 @@ function MonthlyBars({ trades }: { trades: Trade[] }) {
         {rows.map((r, i) => (
           <span
             key={`${r.month}-${i}`}
-            className="absolute bottom-[3px] -translate-x-1/2 text-[10px] leading-none text-tertiary"
+            className="absolute bottom-[3px] -translate-x-1/2 text-[11px] leading-none text-tertiary"
             style={{ left: `${((i * (barW + gap) + barW / 2) / W) * 100}%` }}
           >
             {r.month}
@@ -435,19 +435,19 @@ function RankingCard({
               <div key={`${reKey}-${r.name}`} className="space-y-1">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-[10px] text-tertiary tnum w-3">
+                    <span className="text-[11px] text-tertiary tnum w-3">
                       {i + 1}
                     </span>
                     {/* Se parte y no se trunca: es el nombre del setup, la clave de la fila. */}
                     <span className="min-w-0 text-xs font-medium leading-[1.3] text-primary [overflow-wrap:anywhere]">
                       {r.name}
                     </span>
-                    <Chip variant="neutral" className="text-[9.5px] py-0 px-1.5 tnum">
+                    <Chip variant="neutral" className="text-[11px] py-0 px-1.5 tnum">
                       {fmtInt(r.count, lang)}
                     </Chip>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-[10px] text-tertiary tnum">
+                    <span className="text-[11px] text-tertiary tnum">
                       {fmtPct(r.winRate, lang, 0)}
                     </span>
                     <span
@@ -506,7 +506,7 @@ function HeatmapLegend({ trades }: { trades: Trade[] }) {
   return (
     <div className="mt-4 flex items-center justify-between gap-4 flex-wrap">
       <div className="flex items-center gap-2 flex-wrap min-w-0 gap-y-1.5">
-        <span className="text-[10px] uppercase tracking-wider text-tertiary">
+        <span className="text-[11px] uppercase tracking-wider text-tertiary">
           {lang === "es" ? "Escala" : "Scale"}
         </span>
         <div className="flex items-center gap-0.5 h-3 rounded-[2px] overflow-hidden">
@@ -519,13 +519,13 @@ function HeatmapLegend({ trades }: { trades: Trade[] }) {
             />
           ))}
         </div>
-        <div className="flex items-center gap-2 text-[10px] tnum text-tertiary">
+        <div className="flex items-center gap-2 text-[11px] tnum text-tertiary">
           <span className="text-pnl-neg">−{maxLabel}</span>
           <span>0</span>
           <span className="text-pnl-pos">+{maxLabel}</span>
         </div>
       </div>
-      <div className="flex items-center gap-3 text-[10px] uppercase tracking-wider text-tertiary">
+      <div className="flex items-center gap-3 text-[11px] uppercase tracking-wider text-tertiary">
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-[2px] bg-pnl-pos/70" />
           {lang === "es" ? "Positivo" : "Positive"}
@@ -553,7 +553,7 @@ function HistogramLegend({
   const tradesLabel = fmtOperaciones(total, lang);
   return (
     <div className="mt-3 flex items-center justify-between gap-3 flex-wrap">
-      <div className="flex items-center gap-3 text-[10px] uppercase tracking-[0.14em] text-tertiary">
+      <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.14em] text-tertiary">
         {kind === "pos-neg" ? (
           <>
             <span className="flex items-center gap-1.5">
@@ -572,7 +572,7 @@ function HistogramLegend({
           </span>
         )}
       </div>
-      <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary tnum">
+      <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary tnum">
         {tradesLabel}
       </span>
     </div>
@@ -749,7 +749,7 @@ function computeEdge(trades: Trade[], lang: Lang) {
       ? `Necesitas al menos ${fmtOperaciones(MUESTRA_MINIMA, lang)} para emitir un veredicto con confianza estadística.`
       : `You need at least ${fmtOperaciones(MUESTRA_MINIMA, lang)} to reach a verdict with statistical confidence.`;
   } else if (loR > 0) {
-    verdict = lang === "es" ? "Edge confirmado" : "Confirmed edge";
+    verdict = lang === "es" ? "Ventaja confirmada" : "Confirmed edge";
     verdictTone = "pos";
     hint = lang === "es"
       ? "El intervalo de confianza del 95\u00a0% de la expectativa R excluye al cero: tu ventaja es estadísticamente significativa."
@@ -761,7 +761,7 @@ function computeEdge(trades: Trade[], lang: Lang) {
       ? "La señal apunta en la dirección correcta pero el intervalo aún incluye el cero: sigue operando para estrecharlo."
       : "The signal points the right way but the interval still includes zero — keep trading to narrow it.";
   } else {
-    verdict = lang === "es" ? "Sin edge" : "No edge";
+    verdict = lang === "es" ? "Sin ventaja" : "No edge";
     verdictTone = "neutral";
     hint = lang === "es"
       ? "El intervalo de confianza incluye al cero y la media es cercana o negativa: no hay evidencia de ventaja real."
@@ -798,9 +798,15 @@ function normCdf(z: number): number {
 }
 
 /** SQN, índice Ulcer, CAGR, medio Kelly y Omega, calculados aquí porque `Metrics` no los expone. */
-function computeAdvanced(trades: Trade[], mStats?: { winRate: number; payoff: number }) {
+function computeAdvanced(trades: Trade[], mStats: { winRate: number; payoff: number }) {
   const n = trades.length;
-  if (n < 2) return { sqn: 0, ulcer: 0, cagr: 0, halfKelly: 0, omega: 1 };
+  const kelly = medioKellySeleccion(
+    trades.filter((t) => t.netPnl > 0).length,
+    trades.filter((t) => t.netPnl < 0).length,
+    mStats.winRate,
+    mStats.payoff,
+  );
+  if (n < 2) return { sqn: 0, ulcer: 0, cagr: 0, halfKelly: kelly.medio, kellyFalta: kelly.falta, omega: 1 };
 
   const sqn = computeSqn(trades);
   const ulcer = computeUlcerIndex(trades, INITIAL_BALANCE_CONST);
@@ -821,18 +827,32 @@ function computeAdvanced(trades: Trade[], mStats?: { winRate: number; payoff: nu
       ? (Math.pow(final / INITIAL_BALANCE_CONST, 1 / yearsSpan) - 1) * 100
       : 0;
 
-  const p = mStats?.winRate ?? (trades.filter((t) => t.netPnl > 0).length / n);
-  const wins = trades.filter((t) => t.netPnl > 0);
-  const losses = trades.filter((t) => t.netPnl < 0);
-  const avgW = wins.length > 0 ? wins.reduce((s, t) => s + t.netPnl, 0) / wins.length : 1;
-  const avgL = losses.length > 0 ? Math.abs(losses.reduce((s, t) => s + t.netPnl, 0) / losses.length) : 1;
-  const b = mStats?.payoff ?? (avgL > 0 ? avgW / avgL : 1);
-  const halfKelly = computeHalfKelly(p, b);
-
   // Omega de Keating y Shadwick con umbral L = 0.
   const omega = computeOmega(trades, 0);
 
-  return { sqn, ulcer, cagr, halfKelly, omega };
+  return { sqn, ulcer, cagr, halfKelly: kelly.medio, kellyFalta: kelly.falta, omega };
+}
+
+/** Medio Kelly de la selección. Sin pérdidas o sin ganancias no se calcula:
+ *  «—» y lo que falta, en color neutro (un 0 en ámbar se leía «sin ventaja»). */
+export function CifraKelly({ medio, falta, lang }: { medio: number | null; falta: "perdidas" | "ganancias" | null; lang: Lang }) {
+  if (medio === null) {
+    const nota = falta === "perdidas"
+      ? (lang === "es" ? "sin pérdidas aún" : "no losses yet")
+      : falta === "ganancias"
+        ? (lang === "es" ? "sin ganancias aún" : "no wins yet")
+        : null;
+    return (
+      <span className="text-secondary">
+        —{nota && <span className="block text-[11px] font-normal text-tertiary">{nota}</span>}
+      </span>
+    );
+  }
+  return (
+    <span className={medio > 0 ? "text-pnl-pos" : "text-pnl-warn"}>
+      {fmtNum(medio, lang, 1)}{pctSep(lang)}
+    </span>
+  );
 }
 
 const dayMs = 86_400_000;
@@ -919,7 +939,7 @@ function FilterSelect({
 }) {
   return (
     <div className="flex flex-col gap-1" style={{ minWidth }}>
-      <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary">
+      <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
         {header}
       </span>
       <div className="relative">
@@ -1143,23 +1163,23 @@ export function AnalyticsPage() {
               <table className="w-full text-sm min-w-[560px]">
                 <thead>
                   <tr className="text-left">
-                    <th className="px-2 py-2 text-[10px] uppercase tracking-[0.14em] text-tertiary font-medium">
+                    <th className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium">
                       {lang === "es" ? "Periodo" : "Period"}
                     </th>
-                    <th className="px-2 py-2 text-[10px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
+                    <th className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
                       {lang === "es" ? "Ops." : "Trades"}
                     </th>
-                    <th className="px-2 py-2 text-[10px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
+                    <th className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
                       {lang === "es" ? "Neto" : "Net"}
                     </th>
-                    <th className="px-2 py-2 text-[10px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
+                    <th className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
                       {t("winRate")}
                     </th>
-                    <th className="px-2 py-2 text-[10px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
+                    <th className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
                       {t("profitFactor")}
                     </th>
-                    <th className="px-2 py-2 text-[10px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
-                      {lang === "es" ? "Máx. caída" : "Max drawdown"}
+                    <th className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
+                      {t("maxDrawdown")}
                     </th>
                   </tr>
                 </thead>
@@ -1291,7 +1311,7 @@ export function AnalyticsPage() {
               className="lg:col-span-4 min-w-0"
               hint={
                 shortSample ? (
-                  <Chip variant="warn" className="text-[10px]">
+                  <Chip variant="warn" className="text-[11px]">
                     ⚠ {t("sampleShort")}
                   </Chip>
                 ) : null
@@ -1343,9 +1363,7 @@ export function AnalyticsPage() {
                   label="Half Kelly"
                   hint={desc("Criterio de Kelly al 50\u00a0% (riesgo óptimo)", "Half Kelly sizing (optimal fraction)")}
                 >
-                  <span className={adv.halfKelly > 0 ? "text-pnl-pos" : "text-pnl-warn"}>
-                    {fmtNum(adv.halfKelly, lang, 1)}{pctSep(lang)}
-                  </span>
+                  <CifraKelly medio={adv.halfKelly} falta={adv.kellyFalta} lang={lang} />
                 </RatioCell>
                 <RatioCell
                   label={t("recoveryFactor")}
@@ -1420,47 +1438,47 @@ export function AnalyticsPage() {
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-1">
                 <div className="flex flex-col gap-1 items-center text-center">
-                  <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary">
+                  <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary">
                     {t("winRate")}
                   </span>
                   <span className="font-semibold tnum text-primary text-lg">
                     {fmtPct(edge.winRate, lang, 1)}
                   </span>
-                  <span className="text-[10px] text-tertiary tnum">
+                  <span className="text-[11px] text-tertiary tnum">
                     {edge.winRateCi}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1 items-center text-center">
-                  <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary">
+                  <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary">
                     {t("expectancyR")}
                   </span>
                   <span className={`font-semibold tnum text-lg ${edge.expectancyR >= 0 ? "text-pnl-pos" : "text-pnl-neg"}`}>
                     {edge.expectancyR >= 0 ? "+" : "−"}
                     {fmtNum(Math.abs(edge.expectancyR), lang, 2)}&nbsp;R
                   </span>
-                  <span className="text-[10px] text-tertiary tnum">
+                  <span className="text-[11px] text-tertiary tnum">
                     {edge.expectancyRCi}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1 items-center text-center">
-                  <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary">
+                  <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary">
                     {t("profitFactor")}
                   </span>
                   <span className={`font-semibold tnum text-lg ${edge.profitFactor >= 1 ? "text-pnl-pos" : "text-pnl-neg"}`}>
                     {fmtNum(edge.profitFactor, lang, 2)}
                   </span>
-                  <span className="text-[10px] text-tertiary tnum">
+                  <span className="text-[11px] text-tertiary tnum">
                     {edge.profitFactorCi}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1 items-center text-center">
-                  <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary">
+                  <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary">
                     {lang === "es" ? "Ops necesarias" : "Trades needed"}
                   </span>
                   <span className="font-semibold tnum text-primary text-lg">
                     {edge.tradesNeeded > 0 ? fmtInt(edge.tradesNeeded, lang) : "—"}
                   </span>
-                  <span className="text-[10px] text-tertiary">
+                  <span className="text-[11px] text-tertiary">
                     {lang === "es" ? "para estrechar el IC" : "to tighten CI"}
                   </span>
                 </div>
@@ -1490,10 +1508,10 @@ export function AnalyticsPage() {
               <div className="space-y-3">
                 <div className="space-y-1.5 rounded-[2px] p-2 -mx-2 transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
                   <div className="flex items-baseline justify-between gap-2">
-                    <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary">
+                    <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary">
                       R²
                     </span>
-                    <span className="text-[10px] text-tertiary tnum">
+                    <span className="text-[11px] text-tertiary tnum">
                       {lang === "es" ? "bondad del ajuste" : "goodness of fit"}
                     </span>
                   </div>
@@ -1504,10 +1522,10 @@ export function AnalyticsPage() {
                 <div className="h-px bg-[rgb(var(--divider)/0.18)]" />
                 <div className="space-y-1.5 rounded-[2px] p-2 -mx-2 transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
                   <div className="flex items-baseline justify-between gap-2">
-                    <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary">
+                    <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary">
                       K-Ratio
                     </span>
-                    <span className="text-[10px] text-tertiary tnum">
+                    <span className="text-[11px] text-tertiary tnum">
                       {lang === "es" ? "pendiente / error" : "slope / error"}
                     </span>
                   </div>
@@ -1518,10 +1536,10 @@ export function AnalyticsPage() {
                 <div className="h-px bg-[rgb(var(--divider)/0.18)]" />
                 <div className="space-y-1.5 rounded-[2px] p-2 -mx-2 transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
                   <div className="flex items-baseline justify-between gap-2">
-                    <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary">
+                    <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary">
                       {lang === "es" ? "Pendiente" : "Slope"}
                     </span>
-                    <span className="text-[10px] text-tertiary tnum">
+                    <span className="text-[11px] text-tertiary tnum">
                       {lang === "es" ? "$ / operación" : "$ / trade"}
                     </span>
                   </div>
@@ -1578,7 +1596,7 @@ export function AnalyticsPage() {
               className="lg:col-span-2"
             >
               <ROverTimeChart trades={filteredTrades} />
-              <div className="flex items-center justify-between mt-2 text-[10px] text-tertiary">
+              <div className="flex items-center justify-between mt-2 text-[11px] text-tertiary">
                 <span>
                   {lang === "es" ? "Primera operación" : "First trade"} →{" "}
                   {lang === "es" ? "Última" : "Last"}
@@ -1657,7 +1675,7 @@ export function AnalyticsPage() {
           <SectionCard
             eyebrow={t("heatmapTitle")}
             hint={
-              <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary tnum">
+              <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary tnum">
                 {lang === "es" ? "Lun–Vie × 4h" : "Mon–Fri × 4h"}
               </span>
             }

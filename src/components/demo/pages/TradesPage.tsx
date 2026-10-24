@@ -11,6 +11,7 @@ import {
   SETUP_NAMES,
   nombreSetup,
   NOMBRE_SESION,
+  operacionesExportables,
 } from "@/lib/trading/data";
 import {
   deleteTrade,
@@ -105,7 +106,7 @@ function SortHeader({
       }`}
     >
       <span
-        className={`text-[10px] uppercase tracking-[0.15em] whitespace-nowrap transition-colors ${
+        className={`text-[11px] uppercase tracking-[0.15em] whitespace-nowrap transition-colors ${
           active ? "text-primary font-semibold" : "text-tertiary group-hover/sort:text-secondary"
         }`}
       >
@@ -114,7 +115,7 @@ function SortHeader({
       <span
         key={active ? `${dir}` : "idle"}
         style={{ "--dm-s": 0.6, "--dm-r": active && dir === "asc" ? "-90deg" : "0deg", "--dm-dur": "0.18s" } as CSSProperties}
-        className={`tj-dm-entra inline-block text-[9.5px] leading-none transition-colors ${
+        className={`tj-dm-entra inline-block text-[11px] leading-none transition-colors ${
           active ? "text-primary" : "text-tertiary/50 group-hover/sort:text-secondary"
         }`}
         aria-hidden="true"
@@ -190,7 +191,7 @@ const TradeRow = memo(function TradeRow({
           </span>
           {isCustom && (
             <span
-              className="text-[9.5px] uppercase tracking-[0.15em] font-semibold text-primary border border-[rgb(var(--divider)/0.2)] rounded-[2px] px-1 py-px"
+              className="text-[11px] uppercase tracking-[0.15em] font-semibold text-primary border border-[rgb(var(--divider)/0.2)] rounded-[2px] px-1 py-px"
               title={t("customTradeBadge")}
             >
               {t("customTradeBadge")}
@@ -410,7 +411,7 @@ function KpiStripCell({
       <div className="flex-1 md:min-w-0 flex flex-col gap-1.5 px-2 sm:px-3">
         {/* En móvil cada celda mide lo que su cifra y la franja se desliza: con
             88 px mínimos «+6.739,19 $» invadía a la vecina. */}
-        <div className="text-[10px] uppercase leading-[1.25] tracking-[0.12em] text-tertiary whitespace-nowrap md:whitespace-normal">
+        <div className="text-[11px] uppercase leading-[1.25] tracking-[0.12em] text-tertiary whitespace-nowrap md:whitespace-normal">
           {label}
         </div>
         <div className="font-semibold text-lg sm:text-xl md:text-2xl tnum text-primary leading-none whitespace-nowrap">
@@ -527,13 +528,13 @@ function BulkActionBar({
         <Chip variant="selection" size="sm" rounded="sm" className="tnum">
           {fmtInt(count, lang)}
         </Chip>
-        <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary hidden sm:inline">
+        <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary hidden sm:inline">
           {lang === "es" ? "seleccionadas" : "selected"}
         </span>
 
         <span className="hidden md:inline-block w-px h-4 bg-[rgb(var(--divider)/0.1)] mx-1" aria-hidden="true" />
 
-        <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary hidden md:inline">
+        <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary hidden md:inline">
           {lang === "es" ? "Etiqueta" : "Tag"}
         </span>
         <input
@@ -687,14 +688,7 @@ export function TradesPage() {
           : `${fmtOperaciones(filtered.length, lang)} downloaded in standard CSV format.`,
       });
     } else {
-      const jsonContent = JSON.stringify(
-        filtered.map((t) => ({
-          ...t,
-          closedAt: t.closedAt.toISOString(),
-        })),
-        null,
-        2
-      );
+      const jsonContent = JSON.stringify(operacionesExportables(filtered, lang), null, 2);
       const blob = new Blob([jsonContent], { type: "application/json;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -706,7 +700,7 @@ export function TradesPage() {
       URL.revokeObjectURL(url);
 
       toast({
-        title: es ? "Snapshot JSON generado" : "JSON snapshot generated",
+        title: es ? "Copia JSON generada" : "JSON snapshot generated",
         description: es
           ? `Copia completa con métricas y notas de ${fmtOperaciones(filtered.length, lang)}.`
           : `Complete copy with metrics and notes for ${fmtOperaciones(filtered.length, lang)}.`,
@@ -742,7 +736,7 @@ export function TradesPage() {
       if (outcome === "loss" && tr.netPnl >= 0) return false;
       if (outcome === "be" && tr.netPnl !== 0) return false;
       if (setupSel !== "all" && tr.setup !== setupSel) return false;
-      return coincideOperacion(tr, debounced, nombreSetup(tr.setup, lang));
+      return coincideOperacion(tr, debounced, nombreSetup(tr.setup, lang), lang);
     });
   }, [
     allTrades,
@@ -969,7 +963,7 @@ export function TradesPage() {
         role="group"
         aria-label={es ? "Vistas rápidas" : "Quick views"}
       >
-        <span className="text-[10px] uppercase tracking-wider text-tertiary mr-1 shrink-0" aria-hidden="true">
+        <span className="text-[11px] uppercase tracking-wider text-tertiary mr-1 shrink-0" aria-hidden="true">
           {es ? "Vistas rápidas:" : "Quick views:"}
         </span>
         <button
@@ -1018,7 +1012,7 @@ export function TradesPage() {
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >
-          {es ? "Pérdidas" : "Losses"}
+          {es ? "Perdedoras" : "Losers"}
         </button>
 
         <button
@@ -1094,7 +1088,7 @@ export function TradesPage() {
           rótulo baja a 64 px para dar sitio a los chips. */}
       <div className="space-y-2.5">
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-          <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary min-w-[64px] sm:min-w-[92px]">
+          <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary min-w-[64px] sm:min-w-[92px]">
             {t("colInstrument")}
           </span>
           <div className="flex items-center gap-1.5 flex-wrap">
@@ -1122,7 +1116,7 @@ export function TradesPage() {
 
         <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
           <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
-            <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary min-w-[64px] sm:min-w-[92px]">
+            <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary min-w-[64px] sm:min-w-[92px]">
               {t("direction")}
             </span>
             <div className="flex items-center gap-1.5 flex-wrap">
@@ -1156,7 +1150,7 @@ export function TradesPage() {
           <span className="hidden md:inline-block w-px h-4 bg-[rgb(var(--divider)/0.1)]" aria-hidden="true" />
 
           <div className="flex items-center gap-2.5 flex-wrap">
-            <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary">
+            <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
               {t("compliance")}
             </span>
             <div className="flex items-center gap-1.5 flex-wrap">
@@ -1199,7 +1193,7 @@ export function TradesPage() {
         {/* Resultado + Setup (TradesPage.xaml L107-213). */}
         <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
           <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
-            <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary min-w-[64px] sm:min-w-[92px]">
+            <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary min-w-[64px] sm:min-w-[92px]">
               {es ? "Resultado" : "Result"}
             </span>
             <div className="flex items-center gap-1.5 flex-wrap">
@@ -1230,7 +1224,7 @@ export function TradesPage() {
           <span className="hidden md:inline-block w-px h-4 bg-[rgb(var(--divider)/0.12)]" aria-hidden="true" />
 
           <div className="flex items-center gap-2.5 flex-wrap">
-            <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary">
+            <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
               Setup
             </span>
             <div className="flex items-center gap-1.5 flex-wrap">
@@ -1335,7 +1329,7 @@ export function TradesPage() {
                         aria-label={t("selectAll")}
                         className="h-3.5 w-3.5 rounded-[2px] border-[rgb(var(--divider)/0.2)] bg-[rgb(var(--divider)/0.05)] accent-[rgb(var(--accent-base))] cursor-pointer"
                       />
-                      <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary">
+                      <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
                         {t("direction")}
                       </span>
                     </div>
@@ -1353,19 +1347,19 @@ export function TradesPage() {
                   </th>
 
                   <th scope="col" className="px-3 py-3 whitespace-nowrap">
-                    <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary">
+                    <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
                       {t("colSetup")}
                     </span>
                   </th>
 
                   <th scope="col" className="px-3 py-3 whitespace-nowrap w-[80px]">
-                    <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary">
+                    <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
                       {lang === "es" ? "Sesión" : "Session"}
                     </span>
                   </th>
 
                   <th scope="col" className="px-3 py-3 whitespace-nowrap w-[180px]">
-                    <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary">
+                    <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
                       {t("entry")} → {t("exit")}
                     </span>
                   </th>
@@ -1415,7 +1409,7 @@ export function TradesPage() {
                   </th>
 
                   <th scope="col" className="pl-3 pr-4 py-3 whitespace-nowrap w-[120px] text-right">
-                    <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary">
+                    <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
                       {t("compliance")}
                     </span>
                   </th>
@@ -1479,7 +1473,7 @@ export function TradesPage() {
                       {tf("tradesCount", filtered.length)}
                     </td>
                     <td className="px-3 py-3 text-right">
-                      <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary block">
+                      <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary block">
                         {lang === "es" ? "Suma" : "Sum"}
                       </span>
                     </td>

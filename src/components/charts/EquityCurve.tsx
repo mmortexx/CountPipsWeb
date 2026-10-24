@@ -186,7 +186,7 @@ export const EquityCurve = memo(function EquityCurve({
               const y = padT + t * (H - padT - padB);
               const val = maxBal - t * (maxBal - minBal);
               return (
-                <text key={t} x={padL - 8} y={y + 3} textAnchor="end" className="text-[10px] tnum" fill="rgb(var(--txt-tertiary))">
+                <text key={t} x={padL - 8} y={y + 3} textAnchor="end" className="text-[11px] tnum" fill="rgb(var(--txt-tertiary))">
                   {fmtMoney(val, lang, { decimals: 0 })}
                 </text>
               );
@@ -266,7 +266,7 @@ export const EquityCurve = memo(function EquityCurve({
             transform: tooltipTransform,
           }}
         >
-          <div className="text-tertiary text-[10px]">
+          <div className="text-tertiary text-[11px]">
             {/* `timeZone: "UTC"`: las operaciones están fechadas en UTC (ver
                 `data.ts`); sin fijarlo, la etiqueta puede salir un día antes. */}
             {hoverPoint.date.toLocaleDateString(locale, {

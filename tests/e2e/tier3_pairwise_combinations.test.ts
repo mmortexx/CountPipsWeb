@@ -150,7 +150,7 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
     expect(forex.tamano).toBeCloseTo(1, 9); // 50 pips × 10 $ por lote estándar = 500 $
 
     // Kelly depende del acierto y del R:R, no del mercado.
-    const kelly = [acciones, futuros, forex].map((p) => fraccionesKelly(55, p.rr));
+    const kelly = [acciones, futuros, forex].map((p) => fraccionesKelly(55, p.rr)!);
     for (const k of kelly) {
       expect(k.completo).toBeCloseTo(40, 6); // (0,55·3 − 0,45) / 3
       expect(k.medio).toBeCloseTo(20, 6);

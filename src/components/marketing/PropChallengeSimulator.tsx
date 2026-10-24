@@ -16,6 +16,7 @@ import {
   type EscenarioFondeo,
   type TipoDrawdown,
 } from "@/lib/trading/fondeo";
+import { useEnHerramienta } from "@/components/herramientas/EnHerramienta";
 
 /**
  * Simulador de prueba de fondeo: cuántos de `CAMINOS_FONDEO` intentos con tu forma de
@@ -30,6 +31,7 @@ const sinSuscripcion = () => () => {};
 
 export function PropChallengeSimulator() {
   const { lang } = useLang();
+  const enHerramienta = useEnHerramienta();
   const es = lang === "es";
   const pct = (v: number, dec = 0) => `${fmtNum(v, lang, dec)}${pctSep(lang)}`;
 
@@ -162,7 +164,7 @@ export function PropChallengeSimulator() {
         {/* En móvil, el resultado va justo después de los controles. */}
         <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
-            <h2 data-titular-herramienta className="t-h2 m-0 max-w-[24ch] text-primary">
+            <h2 data-titular-herramienta aria-hidden={enHerramienta || undefined} className="t-h2 m-0 max-w-[24ch] text-primary">
               {es ? (
                 <>
                   Cuántas veces la pasarías.

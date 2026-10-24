@@ -10,6 +10,7 @@ import { fmtMoney, fmtNum, fmtOperaciones, fmtPct, pctSep } from "@/lib/trading/
 import { LIMITES } from "@/lib/trading/limites";
 import { TASA_REINVERSION_ANUAL } from "@/lib/supuestos";
 import { costeIndisciplina } from "@/lib/trading/indisciplina";
+import { useEnHerramienta } from "@/components/herramientas/EnHerramienta";
 
 interface MistakeItem {
   id: string;
@@ -21,10 +22,10 @@ interface MistakeItem {
 /** Reparto de la fuga mensual por tipo de fallo, en %: suma 100. */
 export const ERRORES_INDISCIPLINA: MistakeItem[] = [
   { id: "offhours", labelEs: "Operar fuera de horario", labelEn: "Trading off-hours", pct: 32 },
-  { id: "oversize", labelEs: "Tamaño excesivo (oversize)", labelEn: "Oversized position", pct: 27 },
+  { id: "oversize", labelEs: "Tamaño excesivo", labelEn: "Oversized position", pct: 27 },
   { id: "nostop", labelEs: "Sin stop loss / omitido", labelEn: "No stop loss / omitted", pct: 18 },
   { id: "chasing", labelEs: "Perseguir el precio (FOMO)", labelEn: "Chasing price (FOMO)", pct: 14 },
-  { id: "movingstop", labelEs: "Mover stop loss en contra", labelEn: "Manually moving stop", pct: 9 },
+  { id: "movingstop", labelEs: "Mover el stop en contra", labelEn: "Moving the stop against you", pct: 9 },
 ];
 
 export const PRESETS = [
@@ -71,6 +72,7 @@ const ESCENARIOS_EVITAR = [0.5, 0.8] as const;
 export function DisciplineCost() {
   const idEscenarios = useId();
   const { lang } = useLang();
+  const enHerramienta = useEnHerramienta();
   const es = lang === "es";
 
   // Estado editable
@@ -192,7 +194,7 @@ export function DisciplineCost() {
 
         <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-12 items-start">
           <div>
-            <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]"
+            <h2 data-titular-herramienta aria-hidden={enHerramienta || undefined} className="t-h2 m-0 text-primary max-w-[24ch]"
             >
               {es ? (
                 <>

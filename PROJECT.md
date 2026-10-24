@@ -73,14 +73,14 @@ las pruebas que leen `out/` (con `COMPROBAR_OUT=1`, que convierte su ausencia en
 `humo`, `toque`, `alto-contraste` y `teclado`; las demás se pasan en local:
 
 ```bash
-node scripts/humo.mjs --serve out          # contraste, entradas, menú, sin JavaScript, desborde y miga a 320 px
+node scripts/humo.mjs --serve out          # contraste, entradas, menú, sin JavaScript; a 320 px, desborde, miga y texto espaciado (WCAG 1.4.12), sin partir cifras entre dígitos; letra de la demo ≥ 11 px
 node scripts/legible.mjs --serve out       # contraste de todo el texto sobre fondo plano
 node scripts/tinta.mjs --serve out         # texto sobre fondos de color, en los dos temas
 node scripts/arranque.mjs --serve out --cpu 4  # tiempo hasta titular legible
 node scripts/metadatos.mjs out             # título (con su búsqueda), descripción, canónico, hreflang, lang, ld+json
 node scripts/enlaces.mjs out               # enlaces rotos, que cambian de idioma o que faltan (madre → hija, herramienta → glosario)
 node scripts/cifras.mjs out                # convenciones de idioma y restos de plantilla
-node scripts/rotulos.mjs out               # lo que oye un lector de pantalla
+node scripts/rotulos.mjs out               # lo que oye un lector de pantalla (y ningún título que repita el h1)
 node scripts/equipaje.mjs out              # JS que cada página carga sin pedirlo y su tope comprimido; solo se precargan la sans y la serif
 node scripts/copiado.mjs --serve out       # texto de los botones «Copiar»
 node scripts/medida.mjs --serve out        # caracteres por línea

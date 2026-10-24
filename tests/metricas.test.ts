@@ -233,13 +233,13 @@ describe("Criterio de Kelly (completo, medio y cuarto)", () => {
   it("calcula Kelly correctamente para sistemas con ventaja ganadora", async () => {
     const { fraccionesKelly } = await import("@/lib/trading/plan");
     // WR = 60%, RR = 2:1 -> f* = (0.60 * 2 - 0.40) / 2 = 40%
-    const k1 = fraccionesKelly(60, 2);
+    const k1 = fraccionesKelly(60, 2)!;
     expect(k1.completo).toBeCloseTo(40, 5);
     expect(k1.medio).toBeCloseTo(20, 5);
     expect(k1.cuarto).toBeCloseTo(10, 5);
 
     // WR = 51%, RR = 1:1 -> f* = 2%
-    const k2 = fraccionesKelly(51, 1);
+    const k2 = fraccionesKelly(51, 1)!;
     expect(k2.completo).toBeCloseTo(2.0, 5);
     expect(k2.medio).toBeCloseTo(1.0, 5);
     expect(k2.cuarto).toBeCloseTo(0.5, 5);

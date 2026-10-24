@@ -1,5 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { createElement } from "react";
+import { renderToString } from "react-dom/server";
 import { contrasteVentaja } from "@/lib/trading/estadistica";
+
+let ruta = "/";
+vi.mock("next/navigation", () => ({ usePathname: () => ruta, useRouter: () => ({ push() {}, replace() {} }) }));
+
+import { LanguageProvider } from "@/lib/i18n";
+import { EdgeSignificanceChecker } from "@/components/marketing/EdgeSignificanceChecker";
 
 // La hipótesis nula es el acierto de equilibrio (el que deja la expectancy a
 // cero según el payoff), no el 50 %.
@@ -61,5 +69,19 @@ describe("contrasteVentaja: ventaja frente al acierto de equilibrio", () => {
     expect(pot(100)).toBeLessThan(pot(300));
     expect(pot(n95)).toBeGreaterThanOrEqual(80);
     expect(pot(n95 - 1)).toBeLessThan(80);
+  });
+});
+
+/* Con la muestra por encima de la necesaria, la potencia ya pasa del 80 % (con los valores
+   de inicio, 97,5 %): decir «en 8 de cada 10 muestras» contradecía la cifra de al lado. */
+describe("significancia pintada: el texto de muestra suficiente no contradice su potencia", () => {
+  const texto = (pathname: string) => {
+    ruta = pathname;
+    return renderToString(createElement(LanguageProvider, null, createElement(EdgeSignificanceChecker)))
+      .replace(/<[^>]+>/g, " ").replace(/&[^;]+;/g, " ").replace(/\s+/g, " ");
+  };
+  it("en español y en inglés dice «al menos»", () => {
+    expect(texto("/herramientas/significancia-estadistica/")).toMatch(/en al menos 8 de cada 10 muestras/);
+    expect(texto("/en/herramientas/significancia-estadistica/")).toMatch(/in at least 8 samples out of 10/);
   });
 });

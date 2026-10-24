@@ -8,6 +8,7 @@ import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { fmtMoney, pctSep, fmtInt, fmtOperaciones, fmtR, fmtNum as fmtNumCasa } from "@/lib/trading/format";
 import { BotonCopiar } from "@/components/tj/BotonCopiar";
 import { componerInforme } from "@/lib/informe";
+import { useEnHerramienta } from "@/components/herramientas/EnHerramienta";
 
 /** Decimales (0 a `max`) necesarios para representar `v` sin ceros de más. */
 function decimalesSinCeros(v: number, max: number): number {
@@ -120,6 +121,7 @@ export function EquityProjector() {
   const idAporte = useId();
   const idCostes = useId();
   const { lang } = useLang();
+  const enHerramienta = useEnHerramienta();
   const es = lang === "es";
 
   // ── Estado ────────────────────────────────────────────────────────
@@ -458,7 +460,7 @@ export function EquityProjector() {
             </span>
           </div>
 
-          <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]"
+          <h2 data-titular-herramienta aria-hidden={enHerramienta || undefined} className="t-h2 m-0 text-primary max-w-[24ch]"
           >
             {es ? (
               <>
@@ -716,7 +718,7 @@ export function EquityProjector() {
                   0.05,
                   setRiskPct,
                   pctSep(lang),
-                  `Kelly 1/2: ${fmtPct(c.halfKellyPct, 1)}`
+                  `Kelly 1/2: ${c.halfKellyPct === null ? "—" : fmtPct(c.halfKellyPct, 1)}`
                 )}
 
                 {/* Horizonte */}
@@ -1298,7 +1300,7 @@ export function EquityProjector() {
                     {fmtNum(c.profitFactor, 2)}
                   </div>
                   <div className="text-[12px] text-[var(--ink-3)] tnum mt-0.5">
-                    {es ? `Medio Kelly: ${fmtPct(c.halfKellyPct, 1)}` : `Half Kelly: ${fmtPct(c.halfKellyPct, 1)}`}
+                    {`${es ? "Medio Kelly" : "Half Kelly"}: ${c.halfKellyPct === null ? "—" : fmtPct(c.halfKellyPct, 1)}`}
                   </div>
                 </div>
               </div>

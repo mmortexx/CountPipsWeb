@@ -32,7 +32,7 @@ export function ProfileSelector() {
     {
       id: "prop",
       href: "/traders/prop-firms",
-      eyebrow: "Prop firms",
+      eyebrow: lang === "de" ? "Prop-Firms" : "Prop firms",
       /* En inglés de mercados el verbo es «trade», no «operate»; y «To + verbo»
          mantiene el paralelismo con la tarjeta hermana. */
       title: tx(lang, { es: "Para operar con reglas que importan", en: "To trade under rules that matter", pt: "Para operar com regras que importam", fr: "Pour trader selon des règles strictes", de: "Unter verbindlichen Regeln traden", it: "Per operare con regole che contano" }),

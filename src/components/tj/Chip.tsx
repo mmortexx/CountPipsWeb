@@ -4,8 +4,8 @@ interface ChipProps {
   children: ReactNode;
   variant?: "default" | "pos" | "neg" | "warn" | "accent" | "neutral" | "stat" | "count" | "selection";
   className?: string;
-  /** Tamaño del texto: `"default"` 0.72rem; `sm`/`xs` para etiquetas más pequeñas. */
-  size?: "default" | "sm" | "xs";
+  /** Tamaño del texto: `"default"` 0.72rem; `sm` (11 px, el menor del sitio) para etiquetas más pequeñas. */
+  size?: "default" | "sm";
   /** Radio de esquina: `"default"` 4px; `sm` 2px, como la ventana de la app. */
   rounded?: "default" | "sm";
   /** `"button"` pinta un botón de 44 px con anillo de foco, para chips de
@@ -54,7 +54,6 @@ export function Chip({
   const sizes: Record<string, string> = {
     default: "text-[0.72rem]",
     sm: "text-[11px]",
-    xs: "text-[10px]",
   };
   const radii: Record<string, string> = {
     default: "rounded-[4px]",

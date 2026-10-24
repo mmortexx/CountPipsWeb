@@ -109,6 +109,13 @@ describe("las cifras que salen de precios.ts siguen diciendo lo mismo", () => {
     expect(fmtMoney(PRECIO_CORE, lang, { decimals: 0 })).toBe(core);
     expect(fmtMoney(PRECIO_PRO, lang, { decimals: 0 })).toBe(pro);
   });
+
+  /* En Brasil «$ 149» se lee como reales: el dólar se escribe «US$». */
+  it("pt: el dólar con su «US$», en precios, negativos y cifras cortas", () => {
+    expect(fmtMoney(PRECIO_CORE, "pt", { decimals: 0 })).toBe("US$ 149");
+    expect(fmtMoney(-1234.5, "pt")).toBe("−US$ 1.234,50");
+    expect(fmtMoney(3_000_000, "pt", { compact: true })).toBe("US$ 3 mi");
+  });
 });
 
 describe("TERMINOS_GLOSARIO es el número real de términos", () => {

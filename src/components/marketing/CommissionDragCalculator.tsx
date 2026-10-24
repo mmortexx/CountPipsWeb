@@ -15,12 +15,14 @@ import {
   resultadoBrutoPorOperacion,
   ticksAUnidades,
 } from "@/lib/trading/fugaComisiones";
+import { useEnHerramienta } from "@/components/herramientas/EnHerramienta";
 
 /** Ratio objetivo:riesgo usado para el win rate de equilibrio de la ficha. */
 const RATIO_RR_EQUILIBRIO = 1.5;
 
 export function CommissionDragCalculator() {
   const { lang } = useLang();
+  const enHerramienta = useEnHerramienta();
   const es = lang === "es";
 
   const [selectedInstId, setSelectedInstId] = useState<string>("MNQ");
@@ -97,7 +99,7 @@ export function CommissionDragCalculator() {
 
         <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-10 items-start">
           <div>
-            <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]">
+            <h2 data-titular-herramienta aria-hidden={enHerramienta || undefined} className="t-h2 m-0 text-primary max-w-[24ch]">
               {es ? (
                 <>
                   Lo que se queda por el camino.
@@ -309,7 +311,7 @@ export function CommissionDragCalculator() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-3 pt-4">
               <div>
                 <span className="text-[12px] text-tertiary block mb-1">
-                  {es ? "Parte de la ganancia" : "Share of profit"}
+                  {es ? "Se lo llevan los costes" : "Taken by costs"}
                 </span>
                 <span
                   className={`text-base tnum font-semibold ${
@@ -325,7 +327,7 @@ export function CommissionDragCalculator() {
                   {es ? NIVEL_FUGA_LABEL[nivelFuga].es : NIVEL_FUGA_LABEL[nivelFuga].en}
                 </span>
                 <span className="text-[12px] text-tertiary block mt-0.5">
-                  {es ? "del beneficio" : "of profit"}
+                  {es ? "de la ganancia bruta" : "of gross profit"}
                 </span>
               </div>
 
@@ -337,7 +339,7 @@ export function CommissionDragCalculator() {
                   {fmtNum(breakEvenTicksPerTrade, lang, 2)}
                 </span>
                 <span className="text-[12px] text-tertiary block mt-0.5 tnum">
-                  {fmtNum(breakEvenUnitsPerTrade, lang, 2)} {es ? inst.unitNameEs : inst.unitNameEn}
+                  {fmtNum(breakEvenUnitsPerTrade, lang, 2)} {es ? inst.unitNameEs : inst.unitNameEn} {es ? "por operación" : "per trade"}
                 </span>
               </div>
 

@@ -86,7 +86,7 @@ export function comandosDemo({
     },
     {
       id: "go-detail",
-      labelEs: "Ir a Detalle",
+      labelEs: "Ir al detalle de operación",
       labelEn: "Go to Trade detail",
       section: "nav",
       icon: <DetailIcon />,
@@ -213,8 +213,8 @@ export function comandosDemo({
           const ops = fmtOperaciones(propias, lang);
           const aviso =
             lang === "es"
-              ? `Reiniciar la demo borra ${ops} que has añadido. No se puede deshacer.`
-              : `Resetting the demo deletes the ${ops} you added. This can’t be undone.`;
+              ? `Reiniciar la demo borra ${propias === 1 ? "la operación" : `las ${ops}`} que has añadido. No se puede deshacer.`
+              : `Resetting the demo deletes the ${propias === 1 ? "trade" : ops} you added. This can’t be undone.`;
           if (!confirmar(aviso)) return;
         }
         resetToSample();
@@ -453,7 +453,7 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
                 autoComplete="off"
                 spellCheck={false}
               />
-              <kbd className="bg-[rgb(var(--divider)/0.1)] border border-[rgb(var(--divider)/0.15)] rounded px-1.5 py-0.5 text-[10px] font-mono tnum text-tertiary">
+              <kbd className="bg-[rgb(var(--divider)/0.1)] border border-[rgb(var(--divider)/0.15)] rounded px-1.5 py-0.5 text-[11px] font-mono tnum text-tertiary">
                 Esc
               </kbd>
             </div>
@@ -514,7 +514,7 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
                       </span>
                       <span className="flex-1 text-[13px] truncate">{label}</span>
                       {cmd.hint ? (
-                        <kbd className="bg-[rgb(var(--divider)/0.1)] border border-[rgb(var(--divider)/0.15)] rounded px-1.5 py-0.5 text-[10px] font-mono tnum text-tertiary">
+                        <kbd className="bg-[rgb(var(--divider)/0.1)] border border-[rgb(var(--divider)/0.15)] rounded px-1.5 py-0.5 text-[11px] font-mono tnum text-tertiary">
                           {cmd.hint}
                         </kbd>
                       ) : null}
@@ -524,7 +524,7 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
               )}
             </ul>
 
-            <div className="flex items-center justify-between gap-2 px-3 py-2 border-t border-[rgb(var(--divider)/0.1)] text-[10px] text-tertiary">
+            <div className="flex items-center justify-between gap-2 px-3 py-2 border-t border-[rgb(var(--divider)/0.1)] text-[11px] text-tertiary">
               <span className="flex items-center gap-1.5">
                 <Kbd>↑</Kbd>
                 <Kbd>↓</Kbd>
@@ -546,7 +546,7 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
 
 function Kbd({ children }: { children: ReactNode }) {
   return (
-    <kbd className="inline-flex items-center justify-center min-w-[18px] h-5 px-1.5 rounded bg-[rgb(var(--divider)/0.06)] border border-[rgb(var(--divider)/0.15)] text-[10px] font-mono tnum text-secondary">
+    <kbd className="inline-flex items-center justify-center min-w-[18px] h-5 px-1.5 rounded bg-[rgb(var(--divider)/0.06)] border border-[rgb(var(--divider)/0.15)] text-[11px] font-mono tnum text-secondary">
       {children}
     </kbd>
   );

@@ -90,7 +90,7 @@ export const Histogram = memo(function Histogram({
                   columna y en la última sobresale de la tarjeta (`overflow-hidden`);
                   `text-align` no lo arregla si el texto es más ancho que su caja. */}
               <div
-                className={`mt-1 whitespace-nowrap text-[9.5px] tnum text-tertiary ${
+                className={`mt-1 whitespace-nowrap text-[11px] tnum text-tertiary ${
                   i === 0
                     ? "w-max self-start"
                     : i === data.length - 1
@@ -119,7 +119,7 @@ export const Histogram = memo(function Histogram({
             transform: "translate(-50%, -100%)",
           }}
         >
-          <div className="text-tertiary text-[10px]">
+          <div className="text-tertiary text-[11px]">
             {formatX(data[hovered.i].x)}
           </div>
           <div className="font-semibold tnum mt-0.5 text-primary">

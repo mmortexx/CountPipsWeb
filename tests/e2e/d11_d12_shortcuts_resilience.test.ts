@@ -162,7 +162,7 @@ describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 2 Boundary & Corner 
     sinNaN({ ...todoPerdidas }, "0 % de acierto");
     expect(todoPerdidas.grossExpectancyR).toBe(-1);
     expect(todoPerdidas.hasEdge).toBe(false);
-    expect(todoPerdidas.fullKellyPct).toBe(0);
+    expect(todoPerdidas.fullKellyPct).toBeNull(); // sin ganancias no hay payoff medible
     expect(todoPerdidas.monthsToDouble).toBeNull();
     expect(todoPerdidas.cagr).toBeGreaterThanOrEqual(-1);
     expect(todoPerdidas.cagr).toBeLessThan(0);

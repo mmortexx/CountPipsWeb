@@ -57,6 +57,12 @@ export const LO_QUE_VA_SOLO = {
   en: "Nothing connects on its own, not even the licence: the key is checked on your machine, offline",
 };
 
+/** Entradilla de la ficha técnica (`TechSpecs`). */
+export const ENTRADILLA_FICHA_TECNICA = {
+  es: "Aplicación nativa de Windows sin cuenta ni telemetría. Nada se conecta solo: las actualizaciones, cuando las pidas, y las funciones opcionales, si las activas.",
+  en: "A native Windows app with no account and no telemetry. Nothing connects on its own: updates when you ask for them, and the optional features if you turn them on.",
+};
+
 export const RESUMEN_SEGURIDAD = {
   es: "Sin cuenta, sin telemetría y sin servidores de CountPips: tus operaciones viven en tu equipo y solo salen si tú lo activas. Nada se conecta solo, ni siquiera la licencia.",
   en: "No account, no telemetry and no CountPips servers: your trades live on your machine and only leave if you turn something on. Nothing connects on its own, not even the licence.",

@@ -9,9 +9,9 @@ import { HERRAMIENTAS } from "@/lib/herramientas";
 import { SITE_URL, hreflangDe, esquemasGlobales } from "@/lib/site";
 import { localesAlternos } from "@/lib/locale";
 import { SUPPORT_EMAIL } from "@/lib/forms";
+import { METRICAS } from "@/lib/producto";
 
-const PAGE_DESCRIPTION =
-  "Diario de trading nativo de Windows. Explora una demo interactiva con métricas institucionales, disciplina y tus datos en tu equipo.";
+const PAGE_DESCRIPTION = `Diario de trading para Windows: ${METRICAS} métricas, un guardián de disciplina y tus datos en tu equipo. Prueba la demo sin registro.`;
 
 export const metadata: Metadata = {
   title: { absolute: "App de diario de trading para Windows — CountPips" },

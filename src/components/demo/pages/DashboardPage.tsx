@@ -330,7 +330,7 @@ export function DashboardPage() {
                         móvil porque cuatro huecos de 16 se comían 64 de 224 px. */}
                     <div className="grid grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)_1px_minmax(0,1fr)] gap-x-2 sm:gap-x-4 items-stretch">
                       <div className="flex flex-col items-center justify-center gap-1 text-center py-1 rounded-[2px] transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
-                        <div className="text-[10px] uppercase tracking-[0.12em] text-tertiary">
+                        <div className="text-[11px] uppercase tracking-[0.12em] text-tertiary">
                           {t("riskUsd")}
                         </div>
                         <Money
@@ -343,7 +343,7 @@ export function DashboardPage() {
                         aria-hidden="true"
                       />
                       <div className="flex flex-col items-center justify-center gap-1 text-center py-1 rounded-[2px] transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
-                        <div className="text-[10px] uppercase tracking-[0.12em] text-tertiary">
+                        <div className="text-[11px] uppercase tracking-[0.12em] text-tertiary">
                           {t("rr")}
                         </div>
                         <span
@@ -363,7 +363,7 @@ export function DashboardPage() {
                         aria-hidden="true"
                       />
                       <div className="flex flex-col items-center justify-center gap-1 text-center py-1 rounded-[2px] transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
-                        <div className="text-[10px] uppercase tracking-[0.12em] text-tertiary">
+                        <div className="text-[11px] uppercase tracking-[0.12em] text-tertiary">
                           {es ? "% cuenta" : "% acct"}
                         </div>
                         <span
@@ -710,7 +710,7 @@ export function DashboardPage() {
                     {/* Distintivo con la misma tecla de mando que el `title` del
                         botón. Ver `useTeclaMando`. */}
                     <kbd
-                      className="hidden sm:inline-flex items-center gap-0.5 h-5 px-1.5 rounded-[2px] bg-[rgb(var(--accent-ink)/0.12)] text-[10px] font-semibold text-[rgb(var(--accent-ink)/0.75)] tabular-nums group-hover:bg-[rgb(var(--accent-ink)/0.18)] transition-colors"
+                      className="hidden sm:inline-flex items-center gap-0.5 h-5 px-1.5 rounded-[2px] bg-[rgb(var(--accent-ink)/0.12)] text-[11px] font-semibold text-[rgb(var(--accent-ink)/0.75)] tabular-nums group-hover:bg-[rgb(var(--accent-ink)/0.18)] transition-colors"
                       aria-hidden="true"
                     >
                       <span>{mando}</span>
@@ -1026,7 +1026,7 @@ function KpiCell({
 }) {
   return (
     <div className="flex flex-col items-center gap-1 text-center min-w-[5.5rem] shrink-0 px-1 py-1 rounded-[2px] transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
-      <div className="text-[10px] uppercase tracking-[0.12em] text-tertiary truncate max-w-full">
+      <div className="text-[11px] uppercase tracking-[0.12em] text-tertiary truncate max-w-full">
         {label}
       </div>
       {/* `tnum` y semibold en el contenedor: las 7 celdas comparten tipografía
@@ -1210,7 +1210,7 @@ function DirectionChip({
     <span
       /* El rojo usa `--pnl-neg-on-tint`: sobre su propio tinte el token normal
          daba 4,03:1 a 10 px (hacen falta 4,5:1). Ver globals.css. */
-      className={`inline-flex items-center gap-1 px-1.5 h-5 rounded text-[10px] font-medium uppercase tracking-wider ${
+      className={`inline-flex items-center gap-1 px-1.5 h-5 rounded text-[11px] font-medium uppercase tracking-wider ${
         isLong
           ? "bg-pnl-pos/15 text-pnl-pos"
           : "bg-pnl-neg/15 text-[rgb(var(--pnl-neg-on-tint))]"

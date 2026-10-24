@@ -3,14 +3,14 @@ import { HomeBody } from "../page";
 import { SITE_URL, hreflangDe, esquemasGlobales } from "@/lib/site";
 import { localesAlternos } from "@/lib/locale";
 import { SUPPORT_EMAIL } from "@/lib/forms";
+import { METRICAS } from "@/lib/producto";
 
 /**
  * `/en`: la portada en inglés. El cuerpo es `HomeBody` de `../page`; cada
  * sección elige idioma con `useLang()`, que deriva "en" de esta dirección. Este
  * fichero solo aporta los metadatos que ven buscadores y enlaces compartidos.
  */
-const PAGE_DESCRIPTION =
-  "Windows-native trading journal. Explore an interactive demo with institutional metrics, discipline and your data on your machine.";
+const PAGE_DESCRIPTION = `Trading journal for Windows: ${METRICAS} metrics, a discipline guardian and your data on your machine. Try the demo, no sign-up.`;
 
 export const metadata: Metadata = {
   title: { absolute: "Trading journal app for Windows — CountPips" },

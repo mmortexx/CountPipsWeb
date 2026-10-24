@@ -56,7 +56,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
       <div className="flex gap-1.5">
         <div className="flex flex-col gap-1 justify-around pr-1">
           {WEEKDAYS_SHORT.map((d) => (
-            <div key={d} className="text-[10px] text-tertiary font-medium h-8 flex items-center">{d}</div>
+            <div key={d} className="text-[11px] text-tertiary font-medium h-8 flex items-center">{d}</div>
           ))}
         </div>
         <div className="flex-1 grid grid-rows-5 gap-1">
@@ -77,7 +77,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
                   <div
                     data-entra="sello"
                     key={c}
-                    className="tj-realce h-8 rounded-[4px] flex items-center justify-center text-[9.5px] font-semibold tnum cursor-default relative overflow-hidden group"
+                    className="tj-realce h-8 rounded-[4px] flex items-center justify-center text-[11px] font-semibold tnum cursor-default relative overflow-hidden group"
                     style={{ backgroundColor: bg }}
                     onMouseEnter={(e) => {
                       const cell = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -108,7 +108,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
       </div>
       <div className="flex gap-1 mt-1 ml-7">
         {HOUR_LABELS.map((h) => (
-          <div key={h} className="flex-1 text-[9.5px] text-tertiary text-center">{h}</div>
+          <div key={h} className="flex-1 text-[11px] text-tertiary text-center">{h}</div>
         ))}
       </div>
 
@@ -122,7 +122,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
             transform: "translate(-50%, -100%)",
           }}
         >
-          <div className="text-tertiary text-[10px]">
+          <div className="text-tertiary text-[11px]">
             {WEEKDAYS_SHORT[hovered.r]} · {HOUR_LABELS[hovered.c]}
           </div>
           <div
@@ -133,7 +133,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
             {fmtMoney(grid[hovered.r][hovered.c], lang, { sign: true, decimals: 0 })}
           </div>
           {countGrid[hovered.r][hovered.c] > 0 && (
-            <div className="text-tertiary text-[10px] mt-0.5 tnum">
+            <div className="text-tertiary text-[11px] mt-0.5 tnum">
               {fmtInt(countGrid[hovered.r][hovered.c], lang)} {lang === "es" ? "ops" : "trades"}
             </div>
           )}

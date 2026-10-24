@@ -87,7 +87,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
             </Reveal>
           )}
           {/* El h2 debe existir (índice lateral y encabezados SEO); en `standalone`
-              va `sr-only` para no duplicar el titular del PageHeader. */}
+              va `sr-only` y con otro nombre: repetir el titular del PageHeader se oiría dos veces. */}
           <Reveal delay={0.06}>
             <h2
               className={
@@ -96,15 +96,9 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                   : "relative t-h2 text-primary mt-5"
               }
             >
-              {es ? (
-                <>
-                  Preguntas frecuentes
-                </>
-              ) : (
-                <>
-                  Frequently asked questions
-                </>
-              )}
+              {standalone
+                ? es ? "Todas las preguntas" : "All questions"
+                : es ? "Preguntas frecuentes" : "Frequently asked questions"}
             </h2>
           </Reveal>
         </div>

@@ -11,6 +11,7 @@ import {
   monthlyBreakdown,
   cumplimientoMensual,
   nivelDisciplina,
+  notaEnIdioma,
   type Trade,
 } from "@/lib/trading/data";
 import { useAllTrades } from "@/lib/trading/demoStore";
@@ -338,7 +339,7 @@ function ComplianceRing({ pct, label }: { pct: number; label: string }) {
         <div className={`text-3xl md:text-4xl font-semibold tnum ${toneClass} leading-none`}>
           <CountUp to={pct * 100} decimals={0} suffix={pctSep(lang)} />
         </div>
-        <div className="text-[10px] uppercase tracking-[0.15em] text-tertiary mt-1.5 text-center">
+        <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary mt-1.5 text-center">
           {label}
         </div>
       </div>
@@ -459,7 +460,7 @@ function PnlBarChart({ data }: { data: { label: string; pnl: number }[] }) {
                 }`}
               />
               <div
-                className={`absolute left-1/2 -translate-x-1/2 text-[9.5px] tnum whitespace-nowrap ${
+                className={`absolute left-1/2 -translate-x-1/2 text-[11px] tnum whitespace-nowrap ${
                   isPos
                     ? "bottom-[calc(50%+6px)]"
                     : "top-[calc(50%+6px)]"
@@ -473,7 +474,7 @@ function PnlBarChart({ data }: { data: { label: string; pnl: number }[] }) {
                 {fmtInt(Math.abs(d.pnl), lang)}
               </div>
             </div>
-            <div className="text-[10px] uppercase tracking-wider text-tertiary tnum truncate">
+            <div className="text-[11px] uppercase tracking-wider text-tertiary tnum truncate">
               {d.label}
             </div>
           </div>
@@ -736,13 +737,13 @@ function CrossCell({
   return (
     <div className="space-y-1.5">
       <div className="flex items-center gap-2">
-        <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary">
+        <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary">
           {label}
         </span>
       </div>
       <div className="flex items-stretch gap-4">
         <div className="space-y-0.5">
-          <div className="text-[9.5px] uppercase tracking-wider text-tertiary">
+          <div className="text-[11px] uppercase tracking-wider text-tertiary">
             {lowLabel}
           </div>
           <Money
@@ -753,7 +754,7 @@ function CrossCell({
           />
         </div>
         <div className="space-y-0.5">
-          <div className="text-[9.5px] uppercase tracking-wider text-tertiary">
+          <div className="text-[11px] uppercase tracking-wider text-tertiary">
             {highLabel}
           </div>
           <Money
@@ -764,7 +765,7 @@ function CrossCell({
           />
         </div>
       </div>
-      <div className="text-[10px] text-tertiary tnum">{sample}</div>
+      <div className="text-[11px] text-tertiary tnum">{sample}</div>
     </div>
   );
 }
@@ -1011,7 +1012,7 @@ export function JournalPage() {
 
             <div className="pt-4 border-t border-[rgb(var(--divider)/0.1)]">
               <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
-                <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary">
+                <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary">
                   {L("Constancia del check-in · 30 días", "Check-in consistency · 30 days")}
                 </span>
                 {/* `flex-wrap`: las dos pastillas piden 5 px más de los que hay a 320 px. */}
@@ -1019,24 +1020,24 @@ export function JournalPage() {
                   {/* Etiquetas en `text-secondary`: la terciaria se calibra para el
                       fondo plano y aquí se apoya en el tinte del acento. */}
                   <span className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-[2px] bg-[rgb(var(--accent-base)/0.12)] border border-[rgb(var(--accent-base)/0.3)]">
-                    <span className="text-[10px] uppercase tracking-[0.12em] text-secondary">
+                    <span className="text-[11px] uppercase tracking-[0.12em] text-secondary">
                       {L("Actual", "Current")}
                     </span>
                     <span className="text-sm font-semibold tnum text-primary leading-none">
                       {fmtInt(currentStreak, lang)}
                     </span>
-                    <span className="text-[10px] text-secondary">
+                    <span className="text-[11px] text-secondary">
                       {L("días", "days")}
                     </span>
                   </span>
                   <span className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-[2px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.1)]">
-                    <span className="text-[10px] uppercase tracking-[0.12em] text-tertiary">
+                    <span className="text-[11px] uppercase tracking-[0.12em] text-tertiary">
                       {L("Mejor", "Best")}
                     </span>
                     <span className="text-sm font-semibold tnum text-primary leading-none">
                       {fmtInt(bestStreak, lang)}
                     </span>
-                    <span className="text-[10px] text-tertiary">
+                    <span className="text-[11px] text-tertiary">
                       {L("días", "days")}
                     </span>
                   </span>
@@ -1204,7 +1205,7 @@ export function JournalPage() {
                   {/* `text-secondary`: la etiqueta va sobre el tinte de ganancia o
                       pérdida y la terciaria se queda corta de contraste. */}
                   <div className="rounded-[2px] p-3 bg-pnl-pos/10 border border-pnl-pos/20">
-                    <div className="text-[10px] uppercase leading-[1.25] tracking-[0.12em] text-secondary [overflow-wrap:anywhere]">
+                    <div className="text-[11px] uppercase leading-[1.25] tracking-[0.12em] text-secondary [overflow-wrap:anywhere]">
                       {t("expInPlan")}
                     </div>
                     <div className="mt-1 break-words font-semibold tnum text-pnl-pos text-base sm:text-lg">
@@ -1212,7 +1213,7 @@ export function JournalPage() {
                     </div>
                   </div>
                   <div className="rounded-[2px] p-3 bg-pnl-neg/10 border border-pnl-neg/20">
-                    <div className="text-[10px] uppercase leading-[1.25] tracking-[0.12em] text-secondary [overflow-wrap:anywhere]">
+                    <div className="text-[11px] uppercase leading-[1.25] tracking-[0.12em] text-secondary [overflow-wrap:anywhere]">
                       {t("expOutPlan")}
                     </div>
                     <div className="mt-1 break-words font-semibold tnum text-pnl-neg text-base sm:text-lg">
@@ -1221,7 +1222,7 @@ export function JournalPage() {
                   </div>
                 </div>
                 <DivergingBar inPlan={expInPlan} outPlan={expOutPlan} />
-                <div className="flex items-center justify-between text-[10px] text-tertiary uppercase tracking-wider">
+                <div className="flex items-center justify-between text-[11px] text-tertiary uppercase tracking-wider">
                   <span>{L("En plan", "In plan")}</span>
                   <span>{L("Fuera de plan", "Out of plan")}</span>
                 </div>
@@ -1250,7 +1251,7 @@ export function JournalPage() {
 
               <table className="mt-3 w-full text-sm tnum">
                 <thead>
-                  <tr className="text-[10px] uppercase tracking-[0.14em] text-tertiary border-b border-[rgb(var(--divider)/0.1)]">
+                  <tr className="text-[11px] uppercase tracking-[0.14em] text-tertiary border-b border-[rgb(var(--divider)/0.1)]">
                     <th scope="col" className="px-2 pb-2 text-left font-normal">{L("Cumplimiento", "Compliance")}</th>
                     <th scope="col" className="px-2 pb-2 text-right font-normal">{L("Operaciones", "Trades")}</th>
                     <th scope="col" className="px-2 pb-2 text-right font-normal">%</th>
@@ -1390,7 +1391,7 @@ export function JournalPage() {
             )}
           </div>
 
-          <div className="mt-4 flex items-center justify-center gap-4 text-[10px] text-tertiary uppercase tracking-[0.14em]">
+          <div className="mt-4 flex items-center justify-center gap-4 text-[11px] text-tertiary uppercase tracking-[0.14em]">
             <span className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-[2px] bg-pnl-pos/70" />
               {L("Positivo", "Positive")}
@@ -1448,7 +1449,7 @@ export function JournalPage() {
                   <div className="flex items-start justify-between gap-3 flex-wrap">
                     <div className="flex items-start gap-3 min-w-0 flex-1">
                       <div className="flex flex-col items-center justify-center w-11 h-11 rounded-[2px] bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] shrink-0">
-                        <div className="text-[9.5px] uppercase tracking-[0.14em] text-tertiary leading-none">
+                        <div className="text-[11px] uppercase tracking-[0.14em] text-tertiary leading-none">
                           {/* En UTC, como el resto de fechas de la muestra (ver `format.ts`):
                               si no, el taco y la fecha de al lado podían diferir. */}
                           {entry.date
@@ -1485,7 +1486,7 @@ export function JournalPage() {
                           </span>
                         </div>
                         <p className="text-sm text-secondary mt-1 line-clamp-1">
-                          {entry.note}
+                          {notaEnIdioma(entry.note, lang)}
                         </p>
                       </div>
                     </div>

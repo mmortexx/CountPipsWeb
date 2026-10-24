@@ -186,6 +186,8 @@ const laminasVistas = [];
 const temasLaminaVistos = [];
 /** Dónde se abrió la ayuda de atajos de la demo, por pantalla. */
 const ayudasDemo = [];
+/** Letra de la demo: qué pestañas y cuántos textos se midieron. */
+const letraDemo = [];
 /** Caracteres leídos en cada página inglesa (un `innerText` vacío pasaría en verde). */
 const idiomasRevisados = [];
 /** Vuelta a la cabecera: de dónde salió, dónde apareció y dónde acabó. */
@@ -734,6 +736,63 @@ for (const pantalla of PANTALLAS) {
           }
         } else {
           avisos.push(`${etiqueta}: no encuentro las pestañas de la demo para abrir su ayuda`);
+        }
+      }
+
+      // Letra de la demo: nada por debajo de 11 px, el peldaño menor del sitio,
+      // en ninguna pestaña ni en el detalle de una operación. El texto de los
+      // gráficos SVG escala con su caja y no cuenta. Los `sm:` se aplican desde
+      // 640 px, así que basta el escritorio.
+      if (ruta.endsWith("/demo") && pantalla.nombre === "escritorio") {
+        const pestanas = pagina.locator(".demo-window [role=tab]");
+        const total = await pestanas.count();
+        const medir = () =>
+          pagina.evaluate(() => {
+            const out = [];
+            let vistos = 0;
+            for (const el of document.querySelectorAll(".demo-window *")) {
+              if (el.closest("svg, .sr-only")) continue;
+              if (![...el.childNodes].some((x) => x.nodeType === 3 && x.textContent.trim())) continue;
+              if (typeof el.checkVisibility === "function" && !el.checkVisibility({ visibilityProperty: true })) continue;
+              vistos++;
+              const px = parseFloat(getComputedStyle(el).fontSize);
+              if (px < 10.95) out.push(`${px} px «${el.textContent.trim().slice(0, 30)}»`);
+            }
+            return { vistos, out };
+          });
+        let vistos = 0;
+        let detalle = false;
+        let internas = 0;
+        const pequenas = new Set();
+        const anota = (r) => {
+          vistos += r.vistos;
+          r.out.forEach((x) => pequenas.add(x));
+        };
+        for (let i = 0; i < total; i++) {
+          await pestanas.nth(i).click();
+          await pagina.waitForTimeout(400);
+          anota(await medir());
+          // Las pestañas de dentro de cada pantalla (semanal/mensual, secciones de Analítica) van detrás de las de la barra.
+          for (let j = total; j < (await pestanas.count()); j++) {
+            await pestanas.nth(j).click();
+            await pagina.waitForTimeout(300);
+            anota(await medir());
+            internas++;
+          }
+          const fila = pagina.locator(".demo-window tr[data-operacion]").first();
+          if (!detalle && (await fila.count())) {
+            await fila.click();
+            await pagina.waitForTimeout(400);
+            anota(await medir());
+            detalle = true;
+          }
+        }
+        letraDemo.push(`${etiqueta} ${vistos} textos en ${total} pestañas, ${internas} internas${detalle ? " y el detalle" : ""}`);
+        if (total < 4 || !internas || !detalle || vistos < 500) {
+          fallos.push(`${etiqueta}: letra de la demo — ${vistos} textos en ${total} pestañas, ${internas} internas${detalle ? "" : ", sin detalle"}: la guarda no está mirando`);
+        }
+        if (pequenas.size) {
+          fallos.push(`${etiqueta}: ${pequenas.size} texto(s) de la demo bajo 11 px — ${[...pequenas].slice(0, 4).join("; ")}`);
         }
       }
 
@@ -1903,6 +1962,7 @@ if (SERVIR) {
 // lector: los titulares que el borde corta se miran aparte.
 const ANCHO_ESTRECHO = 320;
 let estrechasMedidas = 0;
+let espaciadosMedidos = 0;
 {
   const compiladas = async (carpeta, rel = "") => {
     const rutas = [];
@@ -1978,6 +2038,53 @@ let estrechasMedidas = 0;
           if (r.sobra > 1) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el contenido se sale ${r.sobra} px por «${r.texto}»`);
           else for (const c of r.cortados) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el borde corta el titular ${c}`);
           if (r.migaLineas > 1) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px la miga de pan ocupa ${r.migaLineas} líneas`);
+          // Con el espaciado de texto de WCAG 1.4.12 (o la letra grande del
+          // móvil), titulares, botones, pestañas y cifras de matriz siguen
+          // enteros: lo que no cabe parte línea o se desliza, no se recorta.
+          // Los conmutadores segmentados quedan fuera: sus columnas iguales
+          // no admiten partir sin cambiar el reparto en escritorio.
+          await pagina.addStyleTag({
+            content: "*{line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important}p{margin-bottom:2em!important}",
+          });
+          const recortes = await pagina.evaluate(async () => {
+            await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok)));
+            const ancho = document.documentElement.clientWidth;
+            const fuera = [];
+            for (const el of document.querySelectorAll("main h1, main h2, main h3, main .cta, main [role=tab], main .tj-matriz > *")) {
+              if (!el.getClientRects().length || el.closest(".tj-segmentado")) continue;
+              const textos = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+              for (let n = textos.nextNode(); n; n = textos.nextNode()) {
+                if (!n.textContent.trim()) continue;
+                const rango = document.createRange();
+                rango.selectNodeContents(n);
+                const cajas = [...rango.getClientRects()].filter((q) => q.width > 0);
+                if (!cajas.length) continue;
+                const der = Math.max(...cajas.map((q) => q.right));
+                const izq = Math.min(...cajas.map((q) => q.left));
+                let limite = { left: 0, right: ancho };
+                let ignorar = false;
+                for (let p = n.parentElement; p && p !== document.body; p = p.parentElement) {
+                  const s = getComputedStyle(p);
+                  if (p.getBoundingClientRect().width <= 1 || s.textOverflow === "ellipsis") ignorar = true;
+                  if (s.overflowX === "auto" || s.overflowX === "scroll") ignorar = true;
+                  if (ignorar) break;
+                  if (s.overflowX === "hidden" || s.overflowX === "clip") {
+                    limite = p.getBoundingClientRect();
+                    break;
+                  }
+                }
+                if (ignorar) continue;
+                const px = Math.round(Math.max(der - Math.min(limite.right, ancho), Math.max(limite.left, 0) - izq));
+                if (px > 1) {
+                  fuera.push(`«${n.textContent.replace(/\s+/g, " ").trim().slice(0, 40)}» (${px} px)`);
+                  break;
+                }
+              }
+            }
+            return fuera;
+          });
+          for (const c of recortes) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px con el texto espaciado se recorta ${c}`);
+          espaciadosMedidos++;
         } catch (e) {
           fallos.push(`estrecho ${ruta}: ${String(e).split("\n")[0]}`);
         }
@@ -1986,6 +2093,74 @@ let estrechasMedidas = 0;
     }),
   );
   if (!estrechasMedidas) fallos.push("estrecho: no se midió ninguna página");
+  if (espaciadosMedidos < estrechasMedidas) fallos.push(`estrecho: texto espaciado medido en ${espaciadosMedidos} de ${estrechasMedidas} páginas`);
+}
+
+// Las cinco cifras de percentil del simulador de rachas, a 320 px con el texto
+// espaciado: si no caben, parten entre cifra y unidad, nunca entre dígitos.
+// Con los valores de partida son de miles; se recorre el deslizador de riesgo
+// con el resto al máximo para pasar por millones y miles de millones. Si el
+// recorrido no llega a una cifra de cuatro caracteres, no ha medido el caso
+// difícil y eso también es un fallo.
+const cifrasPercentil = [];
+{
+  const ctx = await navegador.newContext({ viewport: { width: ANCHO_ESTRECHO, height: 640 }, reducedMotion: "reduce" });
+  const pagina = await ctx.newPage();
+  for (const ruta of ["/features/disciplina/", "/en/features/disciplina/"]) {
+    try {
+      await pagina.goto(`${BASE}${ruta}`, { waitUntil: "load", timeout: 30000 });
+      await pagina.addStyleTag({ content: ".cv-auto{content-visibility:visible!important}" });
+      await pagina.addStyleTag({
+        content: "*{line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important}p{margin-bottom:2em!important}",
+      });
+      const deslizadores = pagina.locator("main input.tj-range");
+      const etiquetas = await deslizadores.evaluateAll((es) => es.map((e) => e.getAttribute("aria-label") ?? ""));
+      const riesgo = etiquetas.findIndex((e) => /riesgo|risk/i.test(e));
+      if (riesgo < 0) throw new Error("no está el deslizador de riesgo");
+      for (const [i, e] of etiquetas.entries()) {
+        if (/retir|withdraw/i.test(e)) continue;
+        await deslizadores.nth(i).focus();
+        await pagina.keyboard.press(i === riesgo ? "Home" : "End");
+      }
+      await deslizadores.nth(riesgo).focus();
+      const partidas = new Set();
+      for (let paso = 0; paso < 60; paso++) {
+        const celdas = await pagina.evaluate(async () => {
+          await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok)));
+          return [...document.querySelectorAll("main .tj-matriz > .caja-cifra")].map((celda) => {
+            const cifra = celda.lastElementChild;
+            const letras = [];
+            const textos = document.createTreeWalker(cifra, NodeFilter.SHOW_TEXT);
+            for (let t = textos.nextNode(); t; t = textos.nextNode()) {
+              for (let i = 0; i < t.length; i++) {
+                const rango = document.createRange();
+                rango.setStart(t, i);
+                rango.setEnd(t, i + 1);
+                const caja = rango.getClientRects()[0];
+                if (caja) letras.push({ c: t.textContent[i], arriba: Math.round(caja.top) });
+              }
+            }
+            const numero = /[\d.,]/;
+            let parte = false;
+            for (let i = 1; i < letras.length; i++) {
+              if (letras[i].arriba !== letras[i - 1].arriba && numero.test(letras[i].c) && numero.test(letras[i - 1].c)) parte = true;
+            }
+            return { texto: (cifra.textContent || "").trim(), parte };
+          });
+        });
+        for (const c of celdas) {
+          cifrasPercentil.push(c.texto);
+          if (c.parte) partidas.add(c.texto);
+        }
+        await pagina.keyboard.press("ArrowRight");
+      }
+      for (const t of partidas) fallos.push(`percentiles ${ruta}: a ${ANCHO_ESTRECHO} px con el texto espaciado «${t}» se parte entre dígitos`);
+    } catch (e) {
+      fallos.push(`percentiles ${ruta}: ${String(e).split("\n")[0]}`);
+    }
+  }
+  await ctx.close();
+  if (!cifrasPercentil.some((t) => /\d[\d.,]{3}/.test(t))) fallos.push("percentiles: el recorrido no llegó a ninguna cifra de cuatro caracteres");
 }
 
 await navegador.close();
@@ -2004,6 +2179,7 @@ const MINIMOS = [
   [laminasVistas, 1, "ninguna lámina de producto en las rutas auditadas"],
   [temasLaminaVistos, 1, "ninguna lámina comprobada por tema"],
   [ayudasDemo, 1, "la ayuda de atajos de la demo no se abrió en ninguna pantalla"],
+  [letraDemo, 2, "no se midió la letra de la demo en español e inglés"],
   [idiomasRevisados, 1, "ninguna página inglesa revisada palabra a palabra"],
   [pliegues, 1, "no se comprobó dónde cae la llamada a la acción de la portada"],
   [opacidadesFinales, 1, "no se comprobó la opacidad al final del scroll"],
@@ -2056,6 +2232,7 @@ if (calculadorasVistas) {
   console.log(`[humo] calculadoras — ${calculadorasVistas} de 2 no dan por bueno lo imposible (plan con el objetivo del lado del stop; proyección fuera de escala)`);
 }
 console.log(`[humo] ayuda de la demo — abierta con «?» en ${ayudasDemo.length} pantallas: ${ayudasDemo.join("; ")}`);
+console.log(`[humo] letra de la demo — ${letraDemo.join("; ")}`);
 console.log(
   `[humo] idioma — ${idiomasRevisados.length} páginas inglesas revisadas palabra a palabra:\n` +
     idiomasRevisados.map((s) => `         ${s}`).join("\n")

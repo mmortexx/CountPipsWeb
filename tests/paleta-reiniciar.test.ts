@@ -66,7 +66,15 @@ describe("paleta de la demo: «Reiniciar demo»", () => {
     unaOperacion();
     const confirmar = vi.fn((_texto: string) => false);
     reiniciar(confirmar, "en");
-    expect(confirmar.mock.calls[0][0]).toMatch(/1 trade.*can.t be undone/);
+    // Con una sola, sin el número: «deletes the 1 trade you added» no se dice.
+    expect(confirmar.mock.calls[0][0]).toMatch(/deletes the trade you added.*can.t be undone/);
+  });
+
+  it("con una sola operación propia, el aviso español habla de «la operación»", () => {
+    unaOperacion();
+    const confirmar = vi.fn((_texto: string) => false);
+    reiniciar(confirmar);
+    expect(confirmar.mock.calls[0][0]).toMatch(/borra la operación que has añadido/);
   });
 
   it("sin operaciones propias no hay nada que perder y no pregunta", () => {

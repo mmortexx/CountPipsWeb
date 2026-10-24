@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { LegalDoc } from "@/components/legal/LegalDoc";
-import { documentoPorSlug } from "@/lib/legal/documentos";
+import { SUBTITULO_PRIVACIDAD, documentoPorSlug } from "@/lib/legal/documentos";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
@@ -52,8 +52,8 @@ export function PrivacidadBody() {
         tono="documento"
         titleEs="Política de privacidad."
         titleEn="Privacy policy."
-        subtitleEs="Lo que escribes en un formulario, un consentimiento separado para comunicaciones y nada más: sin cookies ni analítica. Aquí está qué se recoge y cómo pedir que se borre."
-        subtitleEn="What you type into a form, separate consent for communications and nothing else: no cookies or analytics. Here is what is collected and how to have it deleted."
+        subtitleEs={SUBTITULO_PRIVACIDAD.es}
+        subtitleEn={SUBTITULO_PRIVACIDAD.en}
         breadcrumbEs="Privacidad"
         breadcrumbEn="Privacy"
       />
