@@ -399,7 +399,7 @@ export const AMPLIADO: Record<string, Ampliacion> = {
       en: "You buy at 1.1000 with a take profit at 1.1060: if price gets there, the order closes the trade and locks in the 60 pips even if you are not watching.",
     },
     importa: {
-      es: "Fijar el objetivo de antemano protege de cerrar demasiado pronto por miedo. Comparar tus objetivos con el MFE de cada operación dice si los pones demasiado cerca o demasiado lejos.",
+      es: "Fijar el objetivo de antemano protege de cerrar demasiado pronto por miedo. Comparar tus objetivos con la MFE de cada operación dice si los pones demasiado cerca o demasiado lejos.",
       en: "Setting the target in advance protects you from closing too early out of fear. Comparing your targets with each trade’s MFE tells you whether you set them too close or too far.",
     },
   },
@@ -415,11 +415,11 @@ export const AMPLIADO: Record<string, Ampliacion> = {
   },
   "MFE (Maximum Favorable Excursion)": {
     ejemplo: {
-      es: "Compras a 1,1000, el precio llega a 1,1080 y acabas cerrando en 1,1030. El MFE es de 80 pips, pero solo te llevaste 30.",
+      es: "Compras a 1,1000, el precio llega a 1,1080 y acabas cerrando en 1,1030. La MFE es de 80 pips, pero solo te llevaste 30.",
       en: "You buy at 1.1000, price reaches 1.1080 and you end up closing at 1.1030. The MFE is 80 pips, but you only took 30.",
     },
     importa: {
-      es: "Compararlo con lo que de verdad capturas muestra cuánto dinero dejas en la mesa. Si sueles capturar poco del MFE, el problema está en la salida, no en la entrada.",
+      es: "Compararlo con lo que de verdad capturas muestra cuánto dinero dejas en la mesa. Si sueles capturar poco de la MFE, el problema está en la salida, no en la entrada.",
       en: "Comparing it with what you actually capture shows how much money you leave on the table. If you usually capture little of the MFE, the problem is the exit, not the entry.",
     },
   },

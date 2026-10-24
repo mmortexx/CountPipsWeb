@@ -156,12 +156,12 @@ const ROWS: Row[] = [
   },
   {
     label: {
-      es: "Español nativo",
-      en: "Native Spanish and English",
-      pt: "Espanhol e inglês nativos",
-      fr: "Espagnol et anglais natifs",
-      de: "Spanisch und Englisch nativ",
-      it: "Spagnolo e inglese nativi",
+      es: "Interfaz en español e inglés",
+      en: "Spanish and English interface",
+      pt: "Interface em espanhol e inglês",
+      fr: "Interface en espagnol et en anglais",
+      de: "Oberfläche auf Spanisch und Englisch",
+      it: "Interfaccia in spagnolo e inglese",
     },
     cells: ["yes", "no", "yes"],
   },

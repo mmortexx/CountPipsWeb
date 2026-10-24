@@ -131,8 +131,8 @@ const privacidad: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          es: "Merece una sección propia porque es la parte que casi ninguna web puede escribir:",
-          en: "This deserves its own section because it is the part almost no website can write:",
+          es: "Lo que esta web no hace:",
+          en: "What this website does not do:",
         },
         {
           tipo: "lista",
@@ -256,8 +256,8 @@ const privacidad: DocumentoLegal = {
     },
     {
       id: "app",
-      tituloEs: "El programa es otra cosa, y es el punto importante",
-      tituloEn: "The software is a different matter, and this is the important part",
+      tituloEs: "El programa de escritorio",
+      tituloEn: "The desktop software",
       bloques: [
         {
           tipo: "parrafo",
@@ -303,8 +303,8 @@ const cookies: DocumentoLegal = {
     },
     {
       id: "stored",
-      tituloEs: "Todo lo que se guarda, sin excepción",
-      tituloEn: "Everything that is stored, without exception",
+      tituloEs: "Todo lo que se guarda",
+      tituloEn: "Everything that is stored",
       bloques: [
         {
           tipo: "tabla",

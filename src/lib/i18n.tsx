@@ -357,10 +357,6 @@ export const STR = {
 
   // ---- Pricing ----
   pricingEyebrow: { es: "Precios de lanzamiento", en: "Launch pricing" },
-  pricingTitle: {
-    es: "Compra cuando estés listo.",
-    en: "Buy when you are ready.",
-  },
   core: { es: "Core", en: "Core" },
   pro: { es: "Pro", en: "Pro" },
 

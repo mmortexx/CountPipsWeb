@@ -46,7 +46,7 @@ const VALUES: Value[] = [
     descEn:
       "Your trading data is yours. It lives on your machine and only leaves if you turn on a feature that needs it. This site uses no cookies or analytics.",
     descPt:
-      "Suas operações pertencem a você. Elas ficam na sua máquina e só saem se você ativar uma função necessária. Este site não usa cookies nem análises.",
+      "Suas operações pertencem a você. Elas ficam na sua máquina e só saem se você ativar uma função que precise disso. Este site não usa cookies nem análises.",
     descFr:
       "Vos données de trading vous appartiennent. Elles restent sur votre machine et ne la quittent que si vous activez une option dédiée. Ce site n’utilise ni cookies ni outils d’analyse.",
     descDe:

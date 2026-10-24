@@ -120,8 +120,8 @@ export function Story() {
           <Reveal delay={0.18}>
             <p className="mt-8 text-secondary leading-[1.7] max-w-[44em]">
               {es
-                ? "Cada app de trading que probamos era o una hoja de cálculo con otro nombre o una suscripción mensual que se quedaba con tus datos si dejabas de pagar. Ninguna te enseñaba lo que tu propio comportamiento te costaba en dinero. Así que construimos una que sí lo hace, y que vive en tu ordenador."
-                : "Every trading app we tried was either a glorified spreadsheet, or a monthly subscription that lost your data if you stopped paying. None of them showed what your own behaviour cost you in money. So we built one that does — and that lives on your computer."}
+                ? "Las apps de trading que probamos eran casi siempre una hoja de cálculo con otro nombre o una suscripción mensual que se quedaba con tus datos si dejabas de pagar. Ninguna te enseñaba lo que tu propio comportamiento te costaba en dinero. Así que construimos una que sí lo hace, y que vive en tu ordenador."
+                : "Almost every trading app we tried was either a glorified spreadsheet or a monthly subscription that lost your data if you stopped paying. None of them showed what your own behaviour cost you in money. So we built one that does — and that lives on your computer."}
             </p>
           </Reveal>
         </div>
