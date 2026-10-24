@@ -8,6 +8,7 @@ import { useLang } from "@/lib/i18n";
 import { fmtInt, fmtNum, fmtOperaciones, fmtPct, fmtR, pctSep } from "@/lib/trading/format";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { CAMINOS_FONDEO } from "@/lib/herramientas";
+import { esperanzaEnR } from "@/lib/trading/estadistica";
 import {
   leerEscenario,
   RANGOS_FONDEO,
@@ -65,7 +66,7 @@ export function PropChallengeSimulator() {
     return {
       r: simularFondeo({ ...base, drawdown: tipo }) ?? vacio,
       otro: simularFondeo({ ...base, drawdown: tipo === "estatico" ? "dinamico" : "estatico" }) ?? vacio,
-      esperanza: (acierto / 100) * payoff - (1 - acierto / 100),
+      esperanza: esperanzaEnR(acierto / 100, payoff),
     };
   }, [tipo, objetivo, dd, riesgo, acierto, payoff, maxOps]);
 

@@ -1301,11 +1301,8 @@ for (const pantalla of PANTALLAS) {
       }
 
       if (SHOTS) {
-        // Se espera a que se retire la cortina de la intro y no queden
-        // animaciones corriendo: si no, la captura sale a mitad de transición.
-        await pagina
-          .waitForFunction(() => !document.getElementById("tj-loader"), null, { timeout: 6000 })
-          .catch(() => {});
+        // Se espera a que no queden animaciones corriendo: si no, la captura
+        // sale a mitad de transición.
         await pagina
           .waitForFunction(
             () => document.getAnimations().every((a) => a.playState !== "running"),
@@ -1386,6 +1383,16 @@ for (const { ruta } of RUTAS) {
       );
     } else if (!r.enMain) {
       avisos.push(`sin-JS ${ruta}: el titular no aparece en el texto de <main>`);
+    }
+
+    // Formulario, test y demo no funcionan sin JavaScript: tienen que decirlo.
+    if (/^(\/en)?\/(beta|test|demo)\/?$/.test(ruta)) {
+      const aviso = await pagina.evaluate(() => {
+        const p = document.querySelector("[data-sin-js]");
+        return p ? { texto: (p.textContent || "").trim(), cajas: p.getClientRects().length } : null;
+      });
+      if (!aviso || !aviso.texto.includes("JavaScript") || !aviso.cajas)
+        fallos.push(`sin-JS ${ruta}: no se ve el aviso de que la página necesita JavaScript`);
     }
 
     // Nada de contenido dentro de un bloque oculto: un `loading` en `next/dynamic`
@@ -1958,11 +1965,19 @@ let estrechasMedidas = 0;
                 }
               }
             }
-            return { sobra, texto: peor ? peor.texto : "", cortados };
+            // La miga de pan, en una línea: el último tramo se recorta con puntos
+            // suspensivos (el título de debajo lo dice entero).
+            const miga = document.querySelector(".tj-cabecera nav [aria-current=page]");
+            const estilo = miga && getComputedStyle(miga);
+            const migaLineas = miga
+              ? Math.round(miga.getBoundingClientRect().height / (parseFloat(estilo.lineHeight) || parseFloat(estilo.fontSize) * 1.5))
+              : 0;
+            return { sobra, texto: peor ? peor.texto : "", cortados, migaLineas };
           });
           estrechasMedidas++;
           if (r.sobra > 1) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el contenido se sale ${r.sobra} px por «${r.texto}»`);
           else for (const c of r.cortados) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el borde corta el titular ${c}`);
+          if (r.migaLineas > 1) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px la miga de pan ocupa ${r.migaLineas} líneas`);
         } catch (e) {
           fallos.push(`estrecho ${ruta}: ${String(e).split("\n")[0]}`);
         }

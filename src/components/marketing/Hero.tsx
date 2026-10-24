@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang, tx } from "@/lib/i18n";
 import { Palabras } from "@/components/tj/Palabras";
-import { PROGRAMA } from "@/lib/producto";
+import { PROGRAMA, METRICAS } from "@/lib/producto";
 
 /**
  * Hero — sección `#top`. Titular centrado, dos llamadas y, debajo, lo que
@@ -57,12 +57,12 @@ export function Hero({ producto }: { producto?: ReactNode }) {
 
         <p className="mx-auto mt-7 max-w-[40rem] t-lede text-secondary">
           {tx(lang, {
-            es: "40+ métricas de riesgo y rendimiento, un guardián que te avisa antes de romper tus reglas, y tus datos se quedan en tu equipo.",
-            en: "40+ risk and performance metrics, a guardian that warns you before you break your rules, and your data on your machine.",
-            pt: "40+ métricas de risco e desempenho, um guardião que avisa antes de quebrar suas regras, e seus dados ficam na sua máquina.",
-            fr: "40+ métriques de risque et performance, un gardien qui vous alerte avant d’enfreindre vos règles, et vos données restent sur votre machine.",
-            de: "40+ Kennzahlen für Risiko und Performance, ein Disziplin-Wächter, der vor Regelverstößen warnt, und Ihre Daten auf Ihrem Rechner.",
-            it: "40+ metriche di rischio e rendimento, un guardiano che ti avvisa prima di infrangere le tue regole, e i tuoi dati restano sul tuo computer.",
+            es: `${METRICAS} métricas de riesgo y rendimiento, un guardián que te avisa antes de romper tus reglas, y tus datos se quedan en tu equipo.`,
+            en: `${METRICAS} risk and performance metrics, a guardian that warns you before you break your rules, and your data on your machine.`,
+            pt: `${METRICAS} métricas de risco e desempenho, um guardião que avisa antes de quebrar suas regras, e seus dados ficam na sua máquina.`,
+            fr: `${METRICAS} métriques de risque et performance, un gardien qui vous alerte avant d’enfreindre vos règles, et vos données restent sur votre machine.`,
+            de: `${METRICAS} Kennzahlen für Risiko und Performance, ein Disziplin-Wächter, der vor Regelverstößen warnt, und Ihre Daten auf Ihrem Rechner.`,
+            it: `${METRICAS} metriche di rischio e rendimento, un guardiano che ti avvisa prima di infrangere le tue regole, e i tuoi dati restano sul tuo computer.`,
           })}
         </p>
 

@@ -17,7 +17,8 @@ const pro = (lang: Lang) => fmtMoney(PRECIO_PRO, lang, { decimals: 0 });
 
 export type QA = { q: string; a: string };
 export type CategoriaFaq = "security" | "access" | "product";
-export type QAFaq = QA & { categoria: CategoriaFaq };
+/** `enlace`: el paso siguiente que la respuesta nombra, debajo de ella (no entra en los datos estructurados). */
+export type QAFaq = QA & { categoria: CategoriaFaq; enlace?: { href: string; texto: string } };
 
 export const FAQ_ES: QAFaq[] = [
   {
@@ -33,7 +34,7 @@ export const FAQ_ES: QAFaq[] = [
   {
     q: "¿Puedo exportar mis datos?",
     categoria: "security",
-    a: "Sí. Puedes exportar tus posiciones a CSV (para Excel o Google Sheets), la cuenta completa a JSON e informes a PDF. Leer y exportar tus datos nunca depende de la licencia: si caduca, la app pasa a solo lectura y todo sigue siendo tuyo.",
+    a: "Sí. Puedes exportar tus posiciones a CSV (para Excel o Google Sheets), la cuenta completa a JSON e informes a PDF. Leer y exportar tus datos nunca depende de la licencia: sin una clave válida, la app pasa a solo lectura y todo sigue siendo tuyo.",
   },
   {
     q: "¿Funciona en Mac o Linux?",
@@ -48,6 +49,7 @@ export const FAQ_ES: QAFaq[] = [
   {
     q: "¿Cómo se selecciona el acceso anticipado?",
     categoria: "access",
+    enlace: { href: "/beta", texto: "Solicitar acceso anticipado" },
     a: "Revisamos las solicitudes por perfil y fase del producto, no por orden de llegada. Si encaja con el piloto privado, escribiremos con los pasos de invitación.",
   },
   {
@@ -68,7 +70,7 @@ export const FAQ_ES: QAFaq[] = [
   {
     q: "¿Cuál es la diferencia entre Core y Pro?",
     categoria: "product",
-    a: `Core incluye el diario, las métricas, el calendario y la curva de capital, la gestión de riesgo, psicología y disciplina, el playbook, la importación CSV, las copias de seguridad, el informe mensual en PDF y ${PROGRAMA.cuentasCore} cuentas de trading. Pro añade cuentas ilimitadas, el modo prop firm con su informe de evaluación en PDF, el módulo fiscal, la página Negocio, los experimentos, el simulador Monte Carlo, el riesgo de ruina, la API local y, en Mercados, las alertas, la curva de tipos y la fortaleza de divisas.`,
+    a: `Core incluye el diario, las métricas, el calendario y la curva de capital, la gestión de riesgo, psicología y disciplina, el playbook, la importación CSV, las copias de seguridad, el informe mensual en PDF y ${PROGRAMA.cuentasCore} cuentas de trading. Pro añade cuentas ilimitadas, el modo prop firm con su informe de evaluación en PDF, el módulo fiscal para España, la página Negocio, los experimentos, el simulador Monte Carlo, el riesgo de ruina, la API local y, en Mercados, las alertas, la curva de tipos y la fortaleza de divisas.`,
   },
   {
     q: "¿Qué datos pide esta web?",
@@ -101,7 +103,7 @@ export const FAQ_EN: QAFaq[] = [
   {
     q: "Can I export my data?",
     categoria: "security",
-    a: "Yes. You can export your positions to CSV (for Excel or Google Sheets), the full account to JSON and reports to PDF. Reading and exporting your data never depends on the licence: if it lapses, the app switches to read-only and everything stays yours.",
+    a: "Yes. You can export your positions to CSV (for Excel or Google Sheets), the full account to JSON and reports to PDF. Reading and exporting your data never depends on the licence: without a valid key, the app switches to read-only and everything stays yours.",
   },
   {
     q: "Does it work on Mac or Linux?",
@@ -116,6 +118,7 @@ export const FAQ_EN: QAFaq[] = [
   {
     q: "How is early access selected?",
     categoria: "access",
+    enlace: { href: "/beta", texto: "Request early access" },
     a: "We review applications by profile and product phase, not by order of arrival. If it fits the private pilot, we will write with invitation steps.",
   },
   {
@@ -136,7 +139,7 @@ export const FAQ_EN: QAFaq[] = [
   {
     q: "What’s the difference between Core and Pro?",
     categoria: "product",
-    a: `Core includes the journal, the metrics, the calendar and equity curve, risk management, psychology and discipline, the playbook, CSV import, backups, the monthly PDF report and ${PROGRAMA.cuentasCore} trading accounts. Pro adds unlimited accounts, prop firm mode with its PDF evaluation report, the tax module, the Business page, experiments, the Monte Carlo simulator, risk of ruin, the local API and, in Markets, alerts, the yield curve and currency strength.`,
+    a: `Core includes the journal, the metrics, the calendar and equity curve, risk management, psychology and discipline, the playbook, CSV import, backups, the monthly PDF report and ${PROGRAMA.cuentasCore} trading accounts. Pro adds unlimited accounts, prop firm mode with its PDF evaluation report, the Spanish tax module, the Business page, experiments, the Monte Carlo simulator, risk of ruin, the local API and, in Markets, alerts, the yield curve and currency strength.`,
   },
   {
     q: "What data does this website ask for?",

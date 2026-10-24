@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { HomeBody } from "../page";
 import { SITE_URL, hreflangDe, esquemasGlobales } from "@/lib/site";
+import { localesAlternos } from "@/lib/locale";
 import { SUPPORT_EMAIL } from "@/lib/forms";
 
 /**
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "CountPips",
     locale: "en_GB",
-    alternateLocale: ["es_ES"],
+    alternateLocale: localesAlternos("/", "en"),
   },
   twitter: {
     card: "summary_large_image",

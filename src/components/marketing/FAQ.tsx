@@ -3,6 +3,8 @@
 import * as React from "react";
 import { Search } from "lucide-react";
 
+import { Link } from "@/components/tj/LocaleLink";
+
 import { useLang } from "@/lib/i18n";
 import { FAQ_ES, FAQ_EN, type CategoriaFaq, type QAFaq } from "@/lib/faq";
 import { coincide } from "@/lib/busqueda";
@@ -222,6 +224,14 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                     </AccordionTrigger>
                     <AccordionContent className="medida text-secondary text-[15px] leading-[1.7] pb-5">
                       {item.a}
+                      {item.enlace ? (
+                        <Link
+                          href={item.enlace.href}
+                          className="mt-1 flex w-fit min-h-[44px] items-center text-primary underline underline-offset-2 decoration-[color-mix(in_srgb,currentColor_40%,transparent)] transition-[text-decoration-color] hover:decoration-current"
+                        >
+                          {item.enlace.texto}
+                        </Link>
+                      ) : null}
                     </AccordionContent>
                   </AccordionItem>
                 ))}

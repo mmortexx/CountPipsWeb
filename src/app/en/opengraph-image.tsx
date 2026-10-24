@@ -1,4 +1,5 @@
 import { tarjetaSocial } from "@/lib/tarjeta-social";
+import { METRICAS } from "@/lib/producto";
 
 // Literales en cada fichero: Next las lee del texto y no sigue reexportaciones.
 export const runtime = "nodejs";
@@ -12,6 +13,6 @@ export default function Image() {
     lang: "en",
     antetitulo: "Trading journal for Windows",
     titulo: "Trade like an institutional desk.",
-    subtitulo: "40+ metrics, a discipline guardian and your data on your machine.",
+    subtitulo: `${METRICAS} metrics, a discipline guardian and your data on your machine.`,
   });
 }

@@ -168,7 +168,7 @@ nuevo que falte en la CSP se ve ahí y no el día del lanzamiento.
 Dos pasos, y ninguno toca la configuración del proyecto:
 
 1. Borrar las dos variables `NEXT_PUBLIC_BASE_PATH` y `NEXT_PUBLIC_SITE_URL`
-   de `.github/workflows/deploy.yml`.
+   de `.github/workflows/deploy.yml` y de `.github/workflows/comprobar.yml`.
 2. Desactivar Pages en el repositorio (*Settings → Pages → Source: None*).
 
 Aviso: GitHub Pages **no sabe hacer redirecciones reales**. Quien tenga

@@ -5,7 +5,7 @@ import { useLang } from "@/lib/i18n";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { fmtInt } from "@/lib/trading/format";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
-import { PROGRAMA, arranqueMedido, enumerar } from "@/lib/producto";
+import { PROGRAMA, arranqueMedido, enumerar, METRICAS } from "@/lib/producto";
 
 /** Índice de funciones de /features: se filtra por ejes y marca lo que es exclusivo de Pro. */
 
@@ -35,8 +35,8 @@ const TAGS: { id: Tag; labelEs: string; labelEn: string }[] = [
 const FEATURES: Feature[] = [
   {
     id: "ratios",
-    titleEs: "40+ ratios institucionales",
-    titleEn: "40+ institutional ratios",
+    titleEs: `${METRICAS} ratios institucionales`,
+    titleEn: `${METRICAS} institutional ratios`,
     descEs: "Sharpe, Sortino, Calmar, profit factor, expectancy en R. Calculados de tus operaciones, no inventados.",
     descEn: "Sharpe, Sortino, Calmar, profit factor, expectancy in R. Computed from your trades, not invented.",
     tags: ["metrics"],

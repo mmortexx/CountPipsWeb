@@ -1,3 +1,7 @@
+// La versión de la política que acepta quien se apunta es la de los textos legales
+// de la web; wrangler empaqueta este import al desplegar.
+import { LEGAL_ACTUALIZADO } from "../../../src/lib/legal/titular.ts";
+
 const APPLICATION_STATUSES = new Set([
   "nuevo",
   "revisando",
@@ -194,7 +198,14 @@ async function verifyTurnstile(request, payload, env) {
     });
     if (!response.ok) return false;
     const result = await response.json();
-    return result?.success === true;
+    if (result?.success !== true) return false;
+    // Un token resuelto en otra web con la misma site key también es «válido»:
+    // el dominio donde se resolvió tiene que ser el de la petición. Las claves
+    // de prueba de Turnstile dicen `example.com`; en local,
+    // `TURNSTILE_HOSTNAME_OPTIONAL=1` en `.dev.vars` se salta la comparación.
+    if (String(env.TURNSTILE_HOSTNAME_OPTIONAL ?? "") === "1") return true;
+    const origin = getAllowedOrigin(request, env);
+    return Boolean(origin) && result.hostname === new URL(origin).hostname;
   } catch {
     return false;
   }
@@ -311,7 +322,7 @@ async function createApplication(request, env) {
   const id = crypto.randomUUID();
   const ip = request.headers.get("CF-Connecting-IP") || "";
   const ipHash = ip ? await ipFingerprint(ip, env) : null;
-  const privacyVersion = "2026-08";
+  const privacyVersion = LEGAL_ACTUALIZADO;
   try {
     await env.DB.prepare(
       `INSERT INTO applications (

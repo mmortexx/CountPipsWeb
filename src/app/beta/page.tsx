@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { BetaApplication } from "@/components/beta/BetaApplication";
+import { SinJavaScript } from "@/components/tj/SinJavaScript";
 import { BetaStatus } from "@/components/beta/BetaStatus";
 import { BetaApplicationNote, BetaDetails } from "@/components/beta/BetaDetails";
 import { SITE_URL, hreflangDe, siteUrl, migasSchema } from "@/lib/site";
@@ -57,6 +58,7 @@ export function BetaPage({ lang = "es" }: { lang?: "es" | "en" } = {}) {
         breadcrumbEn="Early access"
       />
       <section className="section">
+        <SinJavaScript que="formulario" />
         <div className="tj-container">
           <BetaApplication />
           <BetaApplicationNote />

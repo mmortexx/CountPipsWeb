@@ -7,6 +7,7 @@ import { FeaturePageNav } from "@/components/marketing/FeaturePageNav";
 import { getCal, getSetups } from "@/lib/trading/fixtures";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
+import { METRICAS } from "@/lib/producto";
 
 // Tiempo de lectura estimado: ~620 palabras a 220 ppm.
 const READING_TIME_MIN = 3;
@@ -65,7 +66,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Funciones del diario de trading — CountPips",
-    description: "40+ métricas institucionales, disciplina medida en dinero, playbook en vivo y tus datos en tu equipo.",
+    description: `${METRICAS} métricas institucionales, disciplina medida en dinero, playbook en vivo y tus datos en tu equipo.`,
   },
 };
 

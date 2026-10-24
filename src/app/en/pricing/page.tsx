@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { pricingFaq, jsonLdFaq } from "@/lib/faq";
 import { PricingBody } from "../../pricing/page";
 import { SITE_URL, hreflangDe } from "@/lib/site";
+import { localesAlternos } from "@/lib/locale";
 import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
 import { fmtMoney } from "@/lib/trading/format";
 
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "CountPips",
     locale: "en_GB",
-    alternateLocale: ["es_ES"],
+    alternateLocale: localesAlternos("/pricing", "en"),
   },
   twitter: {
     card: "summary_large_image",

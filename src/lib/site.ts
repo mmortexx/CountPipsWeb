@@ -93,8 +93,8 @@ export function esquemasGlobales(
       "Playbooks y plantillas de trading",
       "Calendario de P&L y heatmap por día/hora",
       "Diario narrativo con anotaciones por operación",
-      "Multi-cuenta y multi-activo (acciones, futuros, forex, crypto)",
-      "Exportación a CSV/JSON y backups locales",
+      "Multi-cuenta y multi-activo (acciones, futuros, forex, cripto)",
+      "Exportación a CSV, JSON, PDF y Markdown, y copias locales",
     ],
     en: [
       "Institutional metrics (Sharpe, Profit Factor, Expectancy, R-multiple)",
@@ -105,7 +105,7 @@ export function esquemasGlobales(
       "P&L calendar and day/hour heatmap",
       "Narrative journal with per-trade annotations",
       "Multi-account and multi-asset (stocks, futures, forex, crypto)",
-      "CSV/JSON export and local backups",
+      "CSV, JSON, PDF and Markdown export, and local backups",
     ],
     pt: [
       "Métricas institucionais (Sharpe, Profit Factor, Expectancy, R-multiple)",
@@ -116,7 +116,7 @@ export function esquemasGlobales(
       "Calendário de P&L e mapa de calor por dia/hora",
       "Diário narrativo com anotações por operação",
       "Multicontas e multiativos (ações, futuros, forex, cripto)",
-      "Exportação para CSV/JSON e backups locais",
+      "Exportação para CSV, JSON, PDF e Markdown, e backups locais",
     ],
     fr: [
       "Métriques institutionnelles (Sharpe, Profit Factor, Expectancy, R-multiple)",
@@ -127,7 +127,7 @@ export function esquemasGlobales(
       "Calendrier de P&L et heatmap par jour/heure",
       "Journal narratif avec annotations par trade",
       "Multi-comptes et multi-actifs (actions, futures, forex, crypto)",
-      "Exportation CSV/JSON et sauvegardes locales",
+      "Exportation CSV, JSON, PDF et Markdown, et sauvegardes locales",
     ],
     de: [
       "Institutionelle Kennzahlen (Sharpe, Profit Factor, Expectancy, R-Multiple)",
@@ -138,7 +138,7 @@ export function esquemasGlobales(
       "P&L-Kalender und Heatmap nach Wochentag/Uhrzeit",
       "Narratives Journal mit Trade-Notizen",
       "Multi-Konto und Multi-Asset (Aktien, Futures, Forex, Krypto)",
-      "CSV/JSON-Export und lokale Backups",
+      "Export als CSV, JSON, PDF und Markdown, lokale Backups",
     ],
     it: [
       "Metriche istituzionali (Sharpe, Profit Factor, Expectancy, R-multiplo)",
@@ -149,7 +149,7 @@ export function esquemasGlobales(
       "Calendario P&L e heatmap per giorno/ora",
       "Diario narrativo con annotazioni per operazione",
       "Multi-conto e multi-asset (azioni, future, forex, crypto)",
-      "Esportazione in CSV/JSON e backup locali",
+      "Esportazione in CSV, JSON, PDF e Markdown, e backup locali",
     ],
   };
 
@@ -196,7 +196,6 @@ export function esquemasGlobales(
       url: SITE_URL,
       logo: { "@type": "ImageObject", url: LOGO_URL, width: 512, height: 512 },
       description: descripcionesOrg[lang] ?? descripcionesOrg.en,
-      foundingDate: "2024",
       sameAs: ["https://github.com/mmortexx/CountPipsWeb"],
       ...(soporte && {
         contactPoint: {

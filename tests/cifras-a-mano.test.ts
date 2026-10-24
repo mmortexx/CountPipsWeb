@@ -26,6 +26,7 @@ function fuentes(dir: string, out: string[] = []): string[] {
 /* El espacio puede ser el carácter real o el escape `\u00a0` del código fuente. */
 const PRECIO_A_MANO = /(?<!\d[.,]?)(?:149|249)(?:\s|\\u00a0)*(?:\$|USD\b)|\$(?:\s|\\u00a0)*(?:149|249)(?!\d|[.,]\d)/;
 const TERMINOS_A_MANO = /(?<!\d[.,]?)57(?:\s|\\u00a0)+(?:términos|terms|termos|termes|Begriffe|termini)\b/i;
+const METRICAS_A_MANO = /(?<![\d.,])40\+|(?<!\p{L})(?:más de|over|mais de|plus de|über|oltre)\s+40(?!\d)/iu;
 
 function hallazgos(archivos: string[], patron: RegExp, excepto: string[] = []): string[] {
   const out: string[] = [];
@@ -63,6 +64,15 @@ describe("los patrones cazan lo que deben y nada más", () => {
   it.each(["157 términos", "tiene 57 casos"])("«%s» no lo es", (linea) => {
     expect(TERMINOS_A_MANO.test(linea)).toBe(false);
   });
+  it.each(["40+ métricas", "\"40+\"", "Más de 40 métricas", "Over 40 institutional", "Über 40"])(
+    "«%s» es el recuento de métricas a mano",
+    (linea) => {
+      expect(METRICAS_A_MANO.test(linea)).toBe(true);
+    }
+  );
+  it.each(["140+ ms", "más de 400", "h-40 md", "0.40+x"])("«%s» no lo es", (linea) => {
+    expect(METRICAS_A_MANO.test(linea)).toBe(false);
+  });
 });
 
 describe("ninguna cifra de precio ni de glosario se escribe a mano en src/", () => {
@@ -79,6 +89,11 @@ describe("ninguna cifra de precio ni de glosario se escribe a mano en src/", () 
 
   it("«57 términos» y sus variantes salen de TERMINOS_GLOSARIO", () => {
     const sueltos = hallazgos(archivos, TERMINOS_A_MANO);
+    expect(sueltos, sueltos.join("\n")).toEqual([]);
+  });
+
+  it("«40+» y «más de 40» salen de PROGRAMA.metricasMinimo", () => {
+    const sueltos = hallazgos(archivos, METRICAS_A_MANO, ["src/lib/producto.ts"]);
     expect(sueltos, sueltos.join("\n")).toEqual([]);
   });
 });

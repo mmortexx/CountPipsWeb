@@ -104,6 +104,8 @@ export interface ResultadoPlan {
   /** Lo que se arriesga con el tamaño redondeado al escalón del mercado. */
   riesgoReal: number;
   friccion: number;
+  /** La fricción estimada pesa más que lo que se arriesga (acciones baratas, stop a un céntimo). */
+  friccionSuperaRiesgo: boolean;
   riesgoTotal: number;
   /** En unidades, lotes del tipo elegido o contratos. */
   tamano: number;
@@ -119,6 +121,19 @@ export interface ResultadoPlan {
   direccion: "long" | "short";
   apalancamiento: number;
   apalancamientoExcesivo: boolean;
+}
+
+/** Decimales de un tamaño fraccionable (acciones, cripto): dos desde una unidad
+ *  y, por debajo, los justos para que lo escrito no se aparte más de un 0,5 %
+ *  del tamaño real. 0,0025 de un bitcoin no puede salir como «0,00». Hasta
+ *  ocho, el decimal más pequeño de una cripto. */
+const MAX_DECIMALES_TAMANO = 8;
+function decimalesDeTamano(unidades: number): number {
+  if (!(unidades > 0) || unidades >= 1) return 2;
+  for (let d = 2; d < MAX_DECIMALES_TAMANO; d++) {
+    if (Math.abs(Number(unidades.toFixed(d)) - unidades) / unidades < 0.005) return d;
+  }
+  return MAX_DECIMALES_TAMANO;
 }
 
 export function calculaPlan(e: EntradaPlan): ResultadoPlan {
@@ -158,6 +173,7 @@ export function calculaPlan(e: EntradaPlan): ResultadoPlan {
     riesgoNominal,
     riesgoReal: 0,
     friccion: 0,
+    friccionSuperaRiesgo: false,
     riesgoTotal: 0,
     tamano: 0,
     decimalesTamano,
@@ -187,8 +203,10 @@ export function calculaPlan(e: EntradaPlan): ResultadoPlan {
     rr: distObjetivo / distStop,
     riesgoReal,
     friccion,
+    friccionSuperaRiesgo: friccion > riesgoReal,
     riesgoTotal: riesgoReal + friccion,
     tamano: unidades / unidadesPorTamano,
+    decimalesTamano: e.mercado === "equities" ? decimalesDeTamano(unidades) : decimalesTamano,
     noCabe: escalon > 0 && unidades === 0,
     riesgoDeUno: escalon * riesgoPorUnidad,
     valorPip: unidades * tick * dolaresPorUnidad,
@@ -198,6 +216,18 @@ export function calculaPlan(e: EntradaPlan): ResultadoPlan {
     apalancamiento,
     apalancamientoExcesivo: excedeApalancamiento(e.mercado, apalancamiento),
   };
+}
+
+/** Tamaño que arriesga `riesgoUsd` con el stop a `distancia` del precio y
+ *  `multiplicador` dólares por punto y unidad. En acciones y contratos
+ *  (`enteros`) va hacia abajo, con la tolerancia de coma flotante de
+ *  `calculaPlan`, y es 0 si no cabe una unidad: nunca una fracción de contrato
+ *  ni un redondeo hacia arriba que arriesgue más de lo pedido. Con entradas sin
+ *  sentido (stop a cero, riesgo negativo, no finitas), 0. */
+export function tamanoParaRiesgo(riesgoUsd: number, distancia: number, multiplicador: number, enteros: boolean): number {
+  const exacto = riesgoUsd / (distancia * multiplicador);
+  if (!Number.isFinite(exacto) || exacto <= 0) return 0;
+  return enteros ? Math.floor(exacto + 1e-9) : exacto;
 }
 
 /** Kelly completo, medio y cuarto, en %: f* = (p·b − q) / b, sin topes (el tope es cosa del control de riesgo). */

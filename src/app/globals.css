@@ -4315,9 +4315,16 @@ svg [data-entra="sello"] {
    titular, entradilla, llamadas y panel. El panel de cristal solo se
    desplaza (una opacidad en un ancestro le quitaría el esmerilado). */
 @media (prefers-reduced-motion: no-preference) {
-  .tj-hero > .tj-container:first-child > *,
-  .tj-cabecera .tj-container > * {
+  .tj-hero > .tj-container:first-child > * {
     animation: tj-carga 1.05s var(--ease-salida) both;
+    animation-timeline: auto;
+    animation-range: normal;
+  }
+  /* Bajo una cabecera, lo de la primera pantalla parte tenue y no invisible:
+     desde opacidad 0, Chrome no la daba por pintada hasta acabar la entrada y
+     el LCP de precios, FAQ, glosario y legales pasaba de 5 s en móvil. */
+  .tj-cabecera .tj-container > * {
+    animation: tj-carga-tenue 1.05s var(--ease-salida) both;
     animation-timeline: auto;
     animation-range: normal;
   }
@@ -4331,7 +4338,7 @@ svg [data-entra="sello"] {
      pantalla, sin scroll que lo anime: llega detrás de la entradilla. Orden de
      lectura: titular, entradilla, contenido. */
   #main-content .tj-cabecera + section:not(#top):not(section section) {
-    animation: tj-carga 0.9s var(--ease-salida) 0.55s both;
+    animation: tj-carga-tenue 0.9s var(--ease-salida) 0.55s both;
     animation-timeline: auto;
     animation-range: normal;
   }
@@ -4367,6 +4374,16 @@ svg [data-entra="sello"] {
 @keyframes tj-carga {
   from {
     opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes tj-carga-tenue {
+  from {
+    opacity: 0.2;
     transform: translate3d(0, 12px, 0);
   }
   to {

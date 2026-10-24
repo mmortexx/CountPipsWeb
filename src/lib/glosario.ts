@@ -312,8 +312,8 @@ export const FORMULAS_GLOSARIO: Record<
   "sortino-ratio": {
     formulaEs: "So = ((μ − Rf) / σd) × √N",
     formulaEn: "So = ((μ − Rf) / σd) × √N",
-    variablesEs: "μ: retorno medio, Rf: tasa libre de riesgo (Rf=0 en demo), σd: desviación estándar de retornos negativos, N: operaciones/año",
-    variablesEn: "μ: mean return, Rf: risk-free rate (Rf=0 in demo), σd: downside standard deviation, N: trades/year",
+    variablesEs: "μ: retorno medio, Rf: tasa libre de riesgo (Rf=0 en operativa intradiaria), σd: desviación estándar de retornos negativos, N: operaciones/año",
+    variablesEn: "μ: mean return, Rf: risk-free rate (Rf=0 in intraday trading), σd: downside standard deviation, N: trades/year",
   },
   "calmar-ratio": {
     formulaEs: "Ca = CAGR / |MaxDD|",

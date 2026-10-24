@@ -7,6 +7,7 @@ import { CampoUnidad } from "@/components/tj/CampoCifra";
 import { BotonCopiar } from "@/components/tj/BotonCopiar";
 import { componerInforme } from "@/lib/informe";
 import { fmtMoney, fmtNum, fmtOperaciones, fmtPct, pctSep } from "@/lib/trading/format";
+import { LIMITES } from "@/lib/trading/limites";
 import { TASA_REINVERSION_ANUAL } from "@/lib/supuestos";
 import { costeIndisciplina } from "@/lib/trading/indisciplina";
 
@@ -55,6 +56,11 @@ export const PRESETS = [
     offPlanExp: -180,
   },
 ];
+
+/** Qué parte de las operaciones fuera de plan se evitaría, en los escenarios
+ *  de «Si evitaras parte de la fuga». El párrafo habla del primero; las fichas
+ *  de debajo, de todos. */
+const ESCENARIOS_EVITAR = [0.5, 0.8] as const;
 
 /**
  * DisciplineCost — Calculadora interactiva del coste de indisciplina.
@@ -299,6 +305,8 @@ export function DisciplineCost() {
                     antes={!es}
                     paso={1}
                     decimales={2}
+                    min={LIMITES.resultadoPorOperacion.min}
+                    max={LIMITES.resultadoPorOperacion.max}
                     valor={inPlanExp}
                     onValor={aMano(setInPlanExp)}
                     className="text-primary"
@@ -315,6 +323,8 @@ export function DisciplineCost() {
                     antes={!es}
                     paso={1}
                     decimales={2}
+                    min={LIMITES.resultadoPorOperacion.min}
+                    max={LIMITES.resultadoPorOperacion.max}
                     valor={offPlanExp}
                     onValor={aMano(setOffPlanExp)}
                     className={offPlanExp < 0 ? "text-[rgb(var(--pnl-neg))]" : "text-primary"}
@@ -519,12 +529,12 @@ export function DisciplineCost() {
                 </div>
                 <p className="medida text-xs text-secondary leading-relaxed mb-3">
                   {es
-                    ? `Si evitaras el 60\u00a0% de tus operaciones fuera de plan, dejarías de perder unos ${fmtMoney(Math.round(totalLeakMonthly * 0.6), lang, { decimals: 0 })} al mes. Es una estimación con tus cifras, no una promesa de resultado.`
-                    : `If you avoided 60% of your off-plan trades, you would stop losing about ${fmtMoney(Math.round(totalLeakMonthly * 0.6), lang, { decimals: 0 })} a month. It is an estimate from your numbers, not a promise of results.`}
+                    ? `Si evitaras el ${fmtNum(ESCENARIOS_EVITAR[0] * 100, lang, 0)}${pctSep(lang)} de tus operaciones fuera de plan, dejarías de perder unos ${fmtMoney(Math.round(totalLeakMonthly * ESCENARIOS_EVITAR[0]), lang, { decimals: 0 })} al mes. Es una estimación con tus cifras, no una promesa de resultado.`
+                    : `If you avoided ${fmtNum(ESCENARIOS_EVITAR[0] * 100, lang, 0)}${pctSep(lang)} of your off-plan trades, you would stop losing about ${fmtMoney(Math.round(totalLeakMonthly * ESCENARIOS_EVITAR[0]), lang, { decimals: 0 })} a month. It is an estimate from your numbers, not a promise of results.`}
                 </p>
                 {/* Como la proyección: el «al mes» baja a su propia línea. */}
                 <div className="tj-matriz grid-cols-2 text-center tnum">
-                  {[0.5, 0.8].map((f) => (
+                  {ESCENARIOS_EVITAR.map((f) => (
                     <div
                       key={f}
                       title={`+${fmtMoney(totalLeakMonthly * f, lang)}`}

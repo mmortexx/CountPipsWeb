@@ -124,8 +124,8 @@ export function TechSpecs() {
           <p className="medida text-xs text-tertiary leading-[1.6]">
             <span>
               {es
-                ? `Activar la licencia pide conexión una vez; después funciona sin ella. Se revalida como mucho una vez al día y aguanta ${PROGRAMA.graciaSinRedDias} días sin red; si caduca, la app pasa a solo lectura y puedes seguir consultando, exportando y copiando tus datos.`
-                : `Activating the licence needs a connection once; after that it works offline. It is revalidated at most once a day and lasts ${PROGRAMA.graciaSinRedDias} days without a connection; if it lapses, the app switches to read-only and you can still view, export and back up your data.`}
+                ? `La licencia es una clave que el programa comprueba en tu equipo, sin conexión. Sin clave tienes ${PROGRAMA.pruebaDias} días con todo; después, sin una clave válida, la app pasa a solo lectura y puedes seguir consultando, exportando y copiando tus datos.`
+                : `The licence is a key the app checks on your machine, offline. Without a key you get ${PROGRAMA.pruebaDias} days with everything; after that, without a valid key, the app switches to read-only and you can still view, export and back up your data.`}
             </span>
           </p>
         </Reveal>

@@ -305,6 +305,8 @@ const DRAWER_LINKS: {
   },
 ];
 
+const MANUAL = DRAWER_LINKS.find((l) => l.href === "/traders/manual")!;
+
 export function Navbar() {
   const { t, lang } = useLang();
   const { theme, toggleTheme } = useTheme();
@@ -785,7 +787,8 @@ export function Navbar() {
             {/* Sin «Demo» (es el botón de la derecha) ni «Recursos» (vive en
                 el menú Producto). */}
             {navLink("/pricing", tx(lang, { es: "Precios", en: "Pricing", pt: "Preços", fr: "Tarifs", de: "Preise", it: "Prezzi" }))}
-            {navLink("/traders/manual", tx(lang, { es: "Manual", en: "Manual", pt: "Manual", fr: "Manuel", de: "Manuell", it: "Manuale" }))}
+            {/* «Manual» a secas se leía como «manual de uso»: el mismo rótulo que en el cajón. */}
+            {navLink(MANUAL.href, tx(lang, { es: MANUAL.labelEs, en: MANUAL.labelEn, pt: MANUAL.labelPt, fr: MANUAL.labelFr, de: MANUAL.labelDe, it: MANUAL.labelIt }))}
             {navLink("/traders/prop-firms", "Prop firms")}
             {navLink("/beta", tx(lang, { es: "Acceso anticipado", en: "Early access", pt: "Acesso antecipado", fr: "Accès anticipé", de: "Vorabzugang", it: "Accesso anticipato" }))}
           </div>

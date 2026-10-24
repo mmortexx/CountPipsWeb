@@ -14,11 +14,18 @@
  * Y las tipografías precargadas: solo la sans y la serif de los titulares.
  * Cada precarga compite con ellas por la red del arranque; la mono y la
  * cursiva se piden cuando algo las pinta.
+ * Y el peso: el JavaScript de arranque de cada página, comprimido con brotli,
+ * no pasa de PRESUPUESTO_BR. Los `<script nomodule>` no cuentan: los
+ * navegadores actuales no los descargan.
  *
  * Uso:  node scripts/equipaje.mjs out
  */
 import { readFileSync, globSync, existsSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { brotliCompressSync, constants } from "node:zlib";
+
+// Medido el 24/10/2026: 146–178 KB por página. Margen para crecer sin que nadie lo note, no para duplicar.
+const PRESUPUESTO_BR = 190 * 1024;
 
 const dir = process.argv.slice(2).find((a) => !a.startsWith("-")) || "out";
 if (!existsSync(dir)) {
@@ -52,7 +59,12 @@ const leeChunk = (src) => {
   if (!cache.has(src)) {
     const rel = src.startsWith(PREFIJO) ? src.slice(PREFIJO.length) : src;
     const f = join(dir, rel);
-    cache.set(src, existsSync(f) ? { texto: readFileSync(f, "utf8"), bytes: statSync(f).size } : null);
+    if (!existsSync(f)) cache.set(src, null);
+    else {
+      const crudo = readFileSync(f);
+      const br = brotliCompressSync(crudo, { params: { [constants.BROTLI_PARAM_QUALITY]: 11 } }).length;
+      cache.set(src, { texto: crudo.toString("utf8"), bytes: statSync(f).size, br });
+    }
   }
   return cache.get(src);
 };
@@ -61,6 +73,7 @@ const ficheros = globSync(`${dir}/**/index.html`);
 const fallos = new Map();
 const pesos = [];
 let sinChunk = 0;
+let conNomodule = 0;
 const precargasDeMas = new Map();
 let paginasConPrecarga = 0;
 for (const f of ficheros) {
@@ -76,8 +89,11 @@ for (const f of ficheros) {
     if (!precargasDeMas.has(fuente)) precargasDeMas.set(fuente, []);
     precargasDeMas.get(fuente).push(ruta);
   }
-  const srcs = [...new Set([...html.matchAll(/<script[^>]*\ssrc="([^"]+\.js)"/g)].map((m) => m[1]))];
+  const etiquetas = [...html.matchAll(/<script[^>]*\ssrc="([^"]+\.js)"[^>]*>/g)];
+  const srcs = [...new Set(etiquetas.filter((m) => !/\snomodule(?:[\s=>])/i.test(m[0])).map((m) => m[1]))];
+  if (etiquetas.length > srcs.length) conNomodule++;
   let bytes = 0;
+  let br = 0;
   for (const src of srcs) {
     const c = leeChunk(src);
     if (!c) {
@@ -85,6 +101,7 @@ for (const f of ficheros) {
       continue;
     }
     bytes += c.bytes;
+    br += c.br;
     for (const m of MODULOS) {
       if (!m.permitida(ruta) && c.texto.includes(m.marca)) {
         if (!fallos.has(m)) fallos.set(m, new Set());
@@ -92,18 +109,27 @@ for (const f of ficheros) {
       }
     }
   }
-  pesos.push({ ruta, bytes, n: srcs.length });
+  pesos.push({ ruta, bytes, br, n: srcs.length });
 }
 
-pesos.sort((a, b) => a.bytes - b.bytes);
+pesos.sort((a, b) => a.br - b.br);
 const kb = (b) => `${(b / 1024).toFixed(1).replace(".", ",")} KB`;
 const mediana = pesos[Math.floor(pesos.length / 2)];
-console.log(`[equipaje] ${pesos.length} páginas · JavaScript al cargar, sin comprimir:`);
-console.log(`   la más ligera  ${kb(pesos[0].bytes)}  ${pesos[0].ruta}`);
-console.log(`   la mediana     ${kb(mediana.bytes)}  ${mediana.ruta}`);
-console.log(`   la más pesada  ${kb(pesos.at(-1).bytes)}  ${pesos.at(-1).ruta}`);
+console.log(`[equipaje] ${pesos.length} páginas · JavaScript al cargar, con brotli (sin comprimir):`);
+console.log(`   la más ligera  ${kb(pesos[0].br)} (${kb(pesos[0].bytes)})  ${pesos[0].ruta}`);
+console.log(`   la mediana     ${kb(mediana.br)} (${kb(mediana.bytes)})  ${mediana.ruta}`);
+console.log(`   la más pesada  ${kb(pesos.at(-1).br)} (${kb(pesos.at(-1).bytes)})  ${pesos.at(-1).ruta}`);
 
 let problemas = 0;
+const pesadas = pesos.filter((p) => p.br > PRESUPUESTO_BR);
+if (pesadas.length) {
+  problemas += pesadas.length;
+  console.log(`\n  ${pesadas.length} página(s) pasan de ${kb(PRESUPUESTO_BR)} de JavaScript comprimido:`);
+  for (const p of pesadas.slice(-8).reverse()) console.log(`     ${kb(p.br)}  ${p.ruta}`);
+}
+if (!conNomodule) {
+  console.log(`[equipaje] ninguna página trae un <script nomodule>: si Next dejó de emitirlo, bien; si no, el filtro ya no lo reconoce`);
+}
 for (const [m, rutas] of fallos) {
   problemas += rutas.size;
   const lista = [...rutas].sort();
@@ -142,7 +168,7 @@ for (const [fuente, rutas] of precargasDeMas) {
 }
 if (sinChunk) console.log(`[equipaje] aviso: ${sinChunk} referencias a scripts que no están en ${dir}`);
 if (problemas) {
-  console.log(`\n[equipaje] ${problemas} página(s) cargan lo que no usan`);
+  console.log(`\n[equipaje] ${problemas} fallo(s): página que carga lo que no usa o pasa del tope`);
   process.exit(1);
 }
-console.log("[equipaje] correcto — ni los avisos ni el diccionario viajan adonde no se usan, y solo se precargan la sans y la serif");
+console.log(`[equipaje] correcto — ni los avisos ni el diccionario viajan adonde no se usan, solo se precargan la sans y la serif y ninguna página pasa de ${kb(PRESUPUESTO_BR)}`);

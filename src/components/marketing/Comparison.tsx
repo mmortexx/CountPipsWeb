@@ -3,6 +3,9 @@
 import { useLang, tx, type Lang, type TextosIdioma } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { SectionHeader } from "@/components/layout/SectionHeader";
+import { METRICAS, PROGRAMA } from "@/lib/producto";
+
+const N = PROGRAMA.metricasMinimo;
 
 /* Las celdas de texto llevan su idioma; los símbolos los traduce `Celda`. */
 type Texto = TextosIdioma<string>;
@@ -92,7 +95,7 @@ const ROWS: Row[] = [
       it: "Metriche calcolate in automatico",
     },
     cells: [
-      { es: "Más de 40", en: "40+", pt: "Mais de 40", fr: "Plus de 40", de: "Über 40", it: "Oltre 40" },
+      { es: `Más de ${N}`, en: METRICAS, pt: `Mais de ${N}`, fr: `Plus de ${N}`, de: `Über ${N}`, it: `Oltre ${N}` },
       "yes",
       {
         es: "A mano, con fórmulas",
@@ -153,12 +156,12 @@ const ROWS: Row[] = [
   },
   {
     label: {
-      es: "Español nativo",
-      en: "Native Spanish and English",
-      pt: "Espanhol e inglês nativos",
-      fr: "Espagnol et anglais natifs",
-      de: "Spanisch und Englisch nativ",
-      it: "Spagnolo e inglese nativi",
+      es: "Interfaz en español e inglés",
+      en: "Spanish and English interface",
+      pt: "Interface em espanhol e inglês",
+      fr: "Interface en espagnol et en anglais",
+      de: "Oberfläche auf Spanisch und Englisch",
+      it: "Interfaccia in spagnolo e inglese",
     },
     cells: ["yes", "no", "yes"],
   },

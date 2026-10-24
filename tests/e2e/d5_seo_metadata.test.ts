@@ -13,7 +13,8 @@ import { TERMINOS, nombreTermino, tituloDeTermino, LARGO_MAXIMO_TITULO } from "@
 import { HERRAMIENTAS } from "@/lib/herramientas";
 import { DOCUMENTOS_LEGALES } from "@/lib/legal/documentos";
 import { FAQ_ES, FAQ_EN, PRICING_FAQ_ES, PRICING_FAQ_EN, jsonLdFaq } from "@/lib/faq";
-import { sinPrefijoEn, tieneVersionEn } from "@/lib/locale";
+import { TABLA_IDIOMAS, localesAlternos, ogLocaleDe, sinPrefijoEn, tieneVersionEn } from "@/lib/locale";
+import { metadataHome, metadataPricing } from "@/lib/rutas-internacionales";
 import { LOCALIZED_PATHS } from "@/lib/rutas-en";
 import sitemap from "@/app/sitemap";
 import robots from "@/app/robots";
@@ -187,7 +188,6 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
         const expectedUrl = `${SITE_URL}${path === "/" ? "/" : `${path}/`}`;
         expect(sitemapUrls.has(expectedUrl), `Sitemap missing path: ${expectedUrl}`).toBe(true);
       }
-
       for (const entry of sm) {
         expect(entry.priority).toBeGreaterThanOrEqual(0.0);
         expect(entry.priority).toBeLessThanOrEqual(1.0);
@@ -200,6 +200,18 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
       const rb = robots();
       expect(rb.rules).toBeDefined();
       expect(rb.sitemap).toBe(`${SITE_URL}/sitemap.xml`);
+    });
+
+    it("D5-T1-7: og:locale:alternate names every other language the page exists in", () => {
+      const todos = TABLA_IDIOMAS.map((i) => i.ogLocale);
+      for (const lang of ["pt", "fr", "de", "it"] as const) {
+        for (const og of [metadataHome(lang).openGraph, metadataPricing(lang).openGraph]) {
+          const alt = (og as { alternateLocale?: string[] }).alternateLocale ?? [];
+          expect([...alt].sort()).toEqual(todos.filter((l) => l !== ogLocaleDe(lang)).sort());
+        }
+      }
+      expect(localesAlternos("/", "es")).toHaveLength(TABLA_IDIOMAS.length - 1);
+      expect(localesAlternos("/about", "es")).toEqual(["en_GB"]);
     });
   });
 

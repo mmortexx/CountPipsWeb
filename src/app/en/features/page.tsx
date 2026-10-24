@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { FeaturesBody } from "../../features/page";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
+import { METRICAS } from "@/lib/producto";
 
 const READING_TIME_MIN = 3;
 
@@ -58,7 +59,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Trading journal features — CountPips",
-    description: "40+ institutional metrics, discipline measured in money, a live playbook and your data on your machine.",
+    description: `${METRICAS} institutional metrics, discipline measured in money, a live playbook and your data on your machine.`,
   },
 };
 

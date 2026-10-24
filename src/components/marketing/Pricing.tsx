@@ -8,6 +8,7 @@ import { MagneticButton } from "@/components/tj/MagneticButton";
 import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
 import { PRECIO_CORE, PRECIO_PRO, equivalenciaEur } from "@/lib/precios";
 import { fmtInt } from "@/lib/trading/format";
+import { METRICAS } from "@/lib/producto";
 
 type Plan = {
   id: "core" | "pro";
@@ -29,7 +30,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
 
   /* Los mismos niveles que `LicenseGate` y `PLAN.md` §10 del programa. */
   const coreFeatures = [
-    tx(lang, { es: "Diario, 40+ métricas y calendario", en: "Journal, 40+ metrics and calendar", pt: "Diário, 40+ métricas e calendário", fr: "Journal, 40+ métriques et calendrier", de: "Journal, 40+ Kennzahlen und Kalender", it: "Diario, 40+ metriche e calendario" }),
+    tx(lang, { es: `Diario, ${METRICAS} métricas y calendario`, en: `Journal, ${METRICAS} metrics and calendar`, pt: `Diário, ${METRICAS} métricas e calendário`, fr: `Journal, ${METRICAS} métriques et calendrier`, de: `Journal, ${METRICAS} Kennzahlen und Kalender`, it: `Diario, ${METRICAS} metriche e calendario` }),
     tx(lang, { es: "Curva de capital y drawdown", en: "Equity curve and drawdown", pt: "Curva de capital e drawdown", fr: "Courbe de capital et drawdown", de: "Equity-Kurve und Drawdown", it: "Curva di capitale e drawdown" }),
     tx(lang, { es: "Gestión de riesgo y freno duro opcional", en: "Risk management and optional hard brake", pt: "Gestão de risco e freio rígido opcional", fr: "Gestion du risque et frein strict optionnel", de: "Risikomanagement und optionale harte Bremse", it: "Gestione del rischio e freno rigido opzionale" }),
     tx(lang, { es: "Psicología y disciplina", en: "Psychology and discipline", pt: "Psicologia e disciplina", fr: "Psychologie et discipline", de: "Psychologie und Disziplin", it: "Psicologia e disciplina" }),
@@ -46,7 +47,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
     tx(lang, { es: "Modo prop firm e informe de evaluación en PDF", en: "Prop firm mode and PDF evaluation report", pt: "Modo prop firm e relatório de avaliação em PDF", fr: "Mode prop firm et rapport d’évaluation en PDF", de: "Prop-Firm-Modus und PDF-Evaluierungsbericht", it: "Modalità prop firm e report di valutazione in PDF" }),
     tx(lang, { es: "Simulador Monte Carlo y riesgo de ruina", en: "Monte Carlo simulator and risk of ruin", pt: "Simulador de Monte Carlo e risco de ruína", fr: "Simulateur Monte Carlo et risque de ruine", de: "Monte-Carlo-Simulator und Ruin-Risiko", it: "Simulatore Monte Carlo e rischio di rovina" }),
     tx(lang, { es: "Experimentos con validación estadística", en: "Experiments with statistical validation", pt: "Experimentos com validação estatística", fr: "Expériences avec validation statistique", de: "Experimente mit statistischer Validierung", it: "Esperimenti con validazione statistica" }),
-    tx(lang, { es: "Módulo fiscal y página Negocio", en: "Tax module and Business page", pt: "Módulo fiscal e página Negócio", fr: "Module fiscal et page Activité", de: "Steuermodul und Geschäftsübersicht", it: "Modulo fiscale e pagina Attività" }),
+    tx(lang, { es: "Módulo fiscal (España) y página Negocio", en: "Tax module (Spain) and Business page", pt: "Módulo fiscal (Espanha) e página Negócio", fr: "Module fiscal (Espagne) et page Activité", de: "Steuermodul (Spanien) und Geschäftsübersicht", it: "Modulo fiscale (Spagna) e pagina Attività" }),
     tx(lang, { es: "API local", en: "Local API", pt: "API local", fr: "API locale", de: "Lokale API", it: "API locale" }),
     tx(lang, { es: "Alertas de mercado, curva de tipos y fortaleza de divisas", en: "Market alerts, yield curve and currency strength", pt: "Alertas de mercado, curva de juros e força de moedas", fr: "Alertes de marché, courbe des taux et force relative des devises", de: "Marktalarme, Zinskurve und Währungsstärke", it: "Avvisi di mercato, curva dei tassi e forza delle valute" }),
   ];

@@ -201,7 +201,8 @@ function esNombrePropioOTerminoPermitido(texto: string): boolean {
     .split(/\s+/)
     .filter(Boolean);
   if (palabras.length === 0) return true;
-  return palabras.every((p) => TERMINOS_PERMITIDOS.has(p));
+  // Una letra sola (con su tilde o su barra: «W̄») es la variable de una fórmula, no texto sin traducir.
+  return palabras.every((p) => TERMINOS_PERMITIDOS.has(p) || /^\p{L}\p{M}?$/u.test(p));
 }
 
 describe("Guarda de idiomas nuevos (pt, fr, de, it)", () => {

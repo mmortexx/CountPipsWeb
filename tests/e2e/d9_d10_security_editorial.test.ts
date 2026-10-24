@@ -58,15 +58,12 @@ function todasLasFuentes(dir: string, acc: string[] = []): string[] {
 describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
   describe("Tier 1: Feature Coverage", () => {
     it("D9-T1-1: Zero external network requests from calculators (100% client-side computation)", () => {
-      const calculatorFiles = [
-        "src/components/marketing/RiskCalculator.tsx",
-        "src/components/marketing/EdgeSignificanceChecker.tsx",
-        "src/components/marketing/RMultipleSimulator.tsx",
-        "src/components/marketing/EquityProjector.tsx",
-        "src/components/marketing/SavingsCalculator.tsx",
-        "src/components/marketing/DisciplineCost.tsx",
-        "src/components/marketing/SessionClock.tsx",
-      ];
+      // Las que carga de verdad la página de cada herramienta, una por herramienta.
+      const vista = leer("src/components/herramientas/HerramientaVista.tsx");
+      const calculatorFiles = [...vista.matchAll(/import\("@\/components\/(marketing\/\w+)"\)/g)].map(
+        (m) => `src/components/${m[1]}.tsx`,
+      );
+      expect(calculatorFiles).toHaveLength(HERRAMIENTAS.length);
 
       const forbiddenNetworkPatterns = [
         /\bfetch\s*\(/,

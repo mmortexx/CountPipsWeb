@@ -7,7 +7,7 @@ import { BotonCopiar } from "@/components/tj/BotonCopiar";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { componerInforme } from "@/lib/informe";
 import { moverConFlechas } from "@/lib/flechas";
-import { QUESTIONS, type DimId } from "@/lib/trading/disciplineQuestions";
+import { QUESTIONS, notaParcial, type DimId } from "@/lib/trading/disciplineQuestions";
 
 /**
  * Diagnóstico de disciplina operativa: cinco ejes (riesgo, plan, registro,
@@ -556,9 +556,11 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                   ? es
                     ? level.resumenEs
                     : level.resumenEn
-                  : es
-                    ? "Ponderado por eje: un fallo en riesgo pesa más que uno en constancia."
-                    : "Weighted by axis: a gap in risk weighs more than one in consistency."}
+                  : `${notaParcial(answeredCount, QUESTIONS.length, es ? "es" : "en") ?? ""} ${
+                      es
+                        ? "Ponderado por eje: un fallo en riesgo pesa más que uno en constancia."
+                        : "Weighted by axis: a gap in risk weighs more than one in consistency."
+                    }`.trim()}
               </p>
 
               {/* Perfil por ejes */}

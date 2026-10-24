@@ -95,12 +95,12 @@ const privacidad: DocumentoLegal = {
               es: [
                 "Solicitud de acceso anticipado",
                 "Email, perfil, experiencia, mercados, cómo llevas hoy tu diario, objetivo, comentario opcional, idioma y origen/UTM",
-                "El endpoint de admisión, con acceso restringido",
+                "El endpoint de admisión, con acceso restringido; si no está activo, Web3Forms, que la reenvía al correo del titular",
               ],
               en: [
                 "Early-access application",
                 "Email, profile, experience, markets, journaling method, goal, optional note, language and source/UTM",
-                "The admission endpoint, with restricted access",
+                "The admission endpoint, with restricted access; when it is not active, Web3Forms, which forwards it to the owner’s email",
               ],
             },
             {
@@ -131,8 +131,8 @@ const privacidad: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          es: "Merece una sección propia porque es la parte que casi ninguna web puede escribir:",
-          en: "This deserves its own section because it is the part almost no website can write:",
+          es: "Lo que esta web no hace:",
+          en: "What this website does not do:",
         },
         {
           tipo: "lista",
@@ -189,14 +189,14 @@ const privacidad: DocumentoLegal = {
         {
           tipo: "lista",
           es: [
-            "Endpoint de admisión: recibe y deduplica solicitudes para el equipo de selección.",
+            "Endpoint de admisión: recibe las solicitudes, descarta las repetidas y las guarda para el equipo de selección.",
             "Cloudflare Turnstile: valida que la solicitud procede de una persona cuando el control está activado.",
-            "Web3Forms: recibe el formulario de contacto y lo reenvía al correo del titular.",
+            "Web3Forms: recibe el formulario de contacto, y las solicitudes cuando el endpoint no está activo, y los reenvía al correo del titular.",
           ],
           en: [
-            "Admission endpoint — receives and deduplicates applications for the selection team.",
+            "Admission endpoint — receives applications, drops repeats and stores them for the selection team.",
             "Cloudflare Turnstile — checks that an application comes from a person when enabled.",
-            "Web3Forms — receives the contact form and forwards it to the owner’s email.",
+            "Web3Forms — receives the contact form, and applications when the endpoint is not active, and forwards them to the owner’s email.",
           ],
         },
         {
@@ -256,13 +256,13 @@ const privacidad: DocumentoLegal = {
     },
     {
       id: "app",
-      tituloEs: "El programa es otra cosa, y es el punto importante",
-      tituloEn: "The software is a different matter, and this is the important part",
+      tituloEs: "El programa de escritorio",
+      tituloEn: "The desktop software",
       bloques: [
         {
           tipo: "parrafo",
-          es: `Todo lo anterior habla de la web. ${TITULAR.nombreComercial}, el programa, funciona en tu ordenador y guarda tus operaciones en un archivo local de tu propio disco. No pide cuenta, no envía telemetría y nosotros no tenemos servidores donde guardar tus datos de trading. Solo sale información del equipo cuando tú activas una función que lo necesita: la copia cifrada en tu propia carpeta de nube, la sincronización de solo lectura con tu bróker, los avisos por webhook a la dirección que elijas o la descarga de datos públicos de mercado. Al activar la licencia se envían la clave y el nombre del equipo al proveedor de licencias, Lemon Squeezy; después, como mucho una vez al día, la clave y el identificador que ese proveedor dio a esta instalación. El nombre sirve para que reconozcas el equipo en tu panel de compras y lo puedas desactivar.`,
-          en: `Everything above is about the website. ${TITULAR.nombreComercial}, the software, runs on your computer and stores your trades in a local file on your own disk. It asks for no account, sends no telemetry, and we have no servers to store your trading data. Information only leaves your machine when you turn on a feature that needs it: the encrypted copy in your own cloud folder, the read-only sync with your broker, webhook alerts to the address you choose, or downloading public market data. When you activate the licence, the key and the computer name are sent to the licensing provider, Lemon Squeezy; after that, at most once a day, the key and the identifier that provider gave this installation. The name lets you recognise the computer in your purchases panel and deactivate it.`,
+          es: `Todo lo anterior habla de la web. ${TITULAR.nombreComercial}, el programa, funciona en tu ordenador y guarda tus operaciones en un archivo local de tu propio disco. No pide cuenta, no envía telemetría y nosotros no tenemos servidores donde guardar tus datos de trading. Solo sale información del equipo cuando tú activas una función que lo necesita: la copia cifrada en tu propia carpeta de nube, la sincronización de solo lectura con tu bróker, los avisos por webhook a la dirección que elijas o la descarga de datos públicos de mercado. La licencia es una clave que el programa comprueba en tu equipo, sin enviar nada.`,
+          en: `Everything above is about the website. ${TITULAR.nombreComercial}, the software, runs on your computer and stores your trades in a local file on your own disk. It asks for no account, sends no telemetry, and we have no servers to store your trading data. Information only leaves your machine when you turn on a feature that needs it: the encrypted copy in your own cloud folder, the read-only sync with your broker, webhook alerts to the address you choose, or downloading public market data. The licence is a key the software checks on your computer, without sending anything.`,
         },
       ],
     },
@@ -303,8 +303,8 @@ const cookies: DocumentoLegal = {
     },
     {
       id: "stored",
-      tituloEs: "Todo lo que se guarda, sin excepción",
-      tituloEn: "Everything that is stored, without exception",
+      tituloEs: "Todo lo que se guarda",
+      tituloEn: "Everything that is stored",
       bloques: [
         {
           tipo: "tabla",

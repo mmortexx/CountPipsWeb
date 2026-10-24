@@ -32,6 +32,27 @@ function elementos(lista: string, y: RegExp): number {
   return lista.split(/,\s*/).flatMap((p) => p.split(y)).filter((p) => p.trim()).length;
 }
 
+// Sin endpoint de admisión, forms.ts manda la solicitud por Web3Forms al correo
+// del titular: la privacidad tiene que nombrar ese destino en la fila del formulario.
+describe("a dónde va la solicitud de acceso anticipado", () => {
+  const forms = readFileSync(join(process.cwd(), "src", "lib", "forms.ts"), "utf8");
+  const fila = documentoPorSlug("privacidad")!
+    .secciones.flatMap((s) => s.bloques)
+    .flatMap((b) => (b.tipo === "tabla" ? b.filas : []))
+    .find((f) => f.es[0] === "Solicitud de acceso anticipado")!;
+
+  it("forms.ts tiene el camino por correo", () => {
+    expect(forms).toMatch(/if \(!BETA_API_URL\) return solicitudPorCorreo\(/);
+  });
+
+  it("la privacidad nombra los dos destinos", () => {
+    for (const destino of [fila.es[2], fila.en[2]]) {
+      expect(destino).toMatch(/endpoint/);
+      expect(destino).toMatch(/Web3Forms/);
+    }
+  });
+});
+
 // `skipIf` salta las pruebas pero ejecuta el cuerpo del `describe`: leer `out/`
 // aquí rompe el CI, que pasa las pruebas antes de compilar. Con
 // `COMPROBAR_OUT=1` (los flujos de GitHub, tras compilar) no se salta nunca.

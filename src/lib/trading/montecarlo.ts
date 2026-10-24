@@ -1,5 +1,5 @@
 import { mulberry32 } from "./azar";
-import { computeExpectedMaxLossStreak, computeRiskOfRuin, UMBRAL_RUINA_PCT } from "./estadistica";
+import { computeExpectedMaxLossStreak, computeRiskOfRuin, esperanzaEnR, UMBRAL_RUINA_PCT } from "./estadistica";
 import { LIMITE_PROYECCION_USD } from "./proyeccion";
 
 export type ParametrosMonteCarlo = {
@@ -36,7 +36,7 @@ export function simulaMonteCarlo({
   seed,
 }: ParametrosMonteCarlo) {
   const wr = winRate / 100;
-  const expectancyR = wr * avgWinR - (1 - wr) * avgLossR;
+  const expectancyR = esperanzaEnR(wr, avgWinR, avgLossR);
 
   // Ruina = perder UMBRAL_RUINA_PCT del balance inicial en algún momento, por pérdidas o retiros
   // (con riesgo compuesto el saldo nunca llega a 0). Fórmula de la calculadora de riesgo con la

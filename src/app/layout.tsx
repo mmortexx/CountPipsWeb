@@ -61,9 +61,11 @@ const instrumentSans = localFont({
 // La serif de titulares. De contraste moderado: tiene que sostener cifras.
 const newsreader = localFont({
   /* Eje de grosor recortado a 400–500, lo único que usa el sitio. El eje
-     óptico se queda entero (`font-optical-sizing: auto` en globals.css). Este
-     rango y el fichero deben coincidir: un peso que la fuente no trae se
-     finge en silencio como negrita falsa. Lo vigila `scripts/pesos.mjs`. */
+     óptico, a 20–72 (`font-optical-sizing: auto` en globals.css): la serif no
+     se pinta por debajo de 20 px, y sin el tramo 6–19 pesa 64 KB en vez de 86.
+     Un titular más pequeño saldría con el diseño de 20. Rango de pesos y
+     fichero deben coincidir: un peso que la fuente no trae se finge en
+     silencio como negrita falsa. Lo vigila `scripts/pesos.mjs`. */
   src: [{ path: "./fonts/Newsreader.woff2", weight: "400 500", style: "normal" }],
   variable: "--font-serif",
   display: "swap",
