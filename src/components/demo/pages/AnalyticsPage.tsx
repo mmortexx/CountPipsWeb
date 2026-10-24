@@ -19,7 +19,7 @@ import {
   heatmap as heatmapGrid,
   computeSqn,
   computeUlcerIndex,
-  computeHalfKelly,
+  medioKellySeleccion,
   computeOmega,
   INITIAL_BALANCE_CONST,
   type Trade,
@@ -800,7 +800,13 @@ function normCdf(z: number): number {
 /** SQN, índice Ulcer, CAGR, medio Kelly y Omega, calculados aquí porque `Metrics` no los expone. */
 function computeAdvanced(trades: Trade[], mStats: { winRate: number; payoff: number }) {
   const n = trades.length;
-  if (n < 2) return { sqn: 0, ulcer: 0, cagr: 0, halfKelly: 0, omega: 1 };
+  const kelly = medioKellySeleccion(
+    trades.filter((t) => t.netPnl > 0).length,
+    trades.filter((t) => t.netPnl < 0).length,
+    mStats.winRate,
+    mStats.payoff,
+  );
+  if (n < 2) return { sqn: 0, ulcer: 0, cagr: 0, halfKelly: kelly.medio, kellyFalta: kelly.falta, omega: 1 };
 
   const sqn = computeSqn(trades);
   const ulcer = computeUlcerIndex(trades, INITIAL_BALANCE_CONST);
@@ -821,12 +827,32 @@ function computeAdvanced(trades: Trade[], mStats: { winRate: number; payoff: num
       ? (Math.pow(final / INITIAL_BALANCE_CONST, 1 / yearsSpan) - 1) * 100
       : 0;
 
-  const halfKelly = computeHalfKelly(mStats.winRate, mStats.payoff);
-
   // Omega de Keating y Shadwick con umbral L = 0.
   const omega = computeOmega(trades, 0);
 
-  return { sqn, ulcer, cagr, halfKelly, omega };
+  return { sqn, ulcer, cagr, halfKelly: kelly.medio, kellyFalta: kelly.falta, omega };
+}
+
+/** Medio Kelly de la selección. Sin pérdidas o sin ganancias no se calcula:
+ *  «—» y lo que falta, en color neutro (un 0 en ámbar se leía «sin ventaja»). */
+export function CifraKelly({ medio, falta, lang }: { medio: number | null; falta: "perdidas" | "ganancias" | null; lang: Lang }) {
+  if (medio === null) {
+    const nota = falta === "perdidas"
+      ? (lang === "es" ? "sin pérdidas aún" : "no losses yet")
+      : falta === "ganancias"
+        ? (lang === "es" ? "sin ganancias aún" : "no wins yet")
+        : null;
+    return (
+      <span className="text-secondary">
+        —{nota && <span className="block text-[11px] font-normal text-tertiary">{nota}</span>}
+      </span>
+    );
+  }
+  return (
+    <span className={medio > 0 ? "text-pnl-pos" : "text-pnl-warn"}>
+      {fmtNum(medio, lang, 1)}{pctSep(lang)}
+    </span>
+  );
 }
 
 const dayMs = 86_400_000;
@@ -1337,9 +1363,7 @@ export function AnalyticsPage() {
                   label="Half Kelly"
                   hint={desc("Criterio de Kelly al 50\u00a0% (riesgo óptimo)", "Half Kelly sizing (optimal fraction)")}
                 >
-                  <span className={adv.halfKelly > 0 ? "text-pnl-pos" : "text-pnl-warn"}>
-                    {fmtNum(adv.halfKelly, lang, 1)}{pctSep(lang)}
-                  </span>
+                  <CifraKelly medio={adv.halfKelly} falta={adv.kellyFalta} lang={lang} />
                 </RatioCell>
                 <RatioCell
                   label={t("recoveryFactor")}

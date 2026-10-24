@@ -716,7 +716,7 @@ export function EquityProjector() {
                   0.05,
                   setRiskPct,
                   pctSep(lang),
-                  `Kelly 1/2: ${fmtPct(c.halfKellyPct, 1)}`
+                  `Kelly 1/2: ${c.halfKellyPct === null ? "—" : fmtPct(c.halfKellyPct, 1)}`
                 )}
 
                 {/* Horizonte */}
@@ -1298,7 +1298,7 @@ export function EquityProjector() {
                     {fmtNum(c.profitFactor, 2)}
                   </div>
                   <div className="text-[12px] text-[var(--ink-3)] tnum mt-0.5">
-                    {es ? `Medio Kelly: ${fmtPct(c.halfKellyPct, 1)}` : `Half Kelly: ${fmtPct(c.halfKellyPct, 1)}`}
+                    {`${es ? "Medio Kelly" : "Half Kelly"}: ${c.halfKellyPct === null ? "—" : fmtPct(c.halfKellyPct, 1)}`}
                   </div>
                 </div>
               </div>

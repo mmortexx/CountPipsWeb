@@ -231,8 +231,8 @@ export function tamanoParaRiesgo(riesgoUsd: number, distancia: number, multiplic
   return enteros ? Math.floor(exacto + 1e-9) : exacto;
 }
 
-/** Kelly completo, medio y cuarto, en % (ver `kellyPct`). */
-export function fraccionesKelly(aciertoPct: number, rr: number): { completo: number; medio: number; cuarto: number } {
+/** Kelly completo, medio y cuarto, en %; null si no se puede calcular (ver `kellyPct`). */
+export function fraccionesKelly(aciertoPct: number, rr: number): { completo: number; medio: number; cuarto: number } | null {
   const completo = kellyPct(aciertoPct / 100, rr);
-  return { completo, medio: completo / 2, cuarto: completo / 4 };
+  return completo === null ? null : { completo, medio: completo / 2, cuarto: completo / 4 };
 }

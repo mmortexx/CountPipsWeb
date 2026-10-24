@@ -328,7 +328,7 @@ export interface Metrics {
   sqn: number;
   ulcerIndex: number;
   drawdownSkewness: number;
-  halfKelly: number;
+  halfKelly: number | null;
   gainToPainRatio: number;
 }
 
@@ -578,9 +578,23 @@ export function computeDrawdownSkewness(trades: Trade[], initialBalance = INITIA
   return +skew.toFixed(4);
 }
 
-/** Medio Kelly en %, a dos decimales (ver `kellyPct`). Acepta el acierto como fracción o como porcentaje. */
-export function computeHalfKelly(winRate: number, payoff: number): number {
-  return +(kellyPct(winRate > 1 ? winRate / 100 : winRate, payoff) / 2).toFixed(2);
+/** Medio Kelly en %, a dos decimales; null si no se puede calcular (ver `kellyPct`). Acepta el acierto como fracción o como porcentaje. */
+export function computeHalfKelly(winRate: number, payoff: number): number | null {
+  const completo = kellyPct(winRate > 1 ? winRate / 100 : winRate, payoff);
+  return completo === null ? null : +(completo / 2).toFixed(2);
+}
+
+/** Medio Kelly de una selección de operaciones y, si no hay, qué falta para
+ *  calcularlo: la demo enseña «—» con «sin pérdidas aún» o «sin ganancias aún». */
+export function medioKellySeleccion(
+  ganadoras: number,
+  perdedoras: number,
+  winRate: number,
+  payoff: number,
+): { medio: number | null; falta: "perdidas" | "ganancias" | null } {
+  if (ganadoras === 0) return { medio: null, falta: "ganancias" };
+  if (perdedoras === 0) return { medio: null, falta: "perdidas" };
+  return { medio: computeHalfKelly(winRate, payoff), falta: null };
 }
 
 /** Intervalo de Wilson al 95 % (o el `z` dado), en %. Con `total` ≤ 0, todo a 0. */

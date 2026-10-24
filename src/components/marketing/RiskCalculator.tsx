@@ -151,8 +151,10 @@ export function RiskCalculator() {
   const conAciertos = es ? `con un ${fmtNum(kellyWinRate, 0)}${PCT} de aciertos` : `at a ${fmtNum(kellyWinRate, 0)}% win rate`;
   /* El mismo número en la tarjeta, en el anuncio y en el plan copiado. */
   const tamanoTxt = `${fmtNum(c.tamano, c.decimalesTamano)} ${c.sizeLabel}`;
-  const kellyAplicable = riesgoDeKelly(c.kelly.medio);
-  const kellyTopado = c.kelly.medio > 0 && Math.abs(kellyAplicable - c.kelly.medio) > RISK_STEP / 2;
+  /* Sin payoff medible Kelly no se calcula: «—», y el botón de aplicarlo, apagado. */
+  const kellyAplicable = c.kelly ? riesgoDeKelly(c.kelly.medio) : 0;
+  const kellyTopado = !!c.kelly && c.kelly.medio > 0 && Math.abs(kellyAplicable - c.kelly.medio) > RISK_STEP / 2;
+  const kellyTxt = (v: number | undefined) => siPlan(v === undefined ? "—" : `${fmtNum(v)}${PCT}`);
   const friccionTxt = !includeFriction
     ? (es ? "Desactivada" : "Off")
     : c.friccion > 0
@@ -746,7 +748,7 @@ export function RiskCalculator() {
               </button>
               <span className="text-[12px] tnum text-tertiary">
                 {es ? `Medio Kelly ${conAciertos}: ` : `Half-Kelly ${conAciertos}: `}
-                <strong className="text-primary font-semibold">{siPlan(`${fmtNum(c.kelly.medio)}${PCT}`)}</strong>
+                <strong className="text-primary font-semibold">{kellyTxt(c.kelly?.medio)}</strong>
               </span>
             </div>
 
@@ -772,15 +774,15 @@ export function RiskCalculator() {
                 <div className="grid grid-cols-3 gap-2 text-center text-[12px] tnum">
                   <div className="py-1">
                     <div className="text-tertiary">{es ? "Kelly completo" : "Full Kelly"}</div>
-                    <div className="font-semibold text-primary mt-0.5">{siPlan(`${fmtNum(c.kelly.completo)}${PCT}`)}</div>
+                    <div className="font-semibold text-primary mt-0.5">{kellyTxt(c.kelly?.completo)}</div>
                   </div>
                   <div className="py-1">
                     <div className="text-[rgb(var(--accent-base))] font-semibold">{es ? "Medio Kelly" : "Half Kelly"}</div>
-                    <div className="font-semibold text-[rgb(var(--accent-base))] mt-0.5">{siPlan(`${fmtNum(c.kelly.medio)}${PCT}`)}</div>
+                    <div className="font-semibold text-[rgb(var(--accent-base))] mt-0.5">{kellyTxt(c.kelly?.medio)}</div>
                   </div>
                   <div className="py-1">
                     <div className="text-tertiary">{es ? "Cuarto de Kelly" : "Quarter Kelly"}</div>
-                    <div className="font-semibold text-primary mt-0.5">{siPlan(`${fmtNum(c.kelly.cuarto)}${PCT}`)}</div>
+                    <div className="font-semibold text-primary mt-0.5">{kellyTxt(c.kelly?.cuarto)}</div>
                   </div>
                 </div>
                 {kellyTopado && (

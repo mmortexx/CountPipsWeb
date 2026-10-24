@@ -48,8 +48,9 @@ export interface ResultadoProyeccion {
   netExpectancyR: number;
   hasEdge: boolean;
   profitFactor: number;
-  fullKellyPct: number;
-  halfKellyPct: number;
+  /** null si no se puede calcular (ver `kellyPct`). */
+  fullKellyPct: number | null;
+  halfKellyPct: number | null;
   growthPerTrade: number;
   monthlyPoints: PuntoMensual[];
   finalBalance: number;
@@ -99,7 +100,7 @@ export function proyectaCapital(p: ParametrosProyeccion): ResultadoProyeccion {
   const profitFactor = grossLossTotal > 0 ? grossWinTotal / grossLossTotal : 0;
 
   const fullKellyPct = kellyPct(wr, avgLossR > 0 ? avgWinR / avgLossR : 0);
-  const halfKellyPct = fullKellyPct / 2;
+  const halfKellyPct = fullKellyPct === null ? null : fullKellyPct / 2;
 
   const diffWin = avgWinR - grossExpectancyR;
   const diffLoss = -avgLossR - grossExpectancyR;
