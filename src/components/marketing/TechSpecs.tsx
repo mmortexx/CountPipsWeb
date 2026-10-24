@@ -3,6 +3,7 @@
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { SectionHeader } from "@/components/layout/SectionHeader";
+import { ENTRADILLA_FICHA_TECNICA } from "@/lib/conexiones";
 import { PROGRAMA, arranqueMedido } from "@/lib/producto";
 import { fmtInt } from "@/lib/trading/format";
 
@@ -95,11 +96,7 @@ export function TechSpecs() {
               </>
             )
           }
-          entradilla={
-            es
-              ? "Aplicación nativa de Windows sin cuenta ni telemetría. Solo se conecta para lo que tú activas: las actualizaciones que pidas y las funciones opcionales."
-              : "A native Windows app with no account and no telemetry. It only connects for what you turn on: the updates you ask for and the optional features."
-          }
+          entradilla={es ? ENTRADILLA_FICHA_TECNICA.es : ENTRADILLA_FICHA_TECNICA.en}
         />
         <Reveal delay={0.1} y={28} className="mt-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 border-t border-[var(--line-2)]">

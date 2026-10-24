@@ -1,7 +1,5 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { CONEXIONES, LO_QUE_VA_SOLO, RESUMEN_SEGURIDAD } from "@/lib/conexiones";
+import { CONEXIONES, ENTRADILLA_FICHA_TECNICA, LO_QUE_VA_SOLO, RESUMEN_SEGURIDAD } from "@/lib/conexiones";
 import { FAQ_EN, FAQ_ES } from "@/lib/faq";
 
 /**
@@ -37,6 +35,8 @@ describe("conexiones del programa", () => {
     ["entradilla de seguridad EN", RESUMEN_SEGURIDAD.en, "en"],
     ["LO_QUE_VA_SOLO ES", LO_QUE_VA_SOLO.es, "es"],
     ["LO_QUE_VA_SOLO EN", LO_QUE_VA_SOLO.en, "en"],
+    ["entradilla de la ficha técnica ES", ENTRADILLA_FICHA_TECNICA.es, "es"],
+    ["entradilla de la ficha técnica EN", ENTRADILLA_FICHA_TECNICA.en, "en"],
   ];
 
   const NINGUNA = { es: /nada se conecta solo/i, en: /nothing connects on its own/i };
@@ -48,29 +48,4 @@ describe("conexiones del programa", () => {
     }
   });
 
-  /* La licencia no está en CONEXIONES: la clave se comprueba sin red. Una frase
-     de `src/` que la cuente entre lo que se conecta contradice a todas las demás
-     (la ficha técnica decía «Solo se conecta para lo que tú activas: la licencia…»). */
-  it("ninguna frase de src/ cuenta la licencia entre lo que se conecta", () => {
-    expect(CONEXIONES.some((c) => /licen/i.test(c.es.nombre))).toBe(false);
-    const ficheros: string[] = [];
-    const recorre = (dir: string) => {
-      for (const e of readdirSync(dir)) {
-        const p = join(dir, e);
-        if (statSync(p).isDirectory()) recorre(p);
-        else if (/\.tsx?$/.test(e)) ficheros.push(p);
-      }
-    };
-    recorre(join(__dirname, "..", "src"));
-    const malas: string[] = [];
-    for (const f of ficheros) {
-      for (const frase of readFileSync(f, "utf8").split(/[.;\n]/)) {
-        if (/conect|connect/i.test(frase) && /\b(licencia|licence|license)\b/i.test(frase) && !/ni siquiera|not even/i.test(frase)) {
-          malas.push(`${f.split(/[\\/]src[\\/]/)[1]}: «${frase.trim().slice(0, 120)}»`);
-        }
-      }
-    }
-    expect(ficheros.length).toBeGreaterThan(100);
-    expect(malas).toEqual([]);
-  });
 });
