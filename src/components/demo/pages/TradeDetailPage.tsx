@@ -872,7 +872,7 @@ export function TradeDetailPage() {
                 <Detail label={lang === "es" ? "Mercado" : "Market"}>
                   <span className="text-primary">{mercado.regimen[lang === "es" ? "es" : "en"]}</span>
                 </Detail>
-                <Detail label={lang === "es" ? "Puntuación del día" : "Day score"}>
+                <Detail label={t("dayScore")}>
                   <span className="text-primary tnum">{fmtInt(trade.dayScore, lang)}/5</span>
                 </Detail>
               </dl>
@@ -1065,7 +1065,7 @@ export function TradeDetailPage() {
 
             <div className="space-y-2.5 border-t border-[rgb(var(--divider)/0.1)] pt-4">
               <SummaryRow
-                label={t("rr")}
+                label={lang === "es" ? "R múltiplo" : "R multiple"}
                 tone={trade.rMultiple >= 0 ? "pos" : "neg"}
                 value={fmtR(trade.rMultiple, lang, 2)}
               />

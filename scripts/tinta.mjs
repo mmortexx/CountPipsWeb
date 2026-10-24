@@ -131,7 +131,7 @@ for (const tema of ["dark", "light"]) {
   await p.waitForTimeout(700);
 
   // El porcentaje en español lleva espacio duro (U+00A0, `PCT_SEP`): se busca por el trozo estable del rótulo.
-  for (const rotulo of ["Ganadoras", "Pérdidas", "Fuera de plan (fallo)", "en plan"]) {
+  for (const rotulo of ["Ganadoras", "Perdedoras", "Fuera de plan (fallo)", "en plan"]) {
     // Texto literal: hay dos botones «Ganadoras» y el primero en el DOM es el que se pinta con el fondo lleno de P&L.
     const b = p.locator("button").filter({ hasText: rotulo }).first();
     await b.click().catch(() => {});

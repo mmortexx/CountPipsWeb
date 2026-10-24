@@ -706,7 +706,7 @@ export function TradesPage() {
       URL.revokeObjectURL(url);
 
       toast({
-        title: es ? "Snapshot JSON generado" : "JSON snapshot generated",
+        title: es ? "Copia JSON generada" : "JSON snapshot generated",
         description: es
           ? `Copia completa con métricas y notas de ${fmtOperaciones(filtered.length, lang)}.`
           : `Complete copy with metrics and notes for ${fmtOperaciones(filtered.length, lang)}.`,
@@ -1018,7 +1018,7 @@ export function TradesPage() {
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >
-          {es ? "Pérdidas" : "Losses"}
+          {es ? "Perdedoras" : "Losers"}
         </button>
 
         <button

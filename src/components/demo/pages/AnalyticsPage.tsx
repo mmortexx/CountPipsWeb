@@ -749,7 +749,7 @@ function computeEdge(trades: Trade[], lang: Lang) {
       ? `Necesitas al menos ${fmtOperaciones(MUESTRA_MINIMA, lang)} para emitir un veredicto con confianza estadística.`
       : `You need at least ${fmtOperaciones(MUESTRA_MINIMA, lang)} to reach a verdict with statistical confidence.`;
   } else if (loR > 0) {
-    verdict = lang === "es" ? "Edge confirmado" : "Confirmed edge";
+    verdict = lang === "es" ? "Ventaja confirmada" : "Confirmed edge";
     verdictTone = "pos";
     hint = lang === "es"
       ? "El intervalo de confianza del 95\u00a0% de la expectativa R excluye al cero: tu ventaja es estadísticamente significativa."
@@ -761,7 +761,7 @@ function computeEdge(trades: Trade[], lang: Lang) {
       ? "La señal apunta en la dirección correcta pero el intervalo aún incluye el cero: sigue operando para estrecharlo."
       : "The signal points the right way but the interval still includes zero — keep trading to narrow it.";
   } else {
-    verdict = lang === "es" ? "Sin edge" : "No edge";
+    verdict = lang === "es" ? "Sin ventaja" : "No edge";
     verdictTone = "neutral";
     hint = lang === "es"
       ? "El intervalo de confianza incluye al cero y la media es cercana o negativa: no hay evidencia de ventaja real."
@@ -1159,7 +1159,7 @@ export function AnalyticsPage() {
                       {t("profitFactor")}
                     </th>
                     <th className="px-2 py-2 text-[10px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
-                      {lang === "es" ? "Máx. caída" : "Max drawdown"}
+                      {t("maxDrawdown")}
                     </th>
                   </tr>
                 </thead>
