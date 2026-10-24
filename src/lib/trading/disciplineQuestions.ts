@@ -17,6 +17,14 @@ export type Q = {
   options: { es: string; en: string }[];
 };
 
+/** Qué decir junto a la cifra mientras el test está a medias: con una sola
+ *  respuesta la media sale de «100 / 100» y parece un veredicto. Sin
+ *  respuestas (la cifra es «—») o con todas (hay veredicto) no hay nota. */
+export function notaParcial(respondidas: number, total: number, lang: "es" | "en"): string | null {
+  if (respondidas <= 0 || respondidas >= total) return null;
+  return lang === "es" ? `Provisional: ${respondidas} de ${total} respondidas.` : `Provisional: ${respondidas} of ${total} answered.`;
+}
+
 export const QUESTIONS: Q[] = [
   {
     dim: "riesgo",
