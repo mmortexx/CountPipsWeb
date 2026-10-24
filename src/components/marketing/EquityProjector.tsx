@@ -692,7 +692,8 @@ export function EquityProjector() {
                             setFrictionR(f);
                           }}
                         >
-                          {`${f === 0 ? "0" : fmtNum(f, 2)}\u00a0R`}
+                          {/* Espacio normal: a 320 px con el texto espaciado, según la letra, «0,06 R» no cabe entero. */}
+                          {`${f === 0 ? "0" : fmtNum(f, 2)} R`}
                         </button>
                       );
                     })}
