@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { fmtMoney } from "@/lib/trading/format";
 import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
+import { METRICAS } from "@/lib/producto";
 import { localesAlternos, ogLocaleDe } from "@/lib/locale";
 
 interface MetaIdioma {
@@ -9,8 +10,8 @@ interface MetaIdioma {
   homeTitle: string;
   /** Eslogan para las tarjetas sociales. */
   homeSlogan: string;
+  /** Buscador, Open Graph y X: una sola descripción; el eslogan ya dice «institucional». */
   homeDescription: string;
-  homeTwitterDesc: string;
   pricingTitle: string;
   pricingDescription: string;
   pricingTwitterDesc: string;
@@ -23,9 +24,7 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
     homeTitle: "App de diário de trading para Windows — CountPips",
     homeSlogan: "CountPips — Opere como uma mesa institucional.",
     homeDescription:
-      "Diário de trading nativo para Windows. Explore a demo interativa com métricas institucionais, disciplina e dados no seu computador.",
-    homeTwitterDesc:
-      "Diário de trading profissional nativo para Windows. Métricas institucionais, disciplina e dados locais.",
+      `Diário de trading para Windows: ${METRICAS} métricas, um guardião de disciplina e seus dados na sua máquina. Experimente a demo sem cadastro.`,
     pricingTitle: "Preços",
     pricingDescription:
       `Demo interativa sem cadastro. Preços previstos de lançamento: Core ${fmtMoney(PRECIO_CORE, "pt", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "pt", { decimals: 0 })}.`,
@@ -38,9 +37,7 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
     homeTitle: "Application de journal de trading pour Windows — CountPips",
     homeSlogan: "CountPips — Tradez comme un desk institutionnel.",
     homeDescription:
-      "Journal de trading natif pour Windows. Explorez la démo interactive avec métriques institutionnelles, discipline et données locales.",
-    homeTwitterDesc:
-      "Journal de trading professionnel natif pour Windows. Métriques institutionnelles, discipline et données locales.",
+      `Journal de trading pour Windows : ${METRICAS} métriques, un gardien de discipline et vos données sur votre machine. Essayez la démo sans inscription.`,
     pricingTitle: "Tarifs",
     pricingDescription:
       `Démo interactive sans inscription. Tarifs de lancement prévus : Core ${fmtMoney(PRECIO_CORE, "fr", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "fr", { decimals: 0 })}.`,
@@ -53,9 +50,7 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
     homeTitle: "Trading-Journal-App für Windows — CountPips",
     homeSlogan: "CountPips — Traden wie ein institutioneller Desk.",
     homeDescription:
-      "Trading-Journal, nativ für Windows. Interaktive Demo mit institutionellen Kennzahlen, Disziplin und lokalen Daten.",
-    homeTwitterDesc:
-      "Professionelles Trading-Journal für Windows. Institutionelle Kennzahlen, Disziplin und lokale Daten.",
+      `Trading-Journal für Windows: ${METRICAS} Kennzahlen, ein Disziplin-Wächter und Ihre Daten auf Ihrem Rechner. Testen Sie die Demo ohne Anmeldung.`,
     pricingTitle: "Preise",
     pricingDescription:
       `Interaktive Demo ohne Registrierung. Geplante Einführungspreise: Core ${fmtMoney(PRECIO_CORE, "de", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "de", { decimals: 0 })}.`,
@@ -68,9 +63,7 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
     homeTitle: "App di diario di trading per Windows — CountPips",
     homeSlogan: "CountPips — Opera come un desk istituzionale.",
     homeDescription:
-      "Diario di trading nativo per Windows. Esplora la demo interattiva con metriche istituzionali, disciplina e dati sul tuo PC.",
-    homeTwitterDesc:
-      "Diario di trading professionale nativo per Windows. Metriche istituzionali, disciplina e dati locali.",
+      `Diario di trading per Windows: ${METRICAS} metriche, un guardiano della disciplina e i tuoi dati sulla tua macchina. Prova la demo senza registrazione.`,
     pricingTitle: "Prezzi",
     pricingDescription:
       `Demo interattiva senza registrazione. Prezzi di lancio previsti: Core ${fmtMoney(PRECIO_CORE, "it", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "it", { decimals: 0 })}.`,
@@ -102,7 +95,7 @@ export function metadataHome(lang: "pt" | "fr" | "de" | "it"): Metadata {
     twitter: {
       card: "summary_large_image",
       title: meta.homeSlogan,
-      description: meta.homeTwitterDesc,
+      description: meta.homeDescription,
     },
   };
 }

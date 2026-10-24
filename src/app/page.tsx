@@ -32,8 +32,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "CountPips — Opera como una mesa institucional.",
-    description:
-      "Diario de trading profesional, nativo de Windows. Explora el producto antes de instalarlo: métricas institucionales, disciplina y datos locales.",
+    description: PAGE_DESCRIPTION,
   },
 };
 

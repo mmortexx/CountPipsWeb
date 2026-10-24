@@ -31,8 +31,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "CountPips — Trade like an institutional desk.",
-    description:
-      "Professional trading journal, native to Windows. Explore the product before installing it: institutional metrics, discipline and local data.",
+    description: PAGE_DESCRIPTION,
   },
 };
 
