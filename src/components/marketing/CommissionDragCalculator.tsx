@@ -10,6 +10,7 @@ import {
   INSTRUMENT_SPECS,
   UMBRAL_FUGA_ALTA,
   clasificaFugaComisiones,
+  comisionVigente,
   diagnosticoFuga,
   resultadoBrutoPorOperacion,
   ticksAUnidades,
@@ -29,9 +30,11 @@ export function CommissionDragCalculator() {
     () => (INSTRUMENT_SPECS.find((i) => i.id === "MNQ") ?? INSTRUMENT_SPECS[0]).objetivo.inicial,
   );
   const [slippageTicks, setSlippageTicks] = useState<number>(1); // ticks de deslizamiento medio por operación
-  const [customCommission, setCustomCommission] = useState<number>(1.24);
+  /* La comisión que escribe la persona; null mientras use la habitual del instrumento. */
+  const [comisionPropia, setComisionPropia] = useState<number | null>(null);
 
   const inst = INSTRUMENT_SPECS.find((i) => i.id === selectedInstId) || INSTRUMENT_SPECS[0];
+  const customCommission = comisionVigente(comisionPropia, inst);
   /* El recorrido del objetivo es de cada instrumento (`objetivo` en
      INSTRUMENT_SPECS): el crudo se mueve en céntimos y el S&P en puntos. */
   const { min: objetivoMin, max: objetivoMax, paso: objetivoPaso } = inst.objetivo;
@@ -43,7 +46,6 @@ export function CommissionDragCalculator() {
     const item = INSTRUMENT_SPECS.find((i) => i.id === instId);
     if (!item) return;
     setSelectedInstId(instId);
-    setCustomCommission(item.defaultCommissionRT);
     setTargetUnits(item.objetivo.inicial);
   };
 
@@ -217,7 +219,7 @@ export function CommissionDragCalculator() {
                     min={LIMITES.comision.min}
                     max={LIMITES.comision.max}
                     valor={customCommission}
-                    onValor={setCustomCommission}
+                    onValor={setComisionPropia}
                     aria-label={es ? "Comisión ida y vuelta, en dólares" : "Round-turn fee, in dollars"}
                     className="text-primary"
                   />
