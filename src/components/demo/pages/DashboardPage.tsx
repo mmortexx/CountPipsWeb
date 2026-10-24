@@ -11,6 +11,7 @@ import {
   nombreSetup,
   INITIAL_BALANCE_CONST,
   getInstrumentMultiplier,
+  seNegociaEnEnteros,
   nivelDisciplina,
   type Direction,
   type Metrics,
@@ -129,9 +130,9 @@ export function DashboardPage() {
     INSTRUMENTS.find((i) => i.symbol === instrumentSymbol) ?? INSTRUMENTS[0];
 
   const decCantidad = inst.assetClass === "forex" ? 2 : 3;
-  /* Al leer, acciones y futuros van en unidades enteras: «1.000» son mil, no
+  /* Al leer, acciones y futuros (CL incluido) van en unidades enteras: «1.000» son mil, no
      una. Se sigue aceptando «1,5»; solo cambia el caso ambiguo. */
-  const decLecturaCantidad = inst.assetClass === "stock" || inst.assetClass === "futures" ? 0 : decCantidad;
+  const decLecturaCantidad = seNegociaEnEnteros(inst) ? 0 : decCantidad;
   const entryNum = num(entry, inst.decimals) || 0;
   const stopNum = num(stop, inst.decimals) || 0;
   const targetNum = num(target, inst.decimals) || 0;
@@ -529,7 +530,7 @@ export function DashboardPage() {
                             const mult = getInstrumentMultiplier(instrumentSymbol, inst.assetClass);
                             /* Acciones y futuros van en unidades enteras, hacia abajo: una
                                fracción de contrato no existe ni arriesga lo que se pidió. */
-                            const enteros = decLecturaCantidad === 0;
+                            const enteros = seNegociaEnEnteros(inst);
                             const q = tamanoParaRiesgo(INITIAL_BALANCE_CONST * RIESGO_POR_DEFECTO, stopDist, mult, enteros);
                             if (q > 0) setQuantity(enteros ? precio(q, 0) : q < 1 ? precio(q, 3) : precio(q, 2));
                             else toast({ title: t("sizeNoFits"), description: t("sizeNoFitsDesc"), variant: "destructive" });

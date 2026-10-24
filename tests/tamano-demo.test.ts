@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { tamanoParaRiesgo } from "@/lib/trading/plan";
-import { INITIAL_BALANCE_CONST, INSTRUMENTS, getInstrumentMultiplier } from "@/lib/trading/data";
+import { INITIAL_BALANCE_CONST, INSTRUMENTS, getInstrumentMultiplier, seNegociaEnEnteros } from "@/lib/trading/data";
 
 describe("«Calcular tamaño» de la demo: contratos y acciones enteros, nunca por encima del riesgo pedido", () => {
   it("acciones y futuros van hacia abajo: 65,79 acciones son 65, no 66 ni 65,79", () => {
@@ -32,9 +32,22 @@ describe("«Calcular tamaño» de la demo: contratos y acciones enteros, nunca p
     }
   });
 
+  it("qué instrumentos de la demo van en unidades enteras: acciones, futuros y el crudo CL; no cripto, forex ni oro al contado", () => {
+    const enteros = INSTRUMENTS.filter(seNegociaEnEnteros).map((i) => i.symbol);
+    expect(enteros).toEqual(["AAPL", "ES", "NQ", "CL", "GER40"]);
+  });
+
+  it("CL, aunque su clase sea materia prima, sale en contratos enteros", () => {
+    const cl = INSTRUMENTS.find((i) => i.symbol === "CL")!;
+    const dist = cl.basePrice * 0.008;
+    const q = tamanoParaRiesgo(10_000, dist, getInstrumentMultiplier(cl.symbol, cl.assetClass), seNegociaEnEnteros(cl));
+    expect(q).toBe(Math.floor(q));
+    expect(q).toBeGreaterThan(0);
+  });
+
   it("con las acciones y futuros de la demo, el tamaño entero nunca arriesga más del 1 % de la cuenta", () => {
     const riesgo = INITIAL_BALANCE_CONST * 0.01;
-    for (const i of INSTRUMENTS.filter((x) => x.assetClass === "stock" || x.assetClass === "futures")) {
+    for (const i of INSTRUMENTS.filter(seNegociaEnEnteros)) {
       const dist = i.basePrice * 0.008;
       const q = tamanoParaRiesgo(riesgo, dist, getInstrumentMultiplier(i.symbol, i.assetClass), true);
       expect(Number.isInteger(q), i.symbol).toBe(true);

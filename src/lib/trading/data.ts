@@ -73,6 +73,15 @@ export function getInstrumentMultiplier(symbol: string, assetClass?: string): nu
   return 1;
 }
 
+/** Contratos de futuros cuya clase es `commodity`: `commodity` también recoge el
+ *  oro al contado, que sí admite fracciones, así que no basta mirar la clase. */
+const FUTUROS_DE_MATERIAS_PRIMAS: ReadonlySet<string> = new Set(["CL"]);
+
+/** Si el instrumento se negocia en unidades enteras (acciones y contratos de futuros). */
+export function seNegociaEnEnteros(inst: Pick<Instrument, "symbol" | "assetClass">): boolean {
+  return inst.assetClass === "stock" || inst.assetClass === "futures" || FUTUROS_DE_MATERIAS_PRIMAS.has(inst.symbol);
+}
+
 export { SETUP_NAMES, nombreSetup, type SetupName } from "./setups.ts";
 
 export const SESSIONS = ["London", "NY", "Asia"] as const;
