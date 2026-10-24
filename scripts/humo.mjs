@@ -1388,6 +1388,16 @@ for (const { ruta } of RUTAS) {
       avisos.push(`sin-JS ${ruta}: el titular no aparece en el texto de <main>`);
     }
 
+    // Formulario, test y demo no funcionan sin JavaScript: tienen que decirlo.
+    if (/^(\/en)?\/(beta|test|demo)\/?$/.test(ruta)) {
+      const aviso = await pagina.evaluate(() => {
+        const p = document.querySelector("[data-sin-js]");
+        return p ? { texto: (p.textContent || "").trim(), cajas: p.getClientRects().length } : null;
+      });
+      if (!aviso || !aviso.texto.includes("JavaScript") || !aviso.cajas)
+        fallos.push(`sin-JS ${ruta}: no se ve el aviso de que la página necesita JavaScript`);
+    }
+
     // Nada de contenido dentro de un bloque oculto: un `loading` en `next/dynamic`
     // hace que React escriba el contenido real en un `<div hidden>` que solo un
     // script devuelve a su sitio; sin JavaScript no existe para el visitante ni

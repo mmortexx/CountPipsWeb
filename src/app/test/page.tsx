@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
+import { SinJavaScript } from "@/components/tj/SinJavaScript";
 import { QUESTIONS } from "@/lib/trading/disciplineQuestions";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
@@ -95,6 +96,7 @@ export function TestBody() {
         breadcrumbEs="Test de disciplina"
         breadcrumbEn="Discipline test"
       />
+      <SinJavaScript que="test" />
       <DisciplineScore enPagina />
 
       <FinalCTANew variante="herramienta" />

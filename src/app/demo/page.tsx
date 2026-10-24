@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { AppDemoClient } from "@/components/demo/AppDemoClient";
+import { SinJavaScript } from "@/components/tj/SinJavaScript";
 import { DemoConversionPanel } from "@/components/demo/DemoConversionPanel";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
@@ -75,6 +76,7 @@ export function DemoBody() {
       />
       <section id="demo" className="section scroll-mt-16">
         {/* `hideHeader`: el PageHeader de arriba ya pone titular y subtítulo. */}
+        <SinJavaScript que="demo" />
         <AppDemoClient hideHeader />
       </section>
       <DemoConversionPanel />
