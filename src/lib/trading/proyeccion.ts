@@ -1,4 +1,4 @@
-import { sinRuido } from "./estadistica";
+import { esperanzaEnR, sinRuido } from "./estadistica";
 
 /** Racha máxima de pérdidas al nivel de confianza fijado en el motor. */
 export const CONFIANZA_RACHA = 0.99;
@@ -90,7 +90,7 @@ export function proyectaCapital(p: ParametrosProyeccion): ResultadoProyeccion {
   const wr = winRate / 100;
   const lr = 1 - wr;
 
-  const grossExpectancyR = sinRuido(wr * avgWinR - lr * avgLossR);
+  const grossExpectancyR = esperanzaEnR(wr, avgWinR, avgLossR);
   const netExpectancyR = sinRuido(grossExpectancyR - frictionR);
   const hasEdge = netExpectancyR > 0;
 

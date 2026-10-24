@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { simulaMonteCarlo, type ParametrosMonteCarlo } from "@/lib/trading/montecarlo";
-import { computeRiskOfRuin, UMBRAL_RUINA_PCT } from "@/lib/trading/estadistica";
+import { computeRiskOfRuin, esperanzaEnR, UMBRAL_RUINA_PCT } from "@/lib/trading/estadistica";
+import { esperanzaPorOperacion } from "@/lib/trading/recuperacion";
 
 /**
  * Con riesgo compuesto el saldo decae hacia 0 sin tocarlo nunca: la ruina es
@@ -21,6 +22,27 @@ const BASE: ParametrosMonteCarlo = {
 };
 
 const PEOR: ParametrosMonteCarlo = { ...BASE, trades: 300, winRate: 30, avgWinR: 0.5, avgLossR: 3, riskPct: 3.5 };
+
+describe("expectancy del simulador de Monte Carlo", () => {
+  it("un empate exacto (40 % a 1,5 R : 1 R, 25 % a 0,9 R : 0,3 R) es cero, no 1e-16", () => {
+    expect(simulaMonteCarlo({ ...BASE, winRate: 40, avgWinR: 1.5, avgLossR: 1 }).expectancyR).toBe(0);
+    expect(simulaMonteCarlo({ ...BASE, winRate: 25, avgWinR: 0.9, avgLossR: 0.3 }).expectancyR).toBe(0);
+  });
+
+  it("esperanzaEnR, la fórmula que comparten las herramientas, da cero en el empate y no cambia nada más", () => {
+    expect(esperanzaEnR(0.4, 1.5)).toBe(0);
+    expect(esperanzaEnR(0.25, 0.9, 0.3)).toBe(0);
+    expect(esperanzaEnR(0.58, 2, 1)).toBeCloseTo(0.74, 12);
+    expect(esperanzaEnR(0.3, 1, 1)).toBeCloseTo(-0.4, 12);
+    expect(esperanzaEnR(0.5, 1, 0.9999)).toBeCloseTo(0.00005, 12);
+    expect(esperanzaPorOperacion(0.4, 1.5)).toBe(0);
+  });
+
+  it("una ventaja real se conserva con su signo", () => {
+    expect(simulaMonteCarlo(BASE).expectancyR).toBeCloseTo(0.55 * 2 - 0.45, 12);
+    expect(simulaMonteCarlo({ ...BASE, winRate: 30 }).expectancyR).toBeCloseTo(0.3 * 2 - 0.7, 12);
+  });
+});
 
 describe("ruina en el simulador de Monte Carlo", () => {
   it("la peor combinación de los deslizadores es ruina segura, en la simulación y por fórmula", () => {

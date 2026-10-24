@@ -6,11 +6,11 @@
  * pantalla decide cómo decirlo.
  */
 
-import { sinRuido } from "./estadistica";
+import { esperanzaEnR } from "./estadistica";
 
 /** Expectancy en R por operación, con pérdidas de 1 R y ganancias de `payoff`. */
 export function esperanzaPorOperacion(acierto: number, payoff: number): number {
-  return sinRuido(acierto * payoff - (1 - acierto));
+  return esperanzaEnR(acierto, payoff);
 }
 
 /** Ganancia necesaria sobre lo que queda para recuperar la caída. */
