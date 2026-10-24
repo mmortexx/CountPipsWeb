@@ -158,7 +158,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "Margin",
     nombreEs: "Margen",
-    es: "Colateral que el broker retiene para cubrir la posición apalancada. Si el capital cae por debajo del margen de mantenimiento, el broker emite un margin call o cierra posiciones automáticamente.",
+    es: "Colateral que el bróker retiene para cubrir la posición apalancada. Si el capital cae por debajo del margen de mantenimiento, el bróker emite un margin call o cierra posiciones automáticamente.",
     en: "Collateral the broker holds to cover a leveraged position. If equity falls below the maintenance margin, the broker issues a margin call or auto-liquidates positions.",
     category: "risk",
   },
@@ -239,7 +239,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     term: "Win rate",
     nombreEs: "Tasa de acierto",
     es: "Porcentaje de operaciones ganadoras sobre el total. Es engañoso por sí solo: un 70\u00a0% de aciertos con payoff 0,4 pierde dinero; un 35\u00a0% con payoff 3 gana.",
-    en: "The percentage of winning trades out of the total. Misleading on its own: a 70% hit rate with a 0.4 payoff loses money; 35% with a 3 payoff wins.",
+    en: "The percentage of winning trades out of the total. Misleading on its own: a 70% win rate with a 0.4 payoff loses money; 35% with a 3 payoff wins.",
     category: "metrics",
   },
   {
@@ -320,7 +320,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "Market order",
     nombreEs: "Orden a mercado",
-    es: "Orden que se ejecuta inmediatamente al mejor precio disponible. Garantiza la ejecución pero no el precio: en mercados poco líquidos puede sufrir slippage significativo.",
+    es: "Orden que se ejecuta inmediatamente al mejor precio disponible. Garantiza la ejecución pero no el precio: en mercados poco líquidos puede sufrir un deslizamiento notable.",
     en: "An order that fills immediately at the best available price. Guarantees the fill but not the price: in illiquid markets it can suffer significant slippage.",
     category: "execution",
   },
@@ -333,7 +333,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Margin call",
-    es: "Aviso del broker cuando el capital de la cuenta cae por debajo del margen de mantenimiento. Si no se depositan más fondos, el broker cierra posiciones automáticamente para limitar su propio riesgo.",
+    es: "Aviso del bróker cuando el capital de la cuenta cae por debajo del margen de mantenimiento. Si no se depositan más fondos, el bróker cierra posiciones automáticamente para limitar su propio riesgo.",
     en: "A broker warning when account equity falls below the maintenance margin. If no additional funds are deposited, the broker auto-liquidates positions to limit its own risk.",
     category: "execution",
   },
