@@ -104,6 +104,8 @@ export interface ResultadoPlan {
   /** Lo que se arriesga con el tamaño redondeado al escalón del mercado. */
   riesgoReal: number;
   friccion: number;
+  /** La fricción estimada pesa más que lo que se arriesga (acciones baratas, stop a un céntimo). */
+  friccionSuperaRiesgo: boolean;
   riesgoTotal: number;
   /** En unidades, lotes del tipo elegido o contratos. */
   tamano: number;
@@ -171,6 +173,7 @@ export function calculaPlan(e: EntradaPlan): ResultadoPlan {
     riesgoNominal,
     riesgoReal: 0,
     friccion: 0,
+    friccionSuperaRiesgo: false,
     riesgoTotal: 0,
     tamano: 0,
     decimalesTamano,
@@ -200,6 +203,7 @@ export function calculaPlan(e: EntradaPlan): ResultadoPlan {
     rr: distObjetivo / distStop,
     riesgoReal,
     friccion,
+    friccionSuperaRiesgo: friccion > riesgoReal,
     riesgoTotal: riesgoReal + friccion,
     tamano: unidades / unidadesPorTamano,
     decimalesTamano: e.mercado === "equities" ? decimalesDeTamano(unidades) : decimalesTamano,

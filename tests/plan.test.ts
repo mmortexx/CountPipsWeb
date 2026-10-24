@@ -131,6 +131,41 @@ describe("acciones y cripto: el tamaño enseña los decimales que hacen falta", 
   });
 });
 
+describe("fricción mayor que el riesgo: se avisa", () => {
+  const barata: EntradaPlan = { ...BASE, mercado: "equities", balance: 10000, riesgoPct: 1, entrada: 0.5, stop: 0.49, objetivo: 0.53, friccion: true };
+
+  it("una acción de 0,50 $ con el stop a un céntimo: 10.000 unidades, 150 $ de fricción para 100 $ de riesgo", () => {
+    const c = calculaPlan(barata);
+    expect(c.tamano).toBeCloseTo(10000, 6);
+    expect(c.riesgoReal).toBeCloseTo(100, 6);
+    expect(c.friccion).toBeCloseTo(150, 6);
+    expect(c.friccionSuperaRiesgo).toBe(true);
+  });
+
+  it("con una acción normal la fricción es una fracción del riesgo y no se avisa", () => {
+    const c = calculaPlan({ ...barata, entrada: 100, stop: 95, objetivo: 115 });
+    expect(c.friccion).toBeLessThan(c.riesgoReal);
+    expect(c.friccionSuperaRiesgo).toBe(false);
+  });
+
+  it("sin fricción no hay nada que superar, aunque el stop sea de un céntimo", () => {
+    expect(calculaPlan({ ...barata, friccion: false }).friccionSuperaRiesgo).toBe(false);
+  });
+
+  it("un plan inválido no avisa de nada", () => {
+    expect(calculaPlan({ ...barata, stop: 0.5 }).friccionSuperaRiesgo).toBe(false);
+  });
+
+  it("el aviso salta en el primer stop cuya distancia es menor que la fricción por unidad (0,015 $ en acciones)", () => {
+    const con = (stop: number) => calculaPlan({ ...barata, entrada: 10, stop, objetivo: 10.5 }).friccionSuperaRiesgo;
+    expect(con(9.99)).toBe(true);
+    expect(con(9.9851)).toBe(true);
+    expect(con(9.9849)).toBe(false);
+    expect(con(9.98)).toBe(false);
+    expect(con(9.9)).toBe(false);
+  });
+});
+
 describe("Kelly: la mitad es la mitad", () => {
   it("55 % a 3:1 da 40 %, 20 % y 10 %", () => {
     const k = fraccionesKelly(55, 3);

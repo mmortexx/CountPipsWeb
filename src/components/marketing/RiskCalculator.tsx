@@ -615,6 +615,18 @@ export function RiskCalculator() {
             </p>
           ) : null}
 
+          {c.friccionSuperaRiesgo ? (
+            <p
+              className="mb-4 border-y border-[var(--ficha-division)] py-2.5 text-[13px] leading-[1.5]"
+              style={{ color: "rgb(var(--pnl-neg))" }}
+              role="status"
+            >
+              {es
+                ? `La fricción estimada (${fmtUsd(c.friccion)}) es mayor que el riesgo del plan (${fmtUsd(c.riesgoReal)}): con el stop tan cerca, comisiones y deslizamiento pesan más que lo que arriesgas. Aleja el stop.`
+                : `The estimated friction (${fmtUsd(c.friccion)}) is larger than the plan’s risk (${fmtUsd(c.riesgoReal)}): with the stop this close, fees and slippage outweigh what you are risking. Move the stop further away.`}
+            </p>
+          ) : null}
+
           {/* Resultados: la rejilla cuenta sus columnas contra su propio ancho, no
               el de la ventana (`auto-fit` + `minmax(8.25rem, 1fr)`). En
               /features/metricas la calculadora vive en una columna estrecha y
