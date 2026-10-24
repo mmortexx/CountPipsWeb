@@ -2041,8 +2041,6 @@ let espaciadosMedidos = 0;
           // Con el espaciado de texto de WCAG 1.4.12 (o la letra grande del
           // móvil), titulares, botones, pestañas y cifras de matriz siguen
           // enteros: lo que no cabe parte línea o se desliza, no se recorta.
-          // Los conmutadores segmentados quedan fuera: sus columnas iguales
-          // no admiten partir sin cambiar el reparto en escritorio.
           await pagina.addStyleTag({
             content: "*{line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important}p{margin-bottom:2em!important}",
           });
@@ -2050,8 +2048,8 @@ let espaciadosMedidos = 0;
             await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok)));
             const ancho = document.documentElement.clientWidth;
             const fuera = [];
-            for (const el of document.querySelectorAll("main h1, main h2, main h3, main .cta, main [role=tab], main .tj-matriz > *")) {
-              if (!el.getClientRects().length || el.closest(".tj-segmentado")) continue;
+            for (const el of document.querySelectorAll("main h1, main h2, main h3, main .cta, main [role=tab], main .tj-matriz > *, main .tj-segmentado > *")) {
+              if (!el.getClientRects().length) continue;
               const textos = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
               for (let n = textos.nextNode(); n; n = textos.nextNode()) {
                 if (!n.textContent.trim()) continue;
