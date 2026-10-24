@@ -15,6 +15,11 @@ export const LIMITES = {
   /** Cantidad de una operación registrada: acciones, contratos o lotes. Mismo
    *  tope que el precio: el aviso del registro de la demo dice un solo número. */
   cantidad: { min: 0, max: TOPE_REGISTRO },
+  /** Resultado (o riesgo) de una operación registrada, en dólares: precio ×
+   *  cantidad × multiplicador. Cada cifra suelta cabe en su tope y el producto
+   *  no (EURUSD, salida y cantidad en 10 millones: 1e19). El mismo tope que el
+   *  balance: ninguna operación mueve más que la cuenta mayor admitida. */
+  resultadoRegistro: { min: -1_000_000_000, max: 1_000_000_000 },
   /** Tipo de cambio con el que se pasa un par forex a dólares. */
   tipoCambio: { min: 0.0001, max: 100_000 },
   /** Comisión ida y vuelta por contrato, en dólares. */

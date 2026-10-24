@@ -19,7 +19,8 @@ import { fileURLToPath } from "node:url";
  * `environment: "node"` a propósito — aquí no se prueban componentes de
  * React, se prueban los cálculos y los contratos de datos, que es donde
  * estaban los fallos y donde una prueba no necesita un navegador para ser
- * útil.
+ * útil. La excepción es un fichero con `// @vitest-environment happy-dom` cuando
+ * lo que se prueba es el comportamiento de un componente (`campo-cifra-comportamiento`).
  */
 export default defineConfig({
   resolve: {

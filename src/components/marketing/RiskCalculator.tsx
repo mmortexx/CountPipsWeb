@@ -381,12 +381,13 @@ export function RiskCalculator() {
               </div>
               {parForex.referencia && (
                 <label className="flex items-center justify-between gap-3">
-                  <span className="text-[12px] text-tertiary">
+                  <span id="riesgo-tipo" className="text-[12px] text-tertiary">
                     {es
                       ? `Tipo ${parForex.referencia.id} para pasar a dólares`
                       : `${parForex.referencia.id} rate to convert to dollars`}
                   </span>
                   <CampoCifra
+                    aria-labelledby="riesgo-tipo"
                     min={LIMITES.tipoCambio.min}
                     max={LIMITES.tipoCambio.max}
                     valor={tipoReferencia ?? parForex.referencia.defecto}
@@ -476,6 +477,7 @@ export function RiskCalculator() {
                 {es ? "Balance de cuenta ($)" : "Account balance ($)"}
               </span>
               <CampoCifra
+                aria-labelledby="riesgo-balance"
                 min={LIMITES.balance.min}
                 max={LIMITES.balance.max}
                 valor={balance}

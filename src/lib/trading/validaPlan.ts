@@ -62,13 +62,18 @@ export interface Registro {
 /**
  * Lo que admite el registro rápido de la demo. Sin salida (vacía o ilegible)
  * se cierra en la entrada, con P&L 0. Precios y cantidad, mayores que cero y
- * sin pasar de `LIMITES`: nada se corrige en silencio. Devuelve `null` si hay
- * que avisar.
+ * sin pasar de `LIMITES`: nada se corrige en silencio. Con el `multiplicador`
+ * del instrumento, tampoco el resultado ni el riesgo en dólares pueden pasar de
+ * `LIMITES.resultadoRegistro`: cada cifra suelta cabe en su tope y el producto
+ * no. Devuelve `null` si hay que avisar.
  */
-export function validaRegistro({ entrada, stop, salida, cantidad }: Registro): Registro | null {
+export function validaRegistro({ entrada, stop, salida, cantidad, multiplicador = 1 }: Registro & { multiplicador?: number }): Registro | null {
   const precioOk = (p: number) => p > 0 && p <= LIMITES.precio.max;
   if (!Number.isFinite(entrada) || !precioOk(entrada) || !Number.isFinite(stop) || !precioOk(stop) || entrada === stop) return null;
   if (Number.isFinite(salida) && !precioOk(salida)) return null;
   if (!Number.isFinite(cantidad) || cantidad <= 0 || cantidad > LIMITES.cantidad.max) return null;
-  return { entrada, stop, salida: Number.isFinite(salida) ? salida : entrada, cantidad };
+  const cierre = Number.isFinite(salida) ? salida : entrada;
+  const recorrido = Math.max(Math.abs(cierre - entrada), Math.abs(entrada - stop));
+  if (!(recorrido * cantidad * multiplicador <= LIMITES.resultadoRegistro.max)) return null;
+  return { entrada, stop, salida: cierre, cantidad };
 }
