@@ -1,4 +1,5 @@
 import { tarjetaSocial } from "@/lib/tarjeta-social";
+import { METRICAS } from "@/lib/producto";
 
 // Literales en cada fichero: Next las lee del texto y no sigue reexportaciones.
 export const runtime = "nodejs";
@@ -11,6 +12,6 @@ export default function Image() {
   return tarjetaSocial({
     antetitulo: "Diario de trading para Windows",
     titulo: "Opera como una mesa institucional.",
-    subtitulo: "40+ métricas, un guardián de disciplina y tus datos en tu equipo.",
+    subtitulo: `${METRICAS} métricas, un guardián de disciplina y tus datos en tu equipo.`,
   });
 }

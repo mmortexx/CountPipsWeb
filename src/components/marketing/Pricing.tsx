@@ -8,6 +8,7 @@ import { MagneticButton } from "@/components/tj/MagneticButton";
 import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
 import { PRECIO_CORE, PRECIO_PRO, equivalenciaEur } from "@/lib/precios";
 import { fmtInt } from "@/lib/trading/format";
+import { METRICAS } from "@/lib/producto";
 
 type Plan = {
   id: "core" | "pro";
@@ -29,7 +30,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
 
   /* Los mismos niveles que `LicenseGate` y `PLAN.md` §10 del programa. */
   const coreFeatures = [
-    tx(lang, { es: "Diario, 40+ métricas y calendario", en: "Journal, 40+ metrics and calendar", pt: "Diário, 40+ métricas e calendário", fr: "Journal, 40+ métriques et calendrier", de: "Journal, 40+ Kennzahlen und Kalender", it: "Diario, 40+ metriche e calendario" }),
+    tx(lang, { es: `Diario, ${METRICAS} métricas y calendario`, en: `Journal, ${METRICAS} metrics and calendar`, pt: `Diário, ${METRICAS} métricas e calendário`, fr: `Journal, ${METRICAS} métriques et calendrier`, de: `Journal, ${METRICAS} Kennzahlen und Kalender`, it: `Diario, ${METRICAS} metriche e calendario` }),
     tx(lang, { es: "Curva de capital y drawdown", en: "Equity curve and drawdown", pt: "Curva de capital e drawdown", fr: "Courbe de capital et drawdown", de: "Equity-Kurve und Drawdown", it: "Curva di capitale e drawdown" }),
     tx(lang, { es: "Gestión de riesgo y freno duro opcional", en: "Risk management and optional hard brake", pt: "Gestão de risco e freio rígido opcional", fr: "Gestion du risque et frein strict optionnel", de: "Risikomanagement und optionale harte Bremse", it: "Gestione del rischio e freno rigido opzionale" }),
     tx(lang, { es: "Psicología y disciplina", en: "Psychology and discipline", pt: "Psicologia e disciplina", fr: "Psychologie et discipline", de: "Psychologie und Disziplin", it: "Psicologia e disciplina" }),

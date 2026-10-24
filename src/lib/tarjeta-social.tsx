@@ -4,6 +4,7 @@ import { ImageResponse } from "next/og";
 import { CAJA_MARCA, TRAZO_MARCA } from "@/components/tj/BrandGlyph";
 import { INITIAL_BALANCE_CONST, METRICS } from "@/lib/trading/data";
 import { getRDistribution } from "@/lib/trading/fixtures";
+import { METRICAS } from "@/lib/producto";
 
 /**
  * Tarjeta para compartir (Open Graph y X), la misma pieza en cada ruta con
@@ -76,8 +77,8 @@ const BIN_MAX = Math.max(1, ...BINS.map((b) => b.count));
 export type Tarjeta = { antetitulo: string; titulo: string; subtitulo: string; lang?: "es" | "en" };
 
 const ROTULOS = {
-  es: { pie: "Windows 10 y 11 · demo sin registro · tus datos en tu equipo", curva: "Curva de capital", muestra: "Datos de muestra", distribucion: "Distribución de R", metricas: "40+ métricas" },
-  en: { pie: "Windows 10 and 11 · demo without sign-up · your data on your machine", curva: "Equity curve", muestra: "Sample data", distribucion: "R distribution", metricas: "40+ metrics" },
+  es: { pie: "Windows 10 y 11 · demo sin registro · tus datos en tu equipo", curva: "Curva de capital", muestra: "Datos de muestra", distribucion: "Distribución de R", metricas: `${METRICAS} métricas` },
+  en: { pie: "Windows 10 and 11 · demo without sign-up · your data on your machine", curva: "Equity curve", muestra: "Sample data", distribucion: "R distribution", metricas: `${METRICAS} metrics` },
 };
 
 export function tarjetaSocial({ antetitulo, titulo, subtitulo, lang = "es" }: Tarjeta) {

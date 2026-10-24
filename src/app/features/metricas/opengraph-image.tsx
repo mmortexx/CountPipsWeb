@@ -1,4 +1,5 @@
 import { tarjetaSocial } from "@/lib/tarjeta-social";
+import { METRICAS } from "@/lib/producto";
 
 // Literales en cada fichero: Next las lee del texto y no sigue reexportaciones.
 export const runtime = "nodejs";
@@ -11,6 +12,6 @@ export default function Image() {
   return tarjetaSocial({
     antetitulo: "Métricas",
     titulo: "Las cifras que usan los que viven de esto.",
-    subtitulo: "40+ ratios calculados de tus operaciones: Sharpe, Sortino, Calmar y expectancy en R.",
+    subtitulo: `${METRICAS} ratios calculados de tus operaciones: Sharpe, Sortino, Calmar y expectancy en R.`,
   });
 }

@@ -65,6 +65,25 @@ describe.skipIf(!REPO)("lo que la web dice del programa es lo que hace", () => {
     expect([...nombres].sort()).toEqual([...PROGRAMA.plantillasCsv].sort());
   });
 
+  it("las métricas que calcula pasan de las que cita la web", () => {
+    const resultado = fuente("src/CountPips.Core/Metrics/MetricsResult.cs");
+    const metricas = todos(resultado, /^\s*public (?:decimal|double|int)\? ([A-Z]\w+)/gm, "MetricsResult.cs");
+    expect(metricas.length).toBeGreaterThanOrEqual(PROGRAMA.metricasMinimo);
+  });
+
+  // Lo que la ficha técnica (`TechSpecs.tsx`), las integraciones y «Cómo funciona» cuentan con palabras.
+  it.each([
+    ["SQLite en modo WAL", "src/CountPips.Data/SqliteConnectionFactory.cs", /PRAGMA journal_mode = WAL;/],
+    ["cifrado EFS de Windows", "src/CountPips.App/Services/LocalEncryptionControl.cs", /EFS de Windows/],
+    ["copias cifradas con AES-256-GCM", "src/CountPips.Data/Services/EncryptedBackupService.cs", /new AesGcm\(key, TagSizeBytes\)/],
+    ["exportación a Markdown", "src/CountPips.App/Views/SettingsPage.xaml.cs", /\("Markdown", "\.md"\)/],
+    ["Interactive Brokers por Flex Query", "src/CountPips.Core/Import/BrokerTemplates.cs", /BrokerName = "Interactive Brokers \(Flex Query\)"/],
+    ["Ctrl + 3 abre Analítica", "src/CountPips.App/MainWindow.Navegacion.cs", /VirtualKey\.Number3 => "analytics"/],
+    ["Ctrl + 4 abre el Diario", "src/CountPips.App/MainWindow.Navegacion.cs", /VirtualKey\.Number4 => "journal"/],
+  ])("%s", (_, ruta, patron) => {
+    expect(fuente(ruta)).toMatch(patron);
+  });
+
   it("cada salida de red del programa está en la lista de conexiones, y ninguna más", () => {
     const salidas = fuente("tests/CountPips.App.Tests/SalidasDeRedTests.cs");
     const bloque = unico(salidas, /string\[\] Salidas =\s*\[([\s\S]*?)\];/, "SalidasDeRedTests.cs");

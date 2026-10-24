@@ -2,6 +2,7 @@
 
 import { useLang } from "@/lib/i18n";
 import { SectionHeader } from "@/components/layout/SectionHeader";
+import { PROGRAMA } from "@/lib/producto";
 
 /** Cómo funciona en tres pasos: registrar, analizar y mejorar. */
 export function HowItWorks() {
@@ -21,8 +22,8 @@ export function HowItWorks() {
       n: "02",
       title: es ? "Analiza tus métricas" : "Analyse your metrics",
       desc: es
-        ? "Más de 40 métricas institucionales recalculadas con cada operación: expectancy, profit factor, Sharpe, drawdown, win rate por setup."
-        : "Over 40 institutional metrics recalculated with every trade: expectancy, profit factor, Sharpe, drawdown, win rate by setup.",
+        ? `Más de ${PROGRAMA.metricasMinimo} métricas institucionales recalculadas con cada operación: expectancy, profit factor, Sharpe, drawdown, win rate por setup.`
+        : `Over ${PROGRAMA.metricasMinimo} institutional metrics recalculated with every trade: expectancy, profit factor, Sharpe, drawdown, win rate by setup.`,
       kbd: "Ctrl + 3",
     },
     {

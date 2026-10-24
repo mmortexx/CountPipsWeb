@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { MetricasBody } from "../../../features/metricas/page";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
+import { METRICAS } from "@/lib/producto";
 
 const READING_TIME_MIN = 3;
 
@@ -20,7 +21,7 @@ const articleSchema = {
   "@type": "Article",
   headline: "Metrics that separate a real edge from a streak",
   description:
-    "40+ institutional ratios computed from your trades. Sharpe, Sortino, Calmar, profit factor, expectancy in R.",
+    `${METRICAS} institutional ratios computed from your trades. Sharpe, Sortino, Calmar, profit factor, expectancy in R.`,
   url: `${SITE_URL}/en/features/metricas/`,
   mainEntityOfPage: `${SITE_URL}/en/features/metricas/`,
   author: { "@type": "Organization", name: "CountPips" },
@@ -42,14 +43,14 @@ const articleSchema = {
 export const metadata: Metadata = {
   title: { absolute: "Trading metrics: Sharpe and profit factor — CountPips" },
   description:
-    "40+ institutional ratios: Sharpe, Sortino, Calmar, profit factor, expectancy in R. Risk calculator. Metrics that tell whether your edge is real or a streak.",
+    `${METRICAS} institutional ratios: Sharpe, Sortino, Calmar, profit factor, expectancy in R. Risk calculator. Metrics that tell whether your edge is real or a streak.`,
   alternates: {
     canonical: `${SITE_URL}/en/features/metricas/`,
     languages: hreflangDe("/features/metricas"),
   },
   openGraph: {
     title: "Trading metrics: Sharpe and profit factor — CountPips",
-    description: "40+ institutional ratios and a risk calculator. Metrics that separate a real edge from a streak.",
+    description: `${METRICAS} institutional ratios and a risk calculator. Metrics that separate a real edge from a streak.`,
     url: `${SITE_URL}/en/features/metricas/`,
     type: "website",
     siteName: "CountPips",
@@ -59,7 +60,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Trading metrics: Sharpe and profit factor — CountPips",
-    description: "40+ institutional ratios and an interactive risk calculator.",
+    description: `${METRICAS} institutional ratios and an interactive risk calculator.`,
   },
 };
 

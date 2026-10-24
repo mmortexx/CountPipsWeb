@@ -22,6 +22,8 @@ export const PROGRAMA = {
   pruebaDias: 14,
   /** `Pbkdf2Policy.Iterations`, el de la copia en la nube y el de las copias cifradas. */
   pbkdf2Iteraciones: 600_000,
+  /** Suelo del «40+»: métricas numéricas de `MetricsResult` (eran 46 el 24/10/2026). */
+  metricasMinimo: 40,
   /** `LicenseGate.CoreAccountLimit`. */
   cuentasCore: 2,
   /** `PropFirmTemplates.All`, en su orden. */
@@ -29,6 +31,9 @@ export const PROGRAMA = {
   /** `BrokerTemplates`, con el nombre que se enseña en la web. */
   plantillasCsv: ["Interactive Brokers", "MetaTrader 4/5", "TradingView", "Binance", "Bybit"],
 } as const;
+
+/** «40+»: así lo cita la web; `cifras-a-mano.test.ts` no deja escribirlo a mano. */
+export const METRICAS = `${PROGRAMA.metricasMinimo}+`;
 
 /** Términos del glosario que enseña la web; `cifras-a-mano.test.ts` los cuenta contra `GLOSSARY`. */
 export const TERMINOS_GLOSARIO = 57;

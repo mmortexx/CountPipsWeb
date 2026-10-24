@@ -4,6 +4,7 @@ import { Link } from "@/components/tj/LocaleLink";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useLang } from "@/lib/i18n";
+import { METRICAS } from "@/lib/producto";
 
 /**
  * Navegación cruzada de las subpáginas de /features, entre el contenido y
@@ -23,8 +24,8 @@ const AXES: Record<
     href: "/features/metricas",
     labelEs: "Métricas",
     labelEn: "Metrics",
-    descEs: "40+ ratios institucionales y calculadora de riesgo",
-    descEn: "40+ institutional ratios and risk calculator",
+    descEs: `${METRICAS} ratios institucionales y calculadora de riesgo`,
+    descEn: `${METRICAS} institutional ratios and risk calculator`,
   },
   disciplina: {
     href: "/features/disciplina",

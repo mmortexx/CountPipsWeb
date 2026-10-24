@@ -7,6 +7,7 @@ import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
+import { METRICAS } from "@/lib/producto";
 
 // Tiempo de lectura estimado: ~480 palabras a 220 ppm, redondeado hacia arriba.
 const READING_TIME_MIN = 3;
@@ -27,7 +28,7 @@ const articleSchema = {
   "@type": "Article",
   headline: "Métricas que separan un edge real de una racha",
   description:
-    "40+ ratios institucionales calculados de tus operaciones. Sharpe, Sortino, Calmar, profit factor, expectancy en R.",
+    `${METRICAS} ratios institucionales calculados de tus operaciones. Sharpe, Sortino, Calmar, profit factor, expectancy en R.`,
   url: `${SITE_URL}/features/metricas/`,
   mainEntityOfPage: `${SITE_URL}/features/metricas/`,
   author: { "@type": "Organization", name: "CountPips" },
@@ -51,11 +52,11 @@ export const metadata: Metadata = {
   // `absolute` evita la plantilla `%s — CountPips` del layout (saldría duplicada).
   title: { absolute: "Métricas de trading: Sharpe y profit factor — CountPips" },
   description:
-    "40+ ratios institucionales: Sharpe, Sortino, Calmar, profit factor, expectancy en R. Métricas que dicen si tu ventaja es real o una racha.",
+    `${METRICAS} ratios institucionales: Sharpe, Sortino, Calmar, profit factor, expectancy en R. Métricas que dicen si tu ventaja es real o una racha.`,
   alternates: { canonical: `${SITE_URL}/features/metricas/`, languages: hreflangDe("/features/metricas") },
   openGraph: {
     title: "Métricas de trading: Sharpe y profit factor — CountPips",
-    description: "40+ ratios institucionales y calculadora de riesgo. Métricas que separan un edge real de una racha.",
+    description: `${METRICAS} ratios institucionales y calculadora de riesgo. Métricas que separan un edge real de una racha.`,
     url: `${SITE_URL}/features/metricas/`,
     type: "website",
     siteName: "CountPips",
@@ -65,7 +66,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Métricas de trading: Sharpe y profit factor — CountPips",
-    description: "40+ ratios institucionales y calculadora de riesgo interactiva.",
+    description: `${METRICAS} ratios institucionales y calculadora de riesgo interactiva.`,
   },
 };
 
@@ -97,8 +98,8 @@ export function MetricasBody() {
         tono="capitulo"
         titleEs="Métricas que separan un edge real de una racha."
         titleEn="Metrics that separate a real edge from a streak."
-        subtitleEs="40+ ratios institucionales calculados de tus operaciones. Sharpe, Sortino, Calmar, profit factor, expectancy en R. No gráficos bonitos: números con su muestra y su intervalo de confianza."
-        subtitleEn="40+ institutional ratios computed from your trades. Sharpe, Sortino, Calmar, profit factor, expectancy in R. Not pretty charts: numbers with their sample size and confidence interval."
+        subtitleEs={`${METRICAS} ratios institucionales calculados de tus operaciones. Sharpe, Sortino, Calmar, profit factor, expectancy en R. No gráficos bonitos: números con su muestra y su intervalo de confianza.`}
+        subtitleEn={`${METRICAS} institutional ratios computed from your trades. Sharpe, Sortino, Calmar, profit factor, expectancy in R. Not pretty charts: numbers with their sample size and confidence interval.`}
         padre={{ href: "/features", es: "Características", en: "Features" }}
         breadcrumbEs="Métricas"
         breadcrumbEn="Metrics"

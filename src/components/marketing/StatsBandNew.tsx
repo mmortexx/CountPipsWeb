@@ -5,6 +5,7 @@ import { Link } from "@/components/tj/LocaleLink";
 import { useLang, tx } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { FECHA_PUBLICACION, notaCorte } from "@/lib/publicacion";
+import { METRICAS } from "@/lib/producto";
 
 /**
  * Banda de credenciales de la home: tres cifras que definen el producto
@@ -15,7 +16,7 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
   const { lang } = useLang();
   const stats = [
     {
-      v: "40+",
+      v: `${METRICAS}`,
       l: tx(lang, {
         es: "métricas institucionales calculadas con cada operación",
         en: "institutional metrics computed with every trade",

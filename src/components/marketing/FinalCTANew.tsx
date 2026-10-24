@@ -4,6 +4,7 @@ import { Link } from "@/components/tj/LocaleLink";
 import { useLang, tx } from "@/lib/i18n";
 import { OPERACIONES_MUESTRA } from "@/lib/trading/muestra";
 import { fmtInt } from "@/lib/trading/format";
+import { METRICAS } from "@/lib/producto";
 
 /** Cierre de página como el final de un informe: filete, titular a la izquierda
  *  y acciones a la derecha, sin recuadro.
@@ -16,13 +17,13 @@ import { fmtInt } from "@/lib/trading/format";
  *  con quien acaba de calcular algo o leer una definición. */
 const TEXTOS = {
   general: {
-    es: ["Deja de operar a ciegas.", "Mira cómo se mide.", "40+ métricas, un guardián de disciplina y tus datos en tu equipo. Explora la demo, sin registro, y decide con criterio."],
+    es: ["Deja de operar a ciegas.", "Mira cómo se mide.", `${METRICAS} métricas, un guardián de disciplina y tus datos en tu equipo. Explora la demo, sin registro, y decide con criterio.`],
     /* Con contracción («it’s»): sin ella suena a manual junto a «Stop trading blind». */
-    en: ["Stop trading blind.", "See how it’s measured.", "40+ metrics, a discipline guardian and your data on your machine. Explore the demo, no sign-up, and decide with clarity."],
-    pt: ["Pare de operar às cegas.", "Veja como isso é medido.", "40+ métricas, um guardião de disciplina e seus dados na sua máquina. Explore a demo, sem cadastro, e decida com clareza."],
-    fr: ["Cessez de trader à l’aveugle.", "Voyez comment tout est mesuré.", "40+ métriques, un gardien de discipline et vos données sur votre machine. Explorez la démo sans inscription et décidez avec clarté."],
-    de: ["Hören Sie auf, blind zu handeln.", "Sehen Sie, wie gemessen wird.", "40+ Kennzahlen, ein Disziplin-Wächter und Ihre Daten auf Ihrem Rechner. Testen Sie die Demo ohne Anmeldung und entscheiden Sie mit Klarheit."],
-    it: ["Smetti di fare trading alla cieca.", "Guarda come viene misurato.", "40+ metriche, un guardiano della disciplina e i tuoi dati sulla tua macchina. Esplora la demo senza registrazione e decidi con chiarezza."],
+    en: ["Stop trading blind.", "See how it’s measured.", `${METRICAS} metrics, a discipline guardian and your data on your machine. Explore the demo, no sign-up, and decide with clarity.`],
+    pt: ["Pare de operar às cegas.", "Veja como isso é medido.", `${METRICAS} métricas, um guardião de disciplina e seus dados na sua máquina. Explore a demo, sem cadastro, e decida com clareza.`],
+    fr: ["Cessez de trader à l’aveugle.", "Voyez comment tout est mesuré.", `${METRICAS} métriques, un gardien de discipline et vos données sur votre machine. Explorez la démo sans inscription et décidez avec clarté.`],
+    de: ["Hören Sie auf, blind zu handeln.", "Sehen Sie, wie gemessen wird.", `${METRICAS} Kennzahlen, ein Disziplin-Wächter und Ihre Daten auf Ihrem Rechner. Testen Sie die Demo ohne Anmeldung und entscheiden Sie mit Klarheit.`],
+    it: ["Smetti di fare trading alla cieca.", "Guarda come viene misurato.", `${METRICAS} metriche, un guardiano della disciplina e i tuoi dati sulla tua macchina. Esplora la demo senza registrazione e decidi con chiarezza.`],
   },
   herramienta: {
     es: ["La cuenta ya te sale.", "Hazla con las tuyas.", "Esto mismo, pero sobre tu historial entero y al día con cada operación que registras. La demo lo enseña con datos de muestra."],
