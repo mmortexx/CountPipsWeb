@@ -95,12 +95,12 @@ const privacidad: DocumentoLegal = {
               es: [
                 "Solicitud de acceso anticipado",
                 "Email, perfil, experiencia, mercados, cómo llevas hoy tu diario, objetivo, comentario opcional, idioma y origen/UTM",
-                "El endpoint de admisión, con acceso restringido",
+                "El endpoint de admisión, con acceso restringido; si no está activo, Web3Forms, que la reenvía al correo del titular",
               ],
               en: [
                 "Early-access application",
                 "Email, profile, experience, markets, journaling method, goal, optional note, language and source/UTM",
-                "The admission endpoint, with restricted access",
+                "The admission endpoint, with restricted access; when it is not active, Web3Forms, which forwards it to the owner’s email",
               ],
             },
             {
@@ -189,14 +189,14 @@ const privacidad: DocumentoLegal = {
         {
           tipo: "lista",
           es: [
-            "Endpoint de admisión: recibe y deduplica solicitudes para el equipo de selección.",
+            "Endpoint de admisión: recibe las solicitudes, descarta las repetidas y las guarda para el equipo de selección.",
             "Cloudflare Turnstile: valida que la solicitud procede de una persona cuando el control está activado.",
-            "Web3Forms: recibe el formulario de contacto y lo reenvía al correo del titular.",
+            "Web3Forms: recibe el formulario de contacto, y las solicitudes cuando el endpoint no está activo, y los reenvía al correo del titular.",
           ],
           en: [
-            "Admission endpoint — receives and deduplicates applications for the selection team.",
+            "Admission endpoint — receives applications, drops repeats and stores them for the selection team.",
             "Cloudflare Turnstile — checks that an application comes from a person when enabled.",
-            "Web3Forms — receives the contact form and forwards it to the owner’s email.",
+            "Web3Forms — receives the contact form, and applications when the endpoint is not active, and forwards them to the owner’s email.",
           ],
         },
         {
