@@ -2,7 +2,7 @@
 
 import { useState, type InputHTMLAttributes, type KeyboardEvent } from "react";
 import { useLang } from "@/lib/i18n";
-import { cifraEditable, leeCifra } from "@/lib/trading/format";
+import { cifraEditable, cifraReposo, leeCifra } from "@/lib/trading/format";
 
 type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "onChange" | "type" | "min" | "max" | "step"> & {
   valor: number;
@@ -35,7 +35,7 @@ export function CampoCifra({ valor, onValor, min, max, paso, decimales, onFocus,
       inputMode="decimal"
       autoComplete="off"
       spellCheck={false}
-      value={borrador ?? cifraEditable(valor, lang)}
+      value={borrador ?? cifraReposo(valor, lang)}
       onFocus={(e) => {
         setBorrador(cifraEditable(valor, lang));
         onFocus?.(e);

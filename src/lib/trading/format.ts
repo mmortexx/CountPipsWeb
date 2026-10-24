@@ -89,6 +89,20 @@ export function cifraEditable(value: number, lang: Lang = "es", maxDecimales = 6
     .replace("\u2212", "-");
 }
 
+/** La cifra de un campo que no se está editando: con millares, como el resto de
+ *  la página («10.000»). Al enfocar el campo vuelve a `cifraEditable`, sin
+ *  millares, para que lo que se retoca no se confunda con un decimal. */
+export function cifraReposo(value: number, lang: Lang = "es", maxDecimales = 6): string {
+  if (!Number.isFinite(value)) return "";
+  return menosTipografico(
+    new Intl.NumberFormat(LOCALE[lang], {
+      useGrouping: "always",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: maxDecimales,
+    }).format(value),
+  );
+}
+
 /** Separador decimal de cada idioma. El francés no escribe millares con punto. */
 const DECIMAL: Record<Lang, string> = { es: ",", en: ".", pt: ",", fr: ",", de: ",", it: "," };
 const GRUPOS_PUNTO = /^[1-9]\d{0,2}(\.\d{3})+$/;
