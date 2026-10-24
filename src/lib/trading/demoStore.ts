@@ -138,8 +138,15 @@ function isCustomTrade(v: unknown): v is CustomTrade {
   );
 }
 
+/** Las operaciones propias cuando el almacenamiento no deja guardarlas (cuota
+ *  llena o bloqueado): la demo las conserva mientras la pestaña siga abierta, en
+ *  vez de decir «registrada» y perderlas. `null` mientras el almacenamiento
+ *  funcione; en cuanto una escritura sale bien, vuelve a ser la fuente. */
+let enMemoria: CustomTrade[] | null = null;
+
 function readRaw(): CustomTrade[] {
   if (!isBrowser()) return [];
+  if (enMemoria !== null) return [...enMemoria];
   try {
     const raw = window.localStorage.getItem(DEMO_TRADES_KEY);
     if (!raw) return [];
@@ -155,14 +162,16 @@ function writeRaw(trades: CustomTrade[]): void {
   if (!isBrowser()) return;
   try {
     window.localStorage.setItem(DEMO_TRADES_KEY, JSON.stringify(trades));
-    // La caché se invalida antes del evento aunque no haya consumidores montados: si no,
-    // una operación añadida desde el Resumen dejaría la caché vacía y una TradesPage
-    // montada después no la vería.
-    invalidateSnapshot();
-    window.dispatchEvent(new CustomEvent(DEMO_TRADES_EVENT));
+    enMemoria = null;
   } catch {
-    /* Almacenamiento lleno o no disponible: la demo queda solo en memoria. */
+    /* Almacenamiento lleno o no disponible: la demo las guarda en memoria. */
+    enMemoria = [...trades];
   }
+  // La caché se invalida antes del evento aunque no haya consumidores montados: si no,
+  // una operación añadida desde el Resumen dejaría la caché vacía y una TradesPage
+  // montada después no la vería.
+  invalidateSnapshot();
+  window.dispatchEvent(new CustomEvent(DEMO_TRADES_EVENT));
 }
 
 function sortDesc(trades: CustomTrade[]): CustomTrade[] {
@@ -214,14 +223,15 @@ export function deleteTrade(id: number): boolean {
 /** Borra todas las operaciones propias y deja intacta la muestra. */
 export function resetToSample(): void {
   if (!isBrowser()) return;
+  enMemoria = null;
   try {
     window.localStorage.removeItem(DEMO_TRADES_KEY);
-    // Invalida antes de avisar, como `writeRaw`: los consumidores que se monten después ven el estado limpio.
-    invalidateSnapshot();
-    window.dispatchEvent(new CustomEvent(DEMO_TRADES_EVENT));
   } catch {
-    /* sin almacenamiento: nada que borrar */
+    /* sin almacenamiento: nada que borrar de él */
   }
+  // Invalida antes de avisar, como `writeRaw`: los consumidores que se monten después ven el estado limpio.
+  invalidateSnapshot();
+  window.dispatchEvent(new CustomEvent(DEMO_TRADES_EVENT));
 }
 
 const EMPTY: CustomTrade[] = [];
