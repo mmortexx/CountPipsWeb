@@ -619,7 +619,8 @@ export function EquityProjector() {
                             setMonthlyContribution(amt);
                           }}
                         >
-                          {amt === 0 ? (es ? "Sin aporte" : "None") : `+${fmtUsd(amt)}`}
+                          {/* Espacio normal entre cifra y divisa: si no cabe, parte ahí y nunca entre dígitos. */}
+                          {amt === 0 ? (es ? "Sin aporte" : "None") : `+${fmtUsd(amt)}`.replace(/[\u00a0\u202f](?=\D*$)/, " ")}
                         </button>
                       );
                     })}
@@ -736,7 +737,8 @@ export function EquityProjector() {
                             setYears(y);
                           }}
                         >
-                          {y}{" "}{es ? (y === 1 ? "año" : "años") : (y === 1 ? "yr" : "yrs")}
+                          {/* Espacio normal: con el texto espaciado a 320 px «10 años» no cabe en una línea. */}
+                          {y}{" "}{es ? (y === 1 ? "año" : "años") : (y === 1 ? "yr" : "yrs")}
                         </button>
                       );
                     })}
