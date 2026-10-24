@@ -55,9 +55,9 @@ const privacidad: DocumentoLegal = {
   tituloEs: "Política de privacidad",
   tituloEn: "Privacy policy",
   entradaEs:
-    "Esta web solo recoge lo que escribes en un formulario cuando lo envías. No usa cookies ni analítica, y no pedimos credenciales, capital, extractos ni datos financieros.",
+    "Esta web solo recoge lo que envías en un formulario: lo que escribes y, en la solicitud de acceso, el idioma y la página o campaña desde la que llegas. No usa cookies ni analítica, y no pedimos credenciales, capital, extractos ni datos financieros.",
   entradaEn:
-    "This site only collects what you type into a form when you submit it. It uses no cookies or analytics, and we do not ask for credentials, capital, statements or financial data.",
+    "This site only collects what you send through a form: what you type and, with the early-access request, the language and the page or campaign you came from. It uses no cookies or analytics, and we do not ask for credentials, capital, statements or financial data.",
   descripcionEs:
     "Qué datos recoge la web de CountPips, quién los trata y cómo pedir que se borren. Sin cookies ni analítica.",
   descripcionEn:
@@ -537,7 +537,7 @@ const avisoLegal: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          es: "La finalidad de esta web es dar a conocer el producto, permitir probarlo mediante una demostración y recoger las inscripciones de quien quiera que se le avise en el lanzamiento. Hoy no se realiza ninguna venta a través de ella.",
+          es: "La finalidad de esta web es dar a conocer el producto, permitir probarlo mediante una demostración y recoger las inscripciones de quienes quieran que se les avise en el lanzamiento. Hoy no se realiza ninguna venta a través de ella.",
           en: "The purpose of this site is to introduce the product, let you try it through a demo, and collect sign-ups from anyone who wants to be told when it launches. No sales take place through it today.",
         },
       ],

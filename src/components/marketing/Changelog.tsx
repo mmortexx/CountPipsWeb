@@ -114,8 +114,8 @@ export function Changelog() {
             <>What’s ready, what we’re testing and what comes next.</>
           )}
           entradilla={es
-            ? "Separado entre entregado, acceso anticipado y futuro. Sin testimonios ni fechas inventadas: actualizamos esta página cuando haya evidencia."
-            : "Separated into delivered, early access and future. No invented testimonials or dates: we update this page when there is evidence."}
+            ? "Cada fila dice en qué punto está. Sin testimonios ni fechas inventadas: actualizamos esta página cuando haya evidencia."
+            : "Each row says where it stands. No invented testimonials or dates: we update this page when there is evidence."}
         />
 
         {/* `clip` y no `hidden` (como en `DemoCapabilities`): `hidden` abre un

@@ -398,8 +398,8 @@ export function RMultipleSimulator() {
                 col: c.analyticalRuinProb > 5 ? "rgb(var(--pnl-neg))" : "var(--ink)",
               },
               {
-                t: es ? "Racha teórica" : "Theoretical streak",
-                sub: es ? `simulada: ${c.medianMaxLossStreak}` : `simulated: ${c.medianMaxLossStreak}`,
+                t: es ? "Racha más larga" : "Longest losing streak",
+                sub: es ? `por fórmula; simulada: ${c.medianMaxLossStreak}` : `by formula; simulated: ${c.medianMaxLossStreak}`,
                 v: `≈\u00a0${c.theoreticalMaxLossStreak} ${es ? "pérdidas" : "losses"}`,
                 col: "var(--ink)",
               },

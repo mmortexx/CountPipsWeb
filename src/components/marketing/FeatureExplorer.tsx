@@ -175,7 +175,7 @@ const FEATURES: Feature[] = [
   },
   {
     id: "heatmap",
-    titleEs: "Heatmap por día y hora",
+    titleEs: "Mapa de calor por día y hora",
     titleEn: "Day/hour heatmap",
     descEs: "¿Rindes mejor a primera hora o por la tarde? ¿Los lunes o los viernes? El mapa de calor cruza día y hora con tu resultado.",
     descEn: "Do you perform better first thing or in the afternoon? On Mondays or Fridays? The heatmap crosses day and hour with your result.",
