@@ -3,8 +3,9 @@ import { CONEXIONES, LO_QUE_VA_SOLO, RESUMEN_SEGURIDAD } from "@/lib/conexiones"
 import { FAQ_EN, FAQ_ES } from "@/lib/faq";
 
 /**
- * La licencia se comprueba sola, así que cada texto que resume las conexiones
- * debe nombrar las que van solas y cada fila debe decir si depende del usuario.
+ * Cada texto que resume las conexiones debe nombrar las que van solas o, si no
+ * va ninguna, decirlo; y cada fila debe decir si depende del usuario. Que la
+ * lista es la del programa lo comprueba `programa.test.ts`.
  */
 
 const CONDICION = {
@@ -20,10 +21,6 @@ function respuesta(faq: { q: string; a: string }[], pregunta: string) {
 }
 
 describe("conexiones del programa", () => {
-  it("hay al menos una que va sola: si no, la prueba no vigila nada", () => {
-    expect(solas.length).toBeGreaterThan(0);
-  });
-
   it.each(CONEXIONES.flatMap((c) => (["es", "en"] as const).map((l) => [l, c] as const)))(
     "%s: la fila dice si depende de ti, y casa con `automatica`",
     (l, c) => {
@@ -40,7 +37,10 @@ describe("conexiones del programa", () => {
     ["LO_QUE_VA_SOLO EN", LO_QUE_VA_SOLO.en, "en"],
   ];
 
-  it.each(textos)("%s nombra cada conexión que va sola", (_, texto, l) => {
+  const NINGUNA = { es: /nada se conecta solo/i, en: /nothing connects on its own/i };
+
+  it.each(textos)("%s nombra cada conexión que va sola, o dice que no va ninguna", (_, texto, l) => {
+    expect(NINGUNA[l].test(texto), `«${texto}»`).toBe(solas.length === 0);
     for (const c of solas) {
       expect(texto.toLowerCase(), `falta «${c[l].nombre}»`).toContain(c[l].nombre.toLowerCase());
     }

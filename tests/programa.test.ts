@@ -39,12 +39,9 @@ describe.skipIf(!REPO)("lo que la web dice del programa es lo que hace", () => {
     expect(PROGRAMA.carpetaDatos).toBe(`%LOCALAPPDATA%\\${carpeta}`);
   });
 
-  it("los días de gracia sin red y la revalidación de la licencia", () => {
-    const evaluador = fuente("src/CountPips.Core/Licensing/LicenseEvaluator.cs");
-    expect(numero(unico(evaluador, /GraceDays = (\d+);/, "LicenseEvaluator.cs"))).toBe(PROGRAMA.graciaSinRedDias);
-    const servicio = fuente("src/CountPips.Data/Services/Licensing/LicenseService.cs");
-    const dias = unico(servicio, /ValidationInterval = TimeSpan\.FromDays\((\d+)\)/, "LicenseService.cs");
-    expect(numero(dias)).toBe(PROGRAMA.revalidacionDias);
+  it("los días de prueba sin clave", () => {
+    const prueba = fuente("src/CountPips.Core/Licensing/Trial.cs");
+    expect(numero(unico(prueba, /public const int Days = (\d+);/, "Trial.cs"))).toBe(PROGRAMA.pruebaDias);
   });
 
   it("las iteraciones de PBKDF2 de las copias cifradas", () => {

@@ -18,10 +18,8 @@ export function arranqueMedido(lang: Lang): string {
 export const PROGRAMA = {
   /** `AppPaths.FolderName` bajo `LocalApplicationData`. */
   carpetaDatos: "%LOCALAPPDATA%\\CountPips",
-  /** `LicenseEvaluator.GraceDays`. */
-  graciaSinRedDias: 30,
-  /** `LicenseService.ValidationInterval`. */
-  revalidacionDias: 1,
+  /** `Trial.Days`: la prueba sin clave; después, sin una clave válida, solo lectura. */
+  pruebaDias: 14,
   /** `Pbkdf2Policy.Iterations`, el de la copia en la nube y el de las copias cifradas. */
   pbkdf2Iteraciones: 600_000,
   /** `LicenseGate.CoreAccountLimit`. */

@@ -33,7 +33,7 @@ export const FAQ_ES: QAFaq[] = [
   {
     q: "¿Puedo exportar mis datos?",
     categoria: "security",
-    a: "Sí. Puedes exportar tus posiciones a CSV (para Excel o Google Sheets), la cuenta completa a JSON e informes a PDF. Leer y exportar tus datos nunca depende de la licencia: si caduca, la app pasa a solo lectura y todo sigue siendo tuyo.",
+    a: "Sí. Puedes exportar tus posiciones a CSV (para Excel o Google Sheets), la cuenta completa a JSON e informes a PDF. Leer y exportar tus datos nunca depende de la licencia: sin una clave válida, la app pasa a solo lectura y todo sigue siendo tuyo.",
   },
   {
     q: "¿Funciona en Mac o Linux?",
@@ -101,7 +101,7 @@ export const FAQ_EN: QAFaq[] = [
   {
     q: "Can I export my data?",
     categoria: "security",
-    a: "Yes. You can export your positions to CSV (for Excel or Google Sheets), the full account to JSON and reports to PDF. Reading and exporting your data never depends on the licence: if it lapses, the app switches to read-only and everything stays yours.",
+    a: "Yes. You can export your positions to CSV (for Excel or Google Sheets), the full account to JSON and reports to PDF. Reading and exporting your data never depends on the licence: without a valid key, the app switches to read-only and everything stays yours.",
   },
   {
     q: "Does it work on Mac or Linux?",

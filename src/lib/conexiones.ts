@@ -11,12 +11,6 @@ export type Conexion = { automatica: boolean; hosts: string[]; es: Texto; en: Te
 
 export const CONEXIONES: Conexion[] = [
   {
-    automatica: true,
-    hosts: ["api.lemonsqueezy.com"],
-    es: { nombre: "Licencia", que: "La clave y el identificador de esta instalación, como mucho una vez al día; al activarla, también el nombre del equipo" },
-    en: { nombre: "Licence", que: "The key and this installation’s identifier, at most once a day; on activation, also the computer’s name" },
-  },
-  {
     automatica: false,
     hosts: [],
     es: { nombre: "Actualizaciones", que: "Solo cuando las pides" },
@@ -56,16 +50,14 @@ export const CONEXIONES: Conexion[] = [
   },
 ];
 
-const licencia = CONEXIONES.find((c) => c.automatica)!;
-const enMinuscula = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
-
-/** Lo que va solo, dicho en una frase para los textos que resumen la tabla. */
+/** Lo que va solo, dicho en una frase para los textos que resumen la tabla. La licencia no está
+ *  en la tabla porque no se conecta: es una clave firmada que el programa verifica sin red. */
 export const LO_QUE_VA_SOLO = {
-  es: `Lo único que se conecta solo es la licencia: ${enMinuscula(licencia.es.que)}`,
-  en: `The only thing that connects on its own is the licence check: ${enMinuscula(licencia.en.que)}`,
+  es: "Nada se conecta solo, ni siquiera la licencia: la clave se comprueba en tu equipo, sin red",
+  en: "Nothing connects on its own, not even the licence: the key is checked on your machine, offline",
 };
 
 export const RESUMEN_SEGURIDAD = {
-  es: "Sin cuenta, sin telemetría y sin servidores de CountPips: tus operaciones viven en tu equipo y solo salen si tú lo activas. Lo único que se conecta solo es la licencia.",
-  en: "No account, no telemetry and no CountPips servers: your trades live on your machine and only leave if you turn something on. The only thing that connects on its own is the licence check.",
+  es: "Sin cuenta, sin telemetría y sin servidores de CountPips: tus operaciones viven en tu equipo y solo salen si tú lo activas. Nada se conecta solo, ni siquiera la licencia.",
+  en: "No account, no telemetry and no CountPips servers: your trades live on your machine and only leave if you turn something on. Nothing connects on its own, not even the licence.",
 };
