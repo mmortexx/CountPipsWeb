@@ -108,14 +108,24 @@ const DECIMAL: Record<Lang, string> = { es: ",", en: ".", pt: ",", fr: ",", de: 
 const GRUPOS_PUNTO = /^[1-9]\d{0,2}(\.\d{3})+$/;
 const GRUPOS_COMA = /^[1-9]\d{0,2}(,\d{3})+$/;
 
+/** Una cifra con su signo y los símbolos que la acompañan en los extremos
+ *  («$100», «100 €», «5 %», «+5», «-$5»): signo, moneda o %, signo, cuerpo, moneda o %. */
+const CIFRA_CON_SIMBOLOS = /^([+-]?)[\p{Sc}%]*([+-]?)(.*?)[\p{Sc}%]*$/u;
+
 /** Lee lo escrito en un campo según el idioma y los decimales que admite.
  *  «10.000» es 10000 si el campo admite menos de tres decimales, y 10 si admite
  *  tres o más, donde un precio como «151.234» sigue siendo decimal. Devuelve
  *  `null` si no es una cifra (vacío, «1.2.3», «1e5»). */
 export function leeCifra(texto: string, lang: Lang, decimales: number): number | null {
   const limpio = texto.replace(/\u2212/g, "-").replace(/\s/g, "");
-  const negativo = limpio.startsWith("-");
-  const cuerpo = negativo ? limpio.slice(1) : limpio;
+  /* Ninguna cifra real pasa de unas decenas de caracteres; el tope evita que un
+     pegado enorme cueste tiempo a la expresión. */
+  if (limpio.length > 64) return null;
+  const partes = CIFRA_CON_SIMBOLOS.exec(limpio);
+  if (!partes) return null;
+  const [, signoAntes, signoDespues, cuerpo] = partes;
+  if (signoAntes && signoDespues) return null;
+  const negativo = signoAntes === "-" || signoDespues === "-";
   if (!/^[\d.,]+$/.test(cuerpo) || !/\d/.test(cuerpo)) return null;
   const valor = cifraSinSigno(cuerpo, lang, decimales);
   if (valor === null || !Number.isFinite(valor)) return null;

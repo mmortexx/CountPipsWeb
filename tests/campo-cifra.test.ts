@@ -30,7 +30,7 @@ describe("cifras en campos editables", () => {
   });
 
   it("lo que no es una cifra no se toma por una", () => {
-    for (const t of ["", "-", ",", "1,2,3", "1.2.3", "abc", "1e5", "Infinity", "12$"]) {
+    for (const t of ["", "-", ",", "1,2,3", "1.2.3", "abc", "1e5", "Infinity", "12USD", "$$", "5$5"]) {
       expect(leeCifra(t, "es", 2), t).toBeNull();
     }
   });
@@ -40,6 +40,49 @@ describe("cifras en campos editables", () => {
       for (const v of [0, 1.24, 1.085, -38.47, 20500, 0.000125, 75.2]) {
         expect(leeCifra(cifraEditable(v, lang), lang, 6)).toBe(v);
       }
+    }
+  });
+});
+
+describe("leeCifra quita los símbolos que acompañan a una cifra", () => {
+  const NBSP = String.fromCharCode(0xa0);
+  const FINO = String.fromCharCode(0x202f);
+
+  it("moneda delante o detrás, con o sin espacio (también duro)", () => {
+    expect(leeCifra("$100", "en", 2)).toBe(100);
+    expect(leeCifra("100 €", "es", 2)).toBe(100);
+    expect(leeCifra(`100${NBSP}$`, "es", 2)).toBe(100);
+    expect(leeCifra(`100${FINO}€`, "fr", 2)).toBe(100);
+    expect(leeCifra("£1,250.50", "en", 2)).toBe(1250.5);
+    expect(leeCifra("1.250,50 €", "es", 2)).toBe(1250.5);
+    expect(leeCifra("12$", "es", 2)).toBe(12);
+  });
+
+  it("porcentaje y «+»: se lee la cifra, no su centésima", () => {
+    expect(leeCifra("5 %", "es", 2)).toBe(5);
+    expect(leeCifra(`5${NBSP}%`, "es", 2)).toBe(5);
+    expect(leeCifra("5%", "en", 2)).toBe(5);
+    expect(leeCifra("+5", "es", 2)).toBe(5);
+    expect(leeCifra("+5,5 %", "es", 2)).toBe(5.5);
+    expect(leeCifra("+$100", "en", 2)).toBe(100);
+  });
+
+  it("el signo menos sobrevive, antes o después del símbolo", () => {
+    expect(leeCifra("-$100", "en", 2)).toBe(-100);
+    expect(leeCifra("$-100", "en", 2)).toBe(-100);
+    expect(leeCifra("−100 €", "es", 2)).toBe(-100);
+    expect(leeCifra("-5 %", "es", 2)).toBe(-5);
+    expect(leeCifra("-$0", "en", 2)).toBe(0);
+  });
+
+  it("un pegado enorme no se lee y no cuelga la página", () => {
+    expect(leeCifra(`5${"$".repeat(200_000)}x`, "es", 2)).toBeNull();
+    expect(leeCifra("1".repeat(65), "es", 2)).toBeNull();
+  });
+
+  it("dos signos, un símbolo en medio o sin cifra siguen sin leerse", () => {
+    for (const t of ["+-5", "-+5", "--5", "5+", "5+3", "$ $", "%", "+", "5$5", "1 $ 000", "USD 100", "100 USD"]) {
+      expect(leeCifra(t, "es", 2), t).toBeNull();
     }
   });
 });
@@ -112,7 +155,7 @@ describe("leeCifra según el idioma y los decimales del campo", () => {
   });
 
   it("lo que no es una cifra da null en cualquier idioma", () => {
-    for (const t of ["", " ", "-", ",", ".", "--5", "5-", "abc", "1e5", "12$"]) {
+    for (const t of ["", " ", "-", ",", ".", "--5", "5-", "abc", "1e5", "12USD", "+-5", "$"]) {
       expect(leeCifra(t, "es", 2), t).toBeNull();
       expect(leeCifra(t, "en", 2), t).toBeNull();
     }
