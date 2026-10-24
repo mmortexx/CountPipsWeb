@@ -111,6 +111,16 @@ export function FinalCTANew({
                   : tx(lang, { es: "Ver precios", en: "See pricing", pt: "Ver preços", fr: "Voir les tarifs", de: "Preise ansehen", it: "Vedi i prezzi" })}
               </Link>
             </div>
+            {/* Portada, producto y empresa: quien ya está convencido no tiene que
+                subir al menú para pedir acceso. */}
+            {texto === "general" || texto === "producto" || texto === "empresa" ? (
+              <Link
+                href="/beta"
+                className="-my-2 inline-flex min-h-[44px] items-center text-[14px] text-secondary underline underline-offset-2 decoration-[color-mix(in_srgb,currentColor_40%,transparent)] transition-[color,text-decoration-color] hover:text-primary hover:decoration-current"
+              >
+                {tx(lang, { es: "o solicita acceso anticipado", en: "or request early access", pt: "ou solicite acesso antecipado", fr: "ou demandez l’accès anticipé", de: "oder Vorabzugang anfordern", it: "o richiedi l’accesso anticipato" })}
+              </Link>
+            ) : null}
           </div>
         </div>
       </div>

@@ -17,7 +17,8 @@ const pro = (lang: Lang) => fmtMoney(PRECIO_PRO, lang, { decimals: 0 });
 
 export type QA = { q: string; a: string };
 export type CategoriaFaq = "security" | "access" | "product";
-export type QAFaq = QA & { categoria: CategoriaFaq };
+/** `enlace`: el paso siguiente que la respuesta nombra, debajo de ella (no entra en los datos estructurados). */
+export type QAFaq = QA & { categoria: CategoriaFaq; enlace?: { href: string; texto: string } };
 
 export const FAQ_ES: QAFaq[] = [
   {
@@ -48,6 +49,7 @@ export const FAQ_ES: QAFaq[] = [
   {
     q: "¿Cómo se selecciona el acceso anticipado?",
     categoria: "access",
+    enlace: { href: "/beta", texto: "Solicitar acceso anticipado" },
     a: "Revisamos las solicitudes por perfil y fase del producto, no por orden de llegada. Si encaja con el piloto privado, escribiremos con los pasos de invitación.",
   },
   {
@@ -116,6 +118,7 @@ export const FAQ_EN: QAFaq[] = [
   {
     q: "How is early access selected?",
     categoria: "access",
+    enlace: { href: "/beta", texto: "Request early access" },
     a: "We review applications by profile and product phase, not by order of arrival. If it fits the private pilot, we will write with invitation steps.",
   },
   {
