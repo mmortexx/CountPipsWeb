@@ -199,6 +199,21 @@ export function fmtR(
   return `${sign}${fmtNum(Math.abs(rounded), lang, decimals)}\u00a0R`;
 }
 
+/** Valor absoluto, signo y tono de una cifra tal como se va a escribir con
+ *  `decimals` decimales, para componer el texto a mano (contadores con prefijo
+ *  y unidad). Lo que redondea a cero va sin signo y en tono neutro, como en
+ *  `fmtR` y `fmtMoney`: ni «−0,00 R» en rojo ni «+0,00 R» en verde. */
+export function signoDeCifra(
+  value: number,
+  decimals = 2,
+): { abs: number; signo: "+" | "−" | ""; tono: "pos" | "neg" | "neutral" } {
+  const redondeada = Number(value.toFixed(decimals));
+  if (!Number.isFinite(redondeada) || redondeada === 0) return { abs: 0, signo: "", tono: "neutral" };
+  return redondeada > 0
+    ? { abs: redondeada, signo: "+", tono: "pos" }
+    : { abs: -redondeada, signo: "−", tono: "neg" };
+}
+
 // `useGrouping: "always"` en las tres: sin él, `Intl` en español no agrupa las cifras de cuatro dígitos.
 export function fmtInt(value: number, lang: Lang = "es"): string {
   return menosTipografico(new Intl.NumberFormat(LOCALE[lang], { useGrouping: "always" }).format(value));
