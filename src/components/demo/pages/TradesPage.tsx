@@ -13,8 +13,8 @@ import {
   NOMBRE_SESION,
 } from "@/lib/trading/data";
 import {
-  customTradeToTrade,
   deleteTrade,
+  useAllTrades,
   useCustomTrades,
 } from "@/lib/trading/demoStore";
 import { useToast } from "@/hooks/use-toast";
@@ -718,12 +718,7 @@ export function TradesPage() {
     () => new Set(customTrades.map((c) => c.id)),
     [customTrades]
   );
-  const allTrades = useMemo(() => {
-    const mapped = customTrades.map(customTradeToTrade);
-    return [...TRADES, ...mapped].sort(
-      (a, b) => b.closedAt.getTime() - a.closedAt.getTime()
-    );
-  }, [customTrades]);
+  const allTrades = useAllTrades(TRADES);
 
   useEffect(() => {
     const id = setTimeout(() => {

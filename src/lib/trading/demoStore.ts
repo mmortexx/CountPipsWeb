@@ -11,7 +11,7 @@
  * hidratación. `useCustomTrades` se suscribe con `useSyncExternalStore`.
  */
 
-import { useSyncExternalStore } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import type {
   Compliance,
   Direction,
@@ -294,8 +294,10 @@ export function mergeTrades(
   );
 }
 
-/** Muestra y operaciones propias, de la más reciente a la más antigua; repinta al cambiar las propias. */
+/** Muestra y operaciones propias, de la más reciente a la más antigua; repinta al cambiar las propias.
+ *  Es la única fuente de la lista para Resumen, Operaciones y Analítica; la misma
+ *  referencia mientras nada cambie, para que lo calculado a partir de ella se memorice. */
 export function useAllTrades(sample: Trade[]): Trade[] {
   const custom = useCustomTrades();
-  return mergeTrades(sample, custom);
+  return useMemo(() => mergeTrades(sample, custom), [sample, custom]);
 }

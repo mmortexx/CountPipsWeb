@@ -5,7 +5,7 @@ import { Viajero } from "../Viajero";
 import { useLang } from "@/lib/i18n";
 import {
   TRADES,
-  METRICS,
+  computeMetrics,
   INSTRUMENTS,
   SETUP_NAMES,
   nombreSetup,
@@ -14,6 +14,7 @@ import {
   nivelDisciplina,
   type Direction,
   type Metrics,
+  type Trade,
 } from "@/lib/trading/data";
 import { addTrade, useAllTrades } from "@/lib/trading/demoStore";
 import { fraseOperacionesHoy, operacionesDeHoy, operacionesDelMismoDia } from "@/lib/trading/parteDeHoy";
@@ -86,13 +87,14 @@ export function DashboardPage() {
   const mando = useTeclaMando();
 
   const [tfSel, setTfSel] = useState<Timeframe>("6M");
-  const slicedMetrics = useMemo(
-    () => sliceMetricsByDays(METRICS, TF_DAYS[tfSel]),
-    [tfSel]
-  );
-
-  // useAllTrades se suscribe a localStorage: lo registrado arriba aparece aquí al instante.
+  // useAllTrades se suscribe a localStorage: lo registrado arriba aparece aquí al instante,
+  // y de esa misma lista salen las cifras, como en Analítica y Operaciones.
   const allTrades = useAllTrades(TRADES);
+  const metrics = useMemo(() => computeMetrics(allTrades), [allTrades]);
+  const slicedMetrics = useMemo(
+    () => sliceMetricsByDays(metrics, TF_DAYS[tfSel]),
+    [metrics, tfSel]
+  );
   const recentTrades = useMemo(
     () => allTrades.slice(0, RECENT_TRADES_COUNT),
     [allTrades]
@@ -732,7 +734,7 @@ export function DashboardPage() {
         </div>
 
         <Reveal delay={0.06}>
-          <TodayBriefing />
+          <TodayBriefing trades={allTrades} streak={metrics.currentStreak} />
         </Reveal>
 
         <Reveal delay={0.08}>
@@ -743,7 +745,7 @@ export function DashboardPage() {
               label={t("pnlTotal")}
               value={
                 <Money
-                  value={METRICS.netPnl}
+                  value={metrics.netPnl}
                   sign
                   colorizeSign
                   className="text-lg font-semibold"
@@ -755,7 +757,7 @@ export function DashboardPage() {
               label={t("winRate")}
               value={
                 <span className="text-lg font-semibold tnum text-primary">
-                  {fmtPct(METRICS.winRate, lang, 1)}
+                  {fmtPct(metrics.winRate, lang, 1)}
                 </span>
               }
             />
@@ -764,7 +766,7 @@ export function DashboardPage() {
               label={t("expectancy")}
               value={
                 <Money
-                  value={METRICS.expectancy}
+                  value={metrics.expectancy}
                   sign
                   colorizeSign
                   className="text-lg font-semibold"
@@ -777,10 +779,10 @@ export function DashboardPage() {
               value={
                 <span
                   className={`text-lg font-semibold tnum ${
-                    METRICS.profitFactor >= 1 ? "text-pnl-pos" : "text-pnl-neg"
+                    metrics.profitFactor >= 1 ? "text-pnl-pos" : "text-pnl-neg"
                   }`}
                 >
-                  {fmtNum(METRICS.profitFactor, lang, 2)}
+                  {fmtNum(metrics.profitFactor, lang, 2)}
                 </span>
               }
             />
@@ -789,7 +791,7 @@ export function DashboardPage() {
               label={t("currentDd")}
               value={
                 <span className="text-lg font-semibold tnum text-pnl-neg">
-                  {fmtPct(METRICS.currentDrawdown, lang, 1)}
+                  {fmtPct(metrics.currentDrawdown, lang, 1)}
                 </span>
               }
             />
@@ -799,16 +801,16 @@ export function DashboardPage() {
               value={
                 <span
                   className={`text-lg font-semibold tnum ${
-                    METRICS.currentStreak.kind === "win"
+                    metrics.currentStreak.kind === "win"
                       ? "text-pnl-pos"
-                      : METRICS.currentStreak.kind === "loss"
+                      : metrics.currentStreak.kind === "loss"
                       ? "text-pnl-neg"
                       : "text-tertiary"
                   }`}
                 >
-                  {METRICS.currentStreak.count > 0
-                    ? `${fmtInt(METRICS.currentStreak.count, lang)}${
-                        METRICS.currentStreak.kind === "win"
+                  {metrics.currentStreak.count > 0
+                    ? `${fmtInt(metrics.currentStreak.count, lang)}${
+                        metrics.currentStreak.kind === "win"
                           ? es
                             ? "G"
                             : "W"
@@ -827,11 +829,11 @@ export function DashboardPage() {
                 <span
                   className={`text-lg font-semibold tnum ${
                     { alta: "text-pnl-pos", media: "text-pnl-warn", baja: "text-pnl-neg" }[
-                      nivelDisciplina(METRICS.compliancePct)
+                      nivelDisciplina(metrics.compliancePct)
                     ]
                   }`}
                 >
-                  {fmtPct(METRICS.compliancePct, lang, 0)}
+                  {fmtPct(metrics.compliancePct, lang, 0)}
                 </span>
               }
             />
@@ -839,7 +841,7 @@ export function DashboardPage() {
         </Reveal>
 
         <Reveal delay={0.12}>
-          <RealityCheck />
+          <RealityCheck metrics={metrics} />
         </Reveal>
 
         <div className="grid lg:grid-cols-2 gap-4 md:gap-5">
@@ -854,16 +856,16 @@ export function DashboardPage() {
                     </div>
                     <div className="mt-1 flex items-baseline gap-2 flex-wrap">
                       <Money
-                        value={METRICS.finalBalance}
+                        value={metrics.finalBalance}
                         compact
                         className="text-2xl font-semibold text-primary"
                       />
                       <span
                         className={`text-xs tnum ${
-                          METRICS.roiPct >= 0 ? "text-pnl-pos" : "text-pnl-neg"
+                          metrics.roiPct >= 0 ? "text-pnl-pos" : "text-pnl-neg"
                         }`}
                       >
-                        {fmtPct(METRICS.roiPct, lang, 1)}
+                        {fmtPct(metrics.roiPct, lang, 1)}
                       </span>
                     </div>
                   </div>
@@ -900,7 +902,7 @@ export function DashboardPage() {
           </Reveal>
 
           <Reveal delay={0.14}>
-            <MiniCalendar trades={TRADES} className="h-full" />
+            <MiniCalendar trades={allTrades}className="h-full" />
           </Reveal>
         </div>
       </section>
@@ -1044,7 +1046,7 @@ function KpiCell({
  * El día se calcula tras montar: la fecha del servidor y la del visitante no
  * coinciden y romperían la hidratación.
  */
-function TodayBriefing() {
+function TodayBriefing({ trades, streak }: { trades: Trade[]; streak: Metrics["currentStreak"] }) {
   const { lang } = useLang();
   const es = lang === "es";
   // `useHydrated` y no estado + efecto (regla react-hooks/set-state-in-effect).
@@ -1053,22 +1055,17 @@ function TodayBriefing() {
     ? new Date().toLocaleDateString(LOCALE_FECHA[lang], { weekday: "long" })
     : null;
 
-  // Muestra y operaciones registradas: lo que registras hoy cuenta aquí igual que en el resto de la demo.
-  const allTrades = useAllTrades(TRADES);
-
   // Operaciones en el mismo día de la semana: con ellas la app decide si afirma algo.
   const sameWeekdayCount = useMemo(() => {
     if (!weekday) return 0;
     /* La operación se fecha en UTC (ver `data.ts`) y «hoy» es el día local
        del visitante: cada lado se lee en su huso a propósito. */
-    return operacionesDelMismoDia(allTrades, new Date().getDay());
-  }, [weekday, allTrades]);
+    return operacionesDelMismoDia(trades, new Date().getDay());
+  }, [weekday, trades]);
   const closedTodayCount = useMemo(
-    () => (weekday ? operacionesDeHoy(allTrades, new Date()) : 0),
-    [weekday, allTrades]
+    () => (weekday ? operacionesDeHoy(trades, new Date()) : 0),
+    [weekday, trades]
   );
-
-  const streak = METRICS.currentStreak;
 
   return (
     <div className="demo-card p-5">
@@ -1119,13 +1116,13 @@ function TodayBriefing() {
  * la muestra dan 7 y 11, como en la app. La caída típica es la racha esperada
  * de pérdidas medias sobre el balance inicial.
  */
-function RealityCheck() {
+function RealityCheck({ metrics }: { metrics: Metrics }) {
   const { lang } = useLang();
   const es = lang === "es";
 
-  const streak = METRICS.currentStreak;
-  const n = METRICS.closedCount;
-  const q = 1 - METRICS.winRate; // probabilidad de perder
+  const streak = metrics.currentStreak;
+  const n = metrics.closedCount;
+  const q = 1 - metrics.winRate; // probabilidad de perder
 
   if (n < 20 || q <= 0 || q >= 1) return null;
 
@@ -1135,8 +1132,8 @@ function RealityCheck() {
   );
 
   const typicalDd =
-    (expectedStreak * Math.abs(METRICS.avgLoss)) / INITIAL_BALANCE_CONST;
-  const rareDd = (rareStreak * Math.abs(METRICS.avgLoss)) / INITIAL_BALANCE_CONST;
+    (expectedStreak * Math.abs(metrics.avgLoss)) / INITIAL_BALANCE_CONST;
+  const rareDd = (rareStreak * Math.abs(metrics.avgLoss)) / INITIAL_BALANCE_CONST;
 
   /* Las dos frases son independientes, como en LoadRealityCheck
      (PerformanceViewModel.cs L396-432): la racha solo se menciona si es
@@ -1151,11 +1148,11 @@ function RealityCheck() {
     );
   }
 
-  if (METRICS.currentDrawdown > 0) {
+  if (metrics.currentDrawdown > 0) {
     parts.push(
       es
-        ? `Caída actual ${fmtPct(METRICS.currentDrawdown, lang, 1)}: la típica operando así es ${fmtPct(typicalDd, lang, 1)}, y ${fmtPct(rareDd, lang, 1)} sigue estando dentro de lo esperable.`
-        : `Current drawdown ${fmtPct(METRICS.currentDrawdown, lang, 1)}: trading like this the typical one is ${fmtPct(typicalDd, lang, 1)}, and ${fmtPct(rareDd, lang, 1)} is still within what to expect.`
+        ? `Caída actual ${fmtPct(metrics.currentDrawdown, lang, 1)}: la típica operando así es ${fmtPct(typicalDd, lang, 1)}, y ${fmtPct(rareDd, lang, 1)} sigue estando dentro de lo esperable.`
+        : `Current drawdown ${fmtPct(metrics.currentDrawdown, lang, 1)}: trading like this the typical one is ${fmtPct(typicalDd, lang, 1)}, and ${fmtPct(rareDd, lang, 1)} is still within what to expect.`
     );
   }
 
