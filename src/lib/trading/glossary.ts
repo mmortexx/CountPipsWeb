@@ -198,8 +198,7 @@ export const GLOSSARY: GlossaryTerm[] = [
 
   {
     term: "Expectancy",
-    nombreEs: "Esperanza matemática",
-    es: "Beneficio o pérdida promedio esperado por operación, considerando win rate y payoff. Indica cuánto ganas (o pierdes) por cada dólar arriesgado a largo plazo.",
+    es: "La esperanza matemática de tu sistema: beneficio o pérdida promedio esperado por operación, considerando win rate y payoff. Indica cuánto ganas (o pierdes) por cada dólar arriesgado a largo plazo.",
     en: "The average profit or loss expected per trade, factoring in win rate and payoff. It indicates how much you gain (or lose) per dollar risked over the long run.",
     category: "metrics",
   },
