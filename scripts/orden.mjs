@@ -9,6 +9,8 @@
  *   · que el contenido de debajo (panel de la portada, primera sección) empiece
  *     después de la entradilla y se funda, no solo se desplace (sin opacidad
  *     el panel estaba entero desde el primer fotograma, antes que el titular);
+ *   · que bajo una cabecera nada parta de opacidad 0, sino tenue (desde 0 el LCP
+ *     de precios, FAQ y glosario se iba a más de 5 s en móvil);
  *   · que en el cambio de página la nueva no entre hasta que la vieja ha salido
  *     (solapadas se leían dos titulares a la vez).
  *
@@ -97,7 +99,8 @@ for (const ruta of RUTAS) {
       for (const a of el.getAnimations()) {
         const k = a.effect?.getKeyframes?.() ?? [];
         if (!k.some((f) => "opacity" in f || "transform" in f)) continue;
-        return { t: a.effect.getTiming().delay / 1000, funde: k.length > 0 && "opacity" in k[0] && parseFloat(k[0].opacity) < 0.5 };
+        const desde = k.length > 0 && "opacity" in k[0] ? parseFloat(k[0].opacity) : 1;
+        return { t: a.effect.getTiming().delay / 1000, funde: desde < 0.5, invisible: desde === 0 };
       }
       return null;
     };
@@ -116,6 +119,7 @@ for (const ruta of RUTAS) {
       const e = entrada(el);
       if (!e) { out.push(`${nombre(el)} va tras el titular y no tiene entrada`); continue; }
       if (e.t <= tH1) out.push(`${nombre(el)} empieza a ${e.t}s, no después del titular (${tH1}s)`);
+      if (!hero && e.invisible) out.push(`${nombre(el)} parte de opacidad 0: Chrome no lo da por pintado hasta que acaba (LCP)`);
       if (tras === null) tras = e.t;
     }
 
@@ -129,6 +133,7 @@ for (const ruta of RUTAS) {
       else {
         if (e.t <= umbral) out.push(`el contenido bajo la cabecera empieza a ${e.t}s, antes que lo de encima (${umbral}s)`);
         if (!e.funde) out.push("el contenido bajo la cabecera solo se desplaza: está entero antes que el titular");
+        if (!hero && e.invisible) out.push("el contenido bajo la cabecera parte de opacidad 0: Chrome no lo da por pintado hasta que acaba (LCP)");
       }
     }
 
