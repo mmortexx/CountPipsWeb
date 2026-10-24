@@ -35,7 +35,7 @@ export function Hero({ producto }: { producto?: ReactNode }) {
             pt: "Diário de trading para Windows",
             fr: "Journal de trading pour Windows",
             de: "Trading-Journal für Windows",
-            it: "Trading journal per Windows",
+            it: "Diario di trading per Windows",
           })}
         </p>
 

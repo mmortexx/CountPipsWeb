@@ -20,6 +20,13 @@ import { ProductShowcase } from "@/components/marketing/ProductShowcase";
 import { Hero } from "@/components/marketing/Hero";
 import { PRODUCT_ITEMS } from "@/components/marketing/Navbar";
 import { metadataHome } from "@/lib/rutas-internacionales";
+import { Navbar } from "@/components/marketing/Navbar";
+import { ThemeProvider } from "@/lib/theme";
+import { ProfileSelector } from "@/components/marketing/ProfileSelector";
+import { FinalCTANew } from "@/components/marketing/FinalCTANew";
+import { Comparison } from "@/components/marketing/Comparison";
+import { pricingFaq } from "@/lib/faq";
+import { LAMINAS_PRODUCTO } from "@/lib/laminas";
 
 /** Texto visible de un componente pintado en el servidor en un idioma. */
 function texto(lang: Lang, el: ReactElement): string {
@@ -68,6 +75,38 @@ describe("textos de la portada en pt, fr, de e it", () => {
     ["it", "e i tuoi dati restano sul tuo computer"],
   ] as const)("el subtítulo no dice «romper tus reglas y tus datos» (%s)", (lang, frase) => {
     expect(texto(lang, createElement(Hero))).toContain(frase);
+  });
+});
+
+describe("cada idioma nombra las cosas de una sola forma", () => {
+  it("alemán: «Prop-Firms» en la barra y en la portada, como en el cajón y el pie", () => {
+    for (const el of [createElement(ThemeProvider, null, createElement(Navbar)), createElement(ProfileSelector)]) {
+      const t = texto("de", el);
+      expect(t).toMatch(/Prop-Firms/);
+      expect(t).not.toMatch(/Prop firms/);
+    }
+  });
+
+  it("alemán: la venta abre al «Verkaufsstart», no al «Launch»", () => {
+    expect(texto("de", createElement(Pricing))).not.toMatch(/\bLaunch\b/);
+    expect(texto("de", createElement(FinalCTANew))).not.toMatch(/\bLaunch\b/);
+  });
+
+  it("italiano: «diario di trading», no «trading journal», en la portada y la comparativa", () => {
+    expect(texto("it", createElement(Hero))).not.toMatch(/\bjournal\b/i);
+    expect(texto("it", createElement(Comparison))).not.toMatch(/\bjournal\b/i);
+  });
+
+  it("italiano: la respuesta del precio lleva sus artículos", () => {
+    const precio = pricingFaq("it").find((q) => /Core è previsto/.test(q.a))!;
+    expect(precio.a).toMatch(/finché la distribuzione commerciale, la licenza e il supporto/);
+  });
+
+  it("francés y portugués llaman a la pantalla de resumen como su pestaña; italiano con apóstrofo tipográfico", () => {
+    const lamina = Object.values(LAMINAS_PRODUCTO).find((l) => l.notaFr?.includes("formulaire de saisie"))!;
+    expect(lamina.notaFr).not.toMatch(/vue d.ensemble/);
+    expect(lamina.notaPt).not.toMatch(/visão geral/);
+    expect(Object.values(LAMINAS_PRODUCTO).map((l) => l.tituloIt ?? "").filter((t) => t.includes("'"))).toEqual([]);
   });
 });
 
