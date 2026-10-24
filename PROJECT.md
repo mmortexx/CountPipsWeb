@@ -81,7 +81,7 @@ node scripts/metadatos.mjs out             # título (con su búsqueda), descrip
 node scripts/enlaces.mjs out               # enlaces rotos, que cambian de idioma o que faltan (madre → hija, herramienta → glosario)
 node scripts/cifras.mjs out                # convenciones de idioma y restos de plantilla
 node scripts/rotulos.mjs out               # lo que oye un lector de pantalla
-node scripts/equipaje.mjs out              # JS que cada página carga sin pedirlo; solo se precargan la sans y la serif
+node scripts/equipaje.mjs out              # JS que cada página carga sin pedirlo y su tope comprimido; solo se precargan la sans y la serif
 node scripts/copiado.mjs --serve out       # texto de los botones «Copiar»
 node scripts/medida.mjs --serve out        # caracteres por línea
 node scripts/papel.mjs --serve out         # impresión completa
