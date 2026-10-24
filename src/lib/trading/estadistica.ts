@@ -22,6 +22,13 @@ export function sinRuido(x: number): number {
   return Math.abs(x) < 1e-9 ? 0 : x;
 }
 
+/** Expectancy en R por operación: `acierto` (0–1) de ganar `ganancia` R y el
+ *  resto de perder `perdida` R. Un empate exacto es cero, no ±1e-16: de la
+ *  fórmula sale el signo con el que las herramientas pintan «ventaja». */
+export function esperanzaEnR(acierto: number, ganancia: number, perdida = 1): number {
+  return sinRuido(acierto * ganancia - (1 - acierto) * perdida);
+}
+
 /** Parte del balance inicial perdida que las calculadoras cuentan como ruina. */
 export const UMBRAL_RUINA_PCT = 50;
 

@@ -27,6 +27,7 @@ import {
 } from "@/lib/trading/data";
 import { fmtMoney, fmtNum, fmtPct, fmtInt, fmtOperaciones, pctSep } from "@/lib/trading/format";
 import { filtraOperaciones } from "@/lib/trading/filtros";
+import { useAllTrades } from "@/lib/trading/demoStore";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
@@ -958,7 +959,8 @@ export function AnalyticsPage() {
   const bloquesActivos: readonly Bloque[] = SECTIONS.find((s) => s.id === activeSection)?.bloques ?? SECTIONS[0].bloques;
   const ver = (b: Bloque) => bloquesActivos.includes(b);
 
-  const filteredTrades = useMemo(() => filtraOperaciones(TRADES, filters), [filters]);
+  const allTrades = useAllTrades(TRADES);
+  const filteredTrades = useMemo(() => filtraOperaciones(allTrades, filters), [allTrades, filters]);
 
   const m = useMemo(() => computeMetrics(filteredTrades), [filteredTrades]);
 

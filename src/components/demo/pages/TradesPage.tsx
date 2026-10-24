@@ -13,8 +13,8 @@ import {
   NOMBRE_SESION,
 } from "@/lib/trading/data";
 import {
-  customTradeToTrade,
   deleteTrade,
+  useAllTrades,
   useCustomTrades,
 } from "@/lib/trading/demoStore";
 import { useToast } from "@/hooks/use-toast";
@@ -26,6 +26,7 @@ import {
   fmtInt,
   fmtOperaciones,
   fmtPct,
+  signoDeCifra,
 } from "@/lib/trading/format";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
@@ -35,7 +36,7 @@ import { Reveal } from "@/components/tj/Reveal";
 import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
 import { compararSeleccion, type Comparacion } from "@/lib/trading/comparacion";
-import { pasaCumplimiento } from "@/lib/trading/filtros";
+import { coincideOperacion, pasaCumplimiento } from "@/lib/trading/filtros";
 
 const DECIMALS: Record<string, number> = Object.fromEntries(
   INSTRUMENTS.map((i) => [i.symbol, i.decimals])
@@ -717,12 +718,7 @@ export function TradesPage() {
     () => new Set(customTrades.map((c) => c.id)),
     [customTrades]
   );
-  const allTrades = useMemo(() => {
-    const mapped = customTrades.map(customTradeToTrade);
-    return [...TRADES, ...mapped].sort(
-      (a, b) => b.closedAt.getTime() - a.closedAt.getTime()
-    );
-  }, [customTrades]);
+  const allTrades = useAllTrades(TRADES);
 
   useEffect(() => {
     const id = setTimeout(() => {
@@ -738,7 +734,6 @@ export function TradesPage() {
   };
 
   const filtered = useMemo(() => {
-    const q = debounced.trim().toLowerCase();
     return allTrades.filter((tr) => {
       if (filters.instrument !== "all" && tr.instrument !== filters.instrument) return false;
       if (filters.direction !== "all" && tr.direction !== filters.direction) return false;
@@ -747,13 +742,7 @@ export function TradesPage() {
       if (outcome === "loss" && tr.netPnl >= 0) return false;
       if (outcome === "be" && tr.netPnl !== 0) return false;
       if (setupSel !== "all" && tr.setup !== setupSel) return false;
-      if (q) {
-        /* El buscador mira la clave del setup y su rótulo visible («Ruptura», no solo «Breakout»). */
-        const hay =
-          `${tr.instrument} ${tr.setup} ${nombreSetup(tr.setup, lang)} ${tr.entryNote} ${tr.closeNote}`.toLowerCase();
-        if (!hay.includes(q)) return false;
-      }
-      return true;
+      return coincideOperacion(tr, debounced, nombreSetup(tr.setup, lang));
     });
   }, [
     allTrades,
@@ -810,6 +799,9 @@ export function TradesPage() {
   const filterSig = `${filters.instrument}|${filters.direction}|${filters.compliance}|${outcome}|${setupSel}|${debounced.trim()}|${sortKey}|${sortDir}`;
 
   const totalPnl = metrics.netPnl;
+  /* Signo y color de la tira, de la cifra redondeada: «−0,00 R» en rojo no existe. */
+  const pnlTira = signoDeCifra(totalPnl, 2);
+  const ventajaTira = signoDeCifra(metrics.expectancyR, 2);
   const comparacion = useMemo(
     () => (filterActive ? compararSeleccion(allTrades, filtered) : null),
     [filterActive, allTrades, filtered]
@@ -1294,11 +1286,11 @@ export function TradesPage() {
           {/* En español el símbolo va detrás de la cifra («+5.732,24 US$»), como en la columna P&L. */}
           <KpiStripCell label={t("pnlTotal")} filterSig={filterSig} showHairline>
             <CountUp
-              to={Math.abs(totalPnl)}
+              to={pnlTira.abs}
               decimals={2}
-              prefix={`${totalPnl < 0 ? "−" : "+"}${lang === "es" ? "" : "$"}`}
+              prefix={`${pnlTira.signo}${lang === "es" ? "" : "$"}`}
               suffix={lang === "es" ? "\u00a0$" : ""}
-              tone={totalPnl > 0 ? "pos" : totalPnl < 0 ? "neg" : "neutral"}
+              tone={pnlTira.tono}
             />
           </KpiStripCell>
           <KpiStripCell label={t("winRate")} filterSig={filterSig} showHairline>
@@ -1310,11 +1302,11 @@ export function TradesPage() {
           {/* «+0,23 R», como la columna R de la tabla: signo delante y unidad detrás. */}
           <KpiStripCell label={t("expectancyR")} filterSig={filterSig} showHairline={false}>
             <CountUp
-              to={Math.abs(metrics.expectancyR)}
+              to={ventajaTira.abs}
               decimals={2}
-              prefix={metrics.expectancyR < 0 ? "−" : "+"}
+              prefix={ventajaTira.signo}
               suffix={"\u00a0R"}
-              tone={metrics.expectancyR > 0 ? "pos" : "neg"}
+              tone={ventajaTira.tono}
             />
           </KpiStripCell>
         </div>

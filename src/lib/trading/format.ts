@@ -89,10 +89,28 @@ export function cifraEditable(value: number, lang: Lang = "es", maxDecimales = 6
     .replace("\u2212", "-");
 }
 
+/** La cifra de un campo que no se está editando: con millares, como el resto de
+ *  la página («10.000»). Al enfocar el campo vuelve a `cifraEditable`, sin
+ *  millares, para que lo que se retoca no se confunda con un decimal. */
+export function cifraReposo(value: number, lang: Lang = "es", maxDecimales = 6): string {
+  if (!Number.isFinite(value)) return "";
+  return menosTipografico(
+    new Intl.NumberFormat(LOCALE[lang], {
+      useGrouping: "always",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: maxDecimales,
+    }).format(value),
+  );
+}
+
 /** Separador decimal de cada idioma. El francés no escribe millares con punto. */
 const DECIMAL: Record<Lang, string> = { es: ",", en: ".", pt: ",", fr: ",", de: ",", it: "," };
 const GRUPOS_PUNTO = /^[1-9]\d{0,2}(\.\d{3})+$/;
 const GRUPOS_COMA = /^[1-9]\d{0,2}(,\d{3})+$/;
+
+/** Una cifra con su signo y los símbolos que la acompañan en los extremos
+ *  («$100», «100 €», «5 %», «+5», «-$5»): signo, moneda o %, signo, cuerpo, moneda o %. */
+const CIFRA_CON_SIMBOLOS = /^([+-]?)[\p{Sc}%]*([+-]?)(.*?)[\p{Sc}%]*$/u;
 
 /** Lee lo escrito en un campo según el idioma y los decimales que admite.
  *  «10.000» es 10000 si el campo admite menos de tres decimales, y 10 si admite
@@ -100,8 +118,14 @@ const GRUPOS_COMA = /^[1-9]\d{0,2}(,\d{3})+$/;
  *  `null` si no es una cifra (vacío, «1.2.3», «1e5»). */
 export function leeCifra(texto: string, lang: Lang, decimales: number): number | null {
   const limpio = texto.replace(/\u2212/g, "-").replace(/\s/g, "");
-  const negativo = limpio.startsWith("-");
-  const cuerpo = negativo ? limpio.slice(1) : limpio;
+  /* Ninguna cifra real pasa de unas decenas de caracteres; el tope evita que un
+     pegado enorme cueste tiempo a la expresión. */
+  if (limpio.length > 64) return null;
+  const partes = CIFRA_CON_SIMBOLOS.exec(limpio);
+  if (!partes) return null;
+  const [, signoAntes, signoDespues, cuerpo] = partes;
+  if (signoAntes && signoDespues) return null;
+  const negativo = signoAntes === "-" || signoDespues === "-";
   if (!/^[\d.,]+$/.test(cuerpo) || !/\d/.test(cuerpo)) return null;
   const valor = cifraSinSigno(cuerpo, lang, decimales);
   if (valor === null || !Number.isFinite(valor)) return null;
@@ -173,6 +197,21 @@ export function fmtR(
   }
   const sign = rounded > 0 ? "+" : "−";
   return `${sign}${fmtNum(Math.abs(rounded), lang, decimals)}\u00a0R`;
+}
+
+/** Valor absoluto, signo y tono de una cifra tal como se va a escribir con
+ *  `decimals` decimales, para componer el texto a mano (contadores con prefijo
+ *  y unidad). Lo que redondea a cero va sin signo y en tono neutro, como en
+ *  `fmtR` y `fmtMoney`: ni «−0,00 R» en rojo ni «+0,00 R» en verde. */
+export function signoDeCifra(
+  value: number,
+  decimals = 2,
+): { abs: number; signo: "+" | "−" | ""; tono: "pos" | "neg" | "neutral" } {
+  const redondeada = Number(value.toFixed(decimals));
+  if (!Number.isFinite(redondeada) || redondeada === 0) return { abs: 0, signo: "", tono: "neutral" };
+  return redondeada > 0
+    ? { abs: redondeada, signo: "+", tono: "pos" }
+    : { abs: -redondeada, signo: "−", tono: "neg" };
 }
 
 // `useGrouping: "always"` en las tres: sin él, `Intl` en español no agrupa las cifras de cuatro dígitos.

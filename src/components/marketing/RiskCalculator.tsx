@@ -14,6 +14,7 @@ import {
   type TipoLote,
 } from "@/lib/trading/plan";
 import { fmtPct, fmtMoney, fmtNum as fmtNumBase, fmtPrecio, pctSep } from "@/lib/trading/format";
+import { LIMITES } from "@/lib/trading/limites";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { CampoCifra } from "@/components/tj/CampoCifra";
 import { BotonCopiar } from "@/components/tj/BotonCopiar";
@@ -224,7 +225,8 @@ export function RiskCalculator() {
         {label}
       </span>
       <CampoCifra
-        min={0}
+        min={LIMITES.precio.min}
+        max={LIMITES.precio.max}
         valor={value}
         decimales={decimalesPrecio}
         onValor={onChange}
@@ -385,7 +387,8 @@ export function RiskCalculator() {
                       : `${parForex.referencia.id} rate to convert to dollars`}
                   </span>
                   <CampoCifra
-                    min={0.0001}
+                    min={LIMITES.tipoCambio.min}
+                    max={LIMITES.tipoCambio.max}
                     valor={tipoReferencia ?? parForex.referencia.defecto}
                     decimales={4}
                     onValor={setTipoReferencia}
@@ -473,7 +476,8 @@ export function RiskCalculator() {
                 {es ? "Balance de cuenta ($)" : "Account balance ($)"}
               </span>
               <CampoCifra
-                min={100}
+                min={LIMITES.balance.min}
+                max={LIMITES.balance.max}
                 valor={balance}
                 decimales={2}
                 onValor={setBalance}
@@ -608,6 +612,18 @@ export function RiskCalculator() {
               {es
                 ? `La posición equivale a ${fmtNum(c.apalancamiento, 1)} veces tu balance, por encima del ${TOPE_APALANCAMIENTO[assetMode]}:1 que se suele permitir en este mercado. Con el stop tan cerca de la entrada el tamaño se dispara: revisa la distancia.`
                 : `The position is ${fmtNum(c.apalancamiento, 1)} times your balance, above the ${TOPE_APALANCAMIENTO[assetMode]}:1 usually allowed in this market. With the stop this close to entry the size balloons: check the distance.`}
+            </p>
+          ) : null}
+
+          {c.friccionSuperaRiesgo ? (
+            <p
+              className="mb-4 border-y border-[var(--ficha-division)] py-2.5 text-[13px] leading-[1.5]"
+              style={{ color: "rgb(var(--pnl-neg))" }}
+              role="status"
+            >
+              {es
+                ? `La fricción estimada (${fmtUsd(c.friccion)}) es mayor que el riesgo del plan (${fmtUsd(c.riesgoReal)}): con el stop tan cerca, comisiones y deslizamiento pesan más que lo que arriesgas. Aleja el stop.`
+                : `The estimated friction (${fmtUsd(c.friccion)}) is larger than the plan’s risk (${fmtUsd(c.riesgoReal)}): with the stop this close, fees and slippage outweigh what you are risking. Move the stop further away.`}
             </p>
           ) : null}
 

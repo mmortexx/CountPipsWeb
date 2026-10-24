@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { FUTURES_CONTRACTS, PARES_FOREX, calculaPlan, fraccionesKelly, type EntradaPlan } from "@/lib/trading/plan";
-import { fmtPrecio } from "@/lib/trading/format";
+import { fmtNum, fmtPrecio } from "@/lib/trading/format";
 
 const par = (id: string) => PARES_FOREX.find((p) => p.id === id)!;
 const futuro = (id: string) => FUTURES_CONTRACTS.find((f) => f.id === id)!;
@@ -87,6 +87,82 @@ describe("fricción: comisión de ida y vuelta y un tick de deslizamiento", () =
   it("si la fricción se come el objetivo, el beneficio neto sale negativo, no cero", () => {
     const c = calculaPlan({ ...BASE, mercado: "futures", balance: 100000, entrada: 5800, stop: 5790, objetivo: 5800.25, futuro: futuro("es"), friccion: true });
     expect(c.beneficioNeto).toBeLessThan(0);
+  });
+});
+
+describe("acciones y cripto: el tamaño enseña los decimales que hacen falta", () => {
+  const cripto: EntradaPlan = { ...BASE, mercado: "equities", balance: 100, riesgoPct: 2.5, entrada: 60000, stop: 59000, objetivo: 63000 };
+  const enseñado = (c: ReturnType<typeof calculaPlan>) => fmtNum(c.tamano, "es", c.decimalesTamano);
+
+  it("2,50 $ de riesgo a 1.000 $ de stop son 0,0025 unidades, no «0,00»", () => {
+    const c = calculaPlan(cripto);
+    expect(c.riesgoReal).toBeCloseTo(2.5, 10);
+    expect(c.tamano).toBeCloseTo(0.0025, 12);
+    expect(enseñado(c)).toBe("0,0025");
+  });
+
+  it("a partir de una unidad siguen siendo dos decimales", () => {
+    const c = calculaPlan({ ...cripto, balance: 10000, riesgoPct: 1, entrada: 100, stop: 95, objetivo: 115 });
+    expect(c.tamano).toBe(20);
+    expect(enseñado(c)).toBe("20,00");
+    const medio = calculaPlan({ ...cripto, balance: 10000, riesgoPct: 1, entrada: 100, stop: 80, objetivo: 150 });
+    expect(medio.tamano).toBe(5);
+    expect(enseñado(medio)).toBe("5,00");
+  });
+
+  it("lo que se enseña dice el riesgo real con menos de un 0,5 % de error", () => {
+    for (const balance of [100, 1000, 25000])
+      for (const riesgoPct of [0.25, 1, 3])
+        for (const stop of [59000, 50000, 30000, 5000]) {
+          const c = calculaPlan({ ...cripto, balance, riesgoPct, stop });
+          if (c.tamano < 1e-5) continue;
+          const mostrado = Number(enseñado(c).replace(",", "."));
+          const riesgoMostrado = mostrado * Math.abs(cripto.entrada - stop);
+          expect(Math.abs(riesgoMostrado - c.riesgoReal) / c.riesgoReal, `${balance} ${riesgoPct} ${stop}`).toBeLessThan(0.005);
+          expect(c.decimalesTamano).toBeLessThanOrEqual(8);
+        }
+  });
+
+  it("forex y futuros conservan los suyos", () => {
+    expect(calculaPlan(BASE).decimalesTamano).toBe(2);
+    expect(calculaPlan({ ...BASE, lote: "mini" }).decimalesTamano).toBe(1);
+    expect(calculaPlan({ ...BASE, lote: "micro" }).decimalesTamano).toBe(0);
+    expect(calculaPlan({ ...BASE, mercado: "futures" }).decimalesTamano).toBe(0);
+  });
+});
+
+describe("fricción mayor que el riesgo: se avisa", () => {
+  const barata: EntradaPlan = { ...BASE, mercado: "equities", balance: 10000, riesgoPct: 1, entrada: 0.5, stop: 0.49, objetivo: 0.53, friccion: true };
+
+  it("una acción de 0,50 $ con el stop a un céntimo: 10.000 unidades, 150 $ de fricción para 100 $ de riesgo", () => {
+    const c = calculaPlan(barata);
+    expect(c.tamano).toBeCloseTo(10000, 6);
+    expect(c.riesgoReal).toBeCloseTo(100, 6);
+    expect(c.friccion).toBeCloseTo(150, 6);
+    expect(c.friccionSuperaRiesgo).toBe(true);
+  });
+
+  it("con una acción normal la fricción es una fracción del riesgo y no se avisa", () => {
+    const c = calculaPlan({ ...barata, entrada: 100, stop: 95, objetivo: 115 });
+    expect(c.friccion).toBeLessThan(c.riesgoReal);
+    expect(c.friccionSuperaRiesgo).toBe(false);
+  });
+
+  it("sin fricción no hay nada que superar, aunque el stop sea de un céntimo", () => {
+    expect(calculaPlan({ ...barata, friccion: false }).friccionSuperaRiesgo).toBe(false);
+  });
+
+  it("un plan inválido no avisa de nada", () => {
+    expect(calculaPlan({ ...barata, stop: 0.5 }).friccionSuperaRiesgo).toBe(false);
+  });
+
+  it("el aviso salta en el primer stop cuya distancia es menor que la fricción por unidad (0,015 $ en acciones)", () => {
+    const con = (stop: number) => calculaPlan({ ...barata, entrada: 10, stop, objetivo: 10.5 }).friccionSuperaRiesgo;
+    expect(con(9.99)).toBe(true);
+    expect(con(9.9851)).toBe(true);
+    expect(con(9.9849)).toBe(false);
+    expect(con(9.98)).toBe(false);
+    expect(con(9.9)).toBe(false);
   });
 });
 

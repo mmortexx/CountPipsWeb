@@ -7,7 +7,7 @@ import { Deslizador } from "@/components/tj/Deslizador";
 import { BotonCopiar } from "@/components/tj/BotonCopiar";
 import { componerInforme } from "@/lib/informe";
 import { pctSep, fmtR, fmtNum as fmtNumBase, fmtOperaciones, fmtPct } from "@/lib/trading/format";
-import { Z_UNA_COLA, contrasteVentaja, normalCdf } from "@/lib/trading/estadistica";
+import { Z_UNA_COLA, contrasteVentaja, esperanzaEnR, normalCdf } from "@/lib/trading/estadistica";
 
 export { normalCdf };
 
@@ -37,7 +37,7 @@ export function EdgeSignificanceChecker() {
   const c = useMemo(() => {
     const wr = winRate / 100;
     const n = trades;
-    const expectancyR = wr * avgWinR - (1 - wr) * avgLossR;
+    const expectancyR = esperanzaEnR(wr, avgWinR, avgLossR);
     const k = contrasteVentaja(n, winRate, avgWinR, avgLossR);
 
     // Intervalo de Wilson al 95 % (z = 1,96).

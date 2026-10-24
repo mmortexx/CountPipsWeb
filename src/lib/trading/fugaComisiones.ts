@@ -33,6 +33,13 @@ export interface InstrumentConfig {
   objetivo: { min: number; max: number; paso: number; inicial: number };
 }
 
+/** La comisión de ida y vuelta que se usa: la que escribió la persona, si la
+ *  escribió (también un cero), y si no, la habitual del instrumento. Cambiar de
+ *  instrumento no borra la propia. */
+export function comisionVigente(propia: number | null, inst: InstrumentConfig): number {
+  return propia ?? inst.defaultCommissionRT;
+}
+
 export const INSTRUMENT_SPECS: InstrumentConfig[] = [
   {
     id: "NQ",
