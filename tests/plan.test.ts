@@ -168,14 +168,14 @@ describe("fricción mayor que el riesgo: se avisa", () => {
 
 describe("Kelly: la mitad es la mitad", () => {
   it("55 % a 3:1 da 40 %, 20 % y 10 %", () => {
-    const k = fraccionesKelly(55, 3);
+    const k = fraccionesKelly(55, 3)!;
     expect(k.completo).toBeCloseTo(40, 10);
     expect(k.medio).toBeCloseTo(20, 10);
     expect(k.cuarto).toBeCloseTo(10, 10);
   });
   it("sin ventaja, cero", () => {
     expect(fraccionesKelly(40, 1)).toEqual({ completo: 0, medio: 0, cuarto: 0 });
-    expect(fraccionesKelly(60, 0)).toEqual({ completo: 0, medio: 0, cuarto: 0 });
+    expect(fraccionesKelly(60, 0)).toBeNull(); // sin payoff medible no se calcula
   });
 });
 

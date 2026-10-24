@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useMemo, useEffect, useId, useRef } from "react";
+import { Fragment, useState, useMemo, useEffect, useId, useRef } from "react";
 import { marcasRedondas } from "@/lib/marcasEje";
 import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { OPERACIONES_POR_MES, SEMILLA_MAX, siguienteSemilla, simulaMonteCarlo } from "@/lib/trading/montecarlo";
 import { LIMITE_PROYECCION_USD } from "@/lib/trading/proyeccion";
 import { UMBRAL_RUINA_PCT } from "@/lib/trading/estadistica";
-import { fmtMoney, fmtNum as fmtNumBase, fmtOperaciones, fmtR, pctSep } from "@/lib/trading/format";
+import { fmtMoney, fmtNum as fmtNumBase, fmtOperaciones, fmtR, importeCortoPorTrozos, pctSep } from "@/lib/trading/format";
 import { CAMINOS_MONTE_CARLO } from "@/lib/herramientas";
 import { useEnHerramienta } from "@/components/herramientas/EnHerramienta";
 
@@ -56,17 +56,12 @@ export function RMultipleSimulator() {
 
   const fmtUsd = (n: number) => fmtMoney(n, lang, { decimals: 0 });
 
-  /* Importe corto para las cinco celdas de percentil (~70 px a 320 px). A mano:
-     `notation: "compact"` da «18,9 mil» en español, más largo que «18.906». */
+  /* Importe corto para las cinco celdas de percentil (~45 px a 320 px) y las
+     marcas del eje. A mano: `notation: "compact"` da «18,9 mil» en español. */
+  const trozosCortos = (n: number) => importeCortoPorTrozos(n, lang, LIMITE_PROYECCION_USD);
   const fmtUsdCorto = (n: number) => {
-    const a = Math.abs(n);
-    const signo = n < 0 ? "−" : "";
-    /* Por encima del billón ya no se muestra cifra. */
-    if (!Number.isFinite(a) || a > LIMITE_PROYECCION_USD) return "—";
-    if (a >= 1_000_000_000) return es ? `${signo}${fmtNum(a / 1_000_000_000, 1)}\u00a0mil\u00a0M $` : `${signo}$${fmtNum(a / 1_000_000_000, 1)}B`;
-    if (a >= 1_000_000) return es ? `${signo}${fmtNum(a / 1_000_000, 2)}\u00a0M $` : `${signo}$${fmtNum(a / 1_000_000, 2)}M`;
-    if (a >= 10_000) return es ? `${signo}${fmtNum(a / 1_000, 0)}\u00a0k $` : `${signo}$${fmtNum(a / 1_000, 0)}k`;
-    return fmtUsd(n);
+    const { trozos, junta } = trozosCortos(n);
+    return trozos.join(junta).replaceAll(" ", "\u00a0");
   };
 
   const fmtNum = (n: number, dec = 2) => fmtNumBase(n, lang, dec);
@@ -226,7 +221,7 @@ export function RMultipleSimulator() {
                       <span className="flex min-h-[2.5em] items-center justify-center">
                         {preset.label}
                       </span>
-                      <span className="mt-0.5 text-[12px] opacity-70">{preset.nota}</span>
+                      <span className="mt-0.5 text-[12px]">{preset.nota}</span>
                     </span>
                   </button>
                 );
@@ -363,11 +358,15 @@ export function RMultipleSimulator() {
                   {p.k}
                 </span>
                 <span className="mt-0.5 block text-[12px] leading-[1.2] text-tertiary">{p.n}</span>
-                <span
-                  className="tnum cifra-sm mt-1.5 block whitespace-nowrap font-semibold"
-                  style={{ color: p.col }}
-                >
-                  {fmtUsdCorto(p.v)}
+                {/* Cada trozo entero; si no cabe, parte entre la cifra y la unidad. */}
+                <span className="tnum cifra-sm mt-1.5 block font-semibold" style={{ color: p.col }}>
+                  {(({ trozos, junta }) =>
+                    trozos.map((t, i) => (
+                      <Fragment key={i}>
+                        {i > 0 && (junta || <wbr />)}
+                        <span className="whitespace-nowrap">{t}</span>
+                      </Fragment>
+                    )))(trozosCortos(p.v))}
                 </span>
               </div>
             ))}
@@ -400,8 +399,8 @@ export function RMultipleSimulator() {
                 col: c.analyticalRuinProb > 5 ? "rgb(var(--pnl-neg))" : "var(--ink)",
               },
               {
-                t: es ? "Racha teórica" : "Theoretical streak",
-                sub: es ? `simulada: ${c.medianMaxLossStreak}` : `simulated: ${c.medianMaxLossStreak}`,
+                t: es ? "Racha más larga" : "Longest losing streak",
+                sub: es ? `por fórmula; simulada: ${c.medianMaxLossStreak}` : `by formula; simulated: ${c.medianMaxLossStreak}`,
                 v: `≈\u00a0${c.theoreticalMaxLossStreak} ${es ? "pérdidas" : "losses"}`,
                 col: "var(--ink)",
               },

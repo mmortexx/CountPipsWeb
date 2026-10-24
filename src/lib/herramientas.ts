@@ -158,9 +158,9 @@ export const HERRAMIENTAS: Herramienta[] = [
     entregaEs: "Curva a N años",
     entregaEn: "N-year curve",
     descripcionEs:
-      "Proyecta tu curva de capital a varios años a partir de tu expectancy por operación y de cuántas haces al mes.",
+      "Proyecta tu curva de capital a varios años a partir de tu expectancy por operación y de cuántas haces al año.",
     descripcionEn:
-      "Project your equity curve over several years from your expectancy per trade and how many trades you take per month.",
+      "Project your equity curve over several years from your expectancy per trade and how many trades you take a year.",
   },
   {
     slug: "coste-de-indisciplina",

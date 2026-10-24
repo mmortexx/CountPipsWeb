@@ -21,6 +21,7 @@ export const LOCALE_FECHA: Record<Lang, string> = {
 
 /** Importe en dólares. es-ES da «1.234,56 $» (`Intl` escribe «US$» y se cambia
  *  por «$», como MoneyFormat.cs en la app de escritorio); en-US, «$1,234.56».
+ *  En pt-BR se queda «US$ 1.234,56»: en Brasil «$» a secas se lee como reales.
  *
  *  `sign: true` antepone `+` a los positivos; los negativos llevan siempre `−`
  *  (U+2212). El cero va sin signo.
@@ -35,17 +36,15 @@ export function fmtMoney(
   const { sign = false, decimals = 2, compact = false } = opts;
   const locale = LOCALE[lang];
   const abs = Math.abs(value);
-  const formatted = new Intl.NumberFormat(locale, {
+  const cifra = new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: compact && abs >= 1000 ? 0 : decimals,
     maximumFractionDigits: compact && abs >= 1000 ? 0 : decimals,
     notation: compact && abs >= 1_000_000 ? "compact" : "standard",
     useGrouping: "always",
-  })
-    .format(abs)
-    .replace(/US\$|\$US|USD/g, "$")
-    .trim();
+  }).format(abs);
+  const formatted = (lang === "pt" ? cifra : cifra.replace(/US\$|\$US|USD/g, "$")).trim();
   // El signo sale de la cifra escrita: −0,4 $ a cero decimales es «0 $», no «−0 $».
   if (Number.isFinite(value) && !/[1-9]/.test(formatted)) return formatted;
   if (value < 0) return `−${formatted}`;
@@ -238,6 +237,34 @@ export function fmtCifraCorta(value: number, lang: Lang = "es"): string {
   const abs = Math.round(Math.abs(value));
   const signo = value >= 0 ? "+" : "−";
   return abs >= 1000 ? `${signo}${fmtNum(abs / 1000, lang, 1)}k` : `${signo}${abs}`;
+}
+
+/** Importe abreviado para celdas estrechas, en trozos que no se parten: el
+ *  número (tres cifras significativas, sin ceros de relleno: como mucho cuatro
+ *  caracteres) y cada palabra de la unidad. Entre trozo y trozo sí se puede
+ *  partir línea: «12,9 M $» en español (`junta` es un espacio), «$12.9M» en
+ *  inglés (`junta` vacía: se parte sin espacio visible). Desde 999.500 millones
+ *  el número redondearía a «1.000» y, como por encima del `limite`, es «—». */
+export function importeCortoPorTrozos(
+  value: number,
+  lang: Lang,
+  limite: number,
+): { trozos: string[]; junta: " " | "" } {
+  const es = lang === "es";
+  const a = Math.abs(value);
+  if (!Number.isFinite(a) || a > limite || a >= 999_500_000_000) return { trozos: ["—"], junta: "" };
+  const [escala, unidad] =
+    a >= 999_500_000 ? [1e9, es ? ["mil", "M"] : ["B"]]
+    : a >= 999_500 ? [1e6, ["M"]]
+    : a >= 999.5 ? [1e3, ["k"]]
+    : [1, []];
+  const v = a / escala;
+  const decimales = escala === 1 || v >= 99.95 ? 0 : v >= 9.995 ? 1 : 2;
+  const numero = new Intl.NumberFormat(LOCALE[lang], { maximumFractionDigits: decimales, useGrouping: "always" }).format(v);
+  const signo = value < 0 && /[1-9]/.test(numero) ? "−" : "";
+  return es
+    ? { trozos: [signo + numero, ...unidad, "$"], junta: " " }
+    : { trozos: [`${signo}$`, numero, ...unidad], junta: "" };
 }
 
 /** Un precio con los decimales que trae: al menos dos y como mucho ocho. */

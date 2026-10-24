@@ -14,6 +14,7 @@ import {
   contextoDelDia,
   contextoDeMercado,
   ENFRIAMIENTO_MIN,
+  notaEnIdioma,
 } from "@/lib/trading/data";
 import { useAllTrades } from "@/lib/trading/demoStore";
 import {
@@ -871,7 +872,7 @@ export function TradeDetailPage() {
                 <Detail label={lang === "es" ? "Mercado" : "Market"}>
                   <span className="text-primary">{mercado.regimen[lang === "es" ? "es" : "en"]}</span>
                 </Detail>
-                <Detail label={lang === "es" ? "Puntuación del día" : "Day score"}>
+                <Detail label={t("dayScore")}>
                   <span className="text-primary tnum">{fmtInt(trade.dayScore, lang)}/5</span>
                 </Detail>
               </dl>
@@ -1002,7 +1003,7 @@ export function TradeDetailPage() {
                   {t("entryNote")}
                 </div>
                 <blockquote className="border-l-2 border-solid border-[rgb(var(--divider)/0.25)] pl-3 py-1 text-sm text-secondary italic leading-relaxed">
-                  {trade.entryNote}
+                  {notaEnIdioma(trade.entryNote, lang)}
                 </blockquote>
               </div>
               <div>
@@ -1020,7 +1021,7 @@ export function TradeDetailPage() {
                   {t("closeNote")}
                 </div>
                 <blockquote className="border-l-2 border-solid border-[rgb(var(--divider)/0.25)] pl-3 py-1 text-sm text-secondary italic leading-relaxed">
-                  {trade.closeNote}
+                  {notaEnIdioma(trade.closeNote, lang)}
                 </blockquote>
               </div>
             </div>
@@ -1064,7 +1065,7 @@ export function TradeDetailPage() {
 
             <div className="space-y-2.5 border-t border-[rgb(var(--divider)/0.1)] pt-4">
               <SummaryRow
-                label={t("rr")}
+                label={lang === "es" ? "R múltiplo" : "R multiple"}
                 tone={trade.rMultiple >= 0 ? "pos" : "neg"}
                 value={fmtR(trade.rMultiple, lang, 2)}
               />

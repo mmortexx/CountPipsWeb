@@ -86,7 +86,7 @@ export function comandosDemo({
     },
     {
       id: "go-detail",
-      labelEs: "Ir a Detalle",
+      labelEs: "Ir al detalle de operación",
       labelEn: "Go to Trade detail",
       section: "nav",
       icon: <DetailIcon />,
@@ -213,8 +213,8 @@ export function comandosDemo({
           const ops = fmtOperaciones(propias, lang);
           const aviso =
             lang === "es"
-              ? `Reiniciar la demo borra ${ops} que has añadido. No se puede deshacer.`
-              : `Resetting the demo deletes the ${ops} you added. This can’t be undone.`;
+              ? `Reiniciar la demo borra ${propias === 1 ? "la operación" : `las ${ops}`} que has añadido. No se puede deshacer.`
+              : `Resetting the demo deletes the ${propias === 1 ? "trade" : ops} you added. This can’t be undone.`;
           if (!confirmar(aviso)) return;
         }
         resetToSample();

@@ -311,7 +311,7 @@ export function CommissionDragCalculator() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-3 pt-4">
               <div>
                 <span className="text-[12px] text-tertiary block mb-1">
-                  {es ? "Parte de la ganancia" : "Share of profit"}
+                  {es ? "Se lo llevan los costes" : "Taken by costs"}
                 </span>
                 <span
                   className={`text-base tnum font-semibold ${
@@ -327,7 +327,7 @@ export function CommissionDragCalculator() {
                   {es ? NIVEL_FUGA_LABEL[nivelFuga].es : NIVEL_FUGA_LABEL[nivelFuga].en}
                 </span>
                 <span className="text-[12px] text-tertiary block mt-0.5">
-                  {es ? "del beneficio" : "of profit"}
+                  {es ? "de la ganancia bruta" : "of gross profit"}
                 </span>
               </div>
 
@@ -339,7 +339,7 @@ export function CommissionDragCalculator() {
                   {fmtNum(breakEvenTicksPerTrade, lang, 2)}
                 </span>
                 <span className="text-[12px] text-tertiary block mt-0.5 tnum">
-                  {fmtNum(breakEvenUnitsPerTrade, lang, 2)} {es ? inst.unitNameEs : inst.unitNameEn}
+                  {fmtNum(breakEvenUnitsPerTrade, lang, 2)} {es ? inst.unitNameEs : inst.unitNameEn} {es ? "por operación" : "per trade"}
                 </span>
               </div>
 

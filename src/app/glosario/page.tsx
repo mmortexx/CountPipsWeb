@@ -67,7 +67,7 @@ export function GlosarioBody() {
         tono="registro"
         titleEs="Glosario de trading."
         titleEn="Trading glossary."
-        subtitleEs={`${TERMINOS.length} términos, definidos como los usa alguien que opera y no como los define un diccionario. El nombre se queda en inglés a propósito: es como aparecen en tu plataforma y en cualquier comunidad.`}
+        subtitleEs={`${TERMINOS.length} términos, definidos como los usa alguien que opera y no como los define un diccionario. Cada uno con el nombre que verás en tu plataforma y en cualquier comunidad: en inglés cuando así se usa.`}
         subtitleEn={`${TERMINOS.length} terms, defined the way someone who trades uses them rather than the way a dictionary does. Grouped into five families, each one written to be read in under a minute.`}
         breadcrumbEs="Glosario"
         breadcrumbEn="Glossary"

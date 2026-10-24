@@ -25,28 +25,28 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     tituloPt: "A curva e o mês, lado a lado",
     tituloFr: "La courbe et le mois, côte à côte",
     tituloDe: "Die Kurve und der Monat, Seite an Seite",
-    tituloIt: "La curva e il mese, uno accanto all'altro",
+    tituloIt: "La curva e il mese, uno accanto all’altro",
     notaEs:
       "Debajo del formulario de registro, la pantalla de resumen abre en dos: la curva de " +
       "rendimiento con las zonas de caída sombreadas y el balance en trazo discontinuo, y el " +
       "calendario del mes con el resultado de cada día y el total de cada semana. Encima, " +
-      "el parte de hoy —\u2060lo que tu histórico dice del día antes de operar\u2060—, los avisos " +
+      "el parte de hoy —\u2060lo que tu histórico dice de hoy antes de operar\u2060—, los avisos " +
       "de conducta y una pregunta sobre cómo te has sentido operando hoy, que se apunta en " +
       "las operaciones del día.",
     notaEn:
       "Below the logging form, the overview screen splits in two: the performance curve with " +
       "its drawdown areas shaded and the balance as a dashed line, and the month calendar " +
       "with each day’s result and each week’s total. Above them, today’s briefing (what " +
-      "your history says about the day before you trade), the behaviour notices and a " +
+      "your history says about today, before you trade), the behaviour notices and a " +
       "question about how trading felt today, which is recorded against the day’s trades.",
     notaPt:
-      "Abaixo do formulário de registro, a tela de visão geral se divide em duas: a curva de " +
+      "Abaixo do formulário de registro, a tela Resumo se divide em duas: a curva de " +
       "desempenho com as áreas de drawdown sombreadas e o saldo em linha pontilhada, e o " +
       "calendário do mês com o resultado de cada dia e o total de cada semana. Acima, o " +
       "briefing de hoje — o que seu histórico diz antes de operar —, os avisos de comportamento " +
       "e uma pergunta sobre como você se sentiu operando hoje, registrada nas operações do dia.",
     notaFr:
-      "Sous le formulaire de saisie, l’écran de vue d’ensemble se divise en deux : la courbe de " +
+      "Sous le formulaire de saisie, l’écran Tableau de bord se divise en deux : la courbe de " +
       "performance avec ses zones de drawdown grisées et le solde en pointillés, et le " +
       "calendrier du mois avec le résultat de chaque jour et le total de chaque semaine. Au-dessus, " +
       "le briefing du jour — ce que votre historique dit de la séance avant de trader —, les " +
@@ -122,7 +122,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     tituloPt: "Registrar a operação é a primeira coisa que você vê",
     tituloFr: "Saisir l’opération est la première chose visible",
     tituloDe: "Den Trade erfassen ist das Erste, was Sie sehen",
-    tituloIt: "Registrare l'operazione è la prima cosa che vedi",
+    tituloIt: "Registrare l’operazione è la prima cosa che vedi",
     notaEs:
       "El compositor ocupa la pantalla entera a propósito: instrumento, dirección, entrada, " +
       "stop, objetivo y salida, junto a una zona grande donde se arrastran o se pegan las " +
@@ -267,7 +267,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     tituloPt: "O histórico completo e as métricas do que você filtra",
     tituloFr: "Le journal complet et les métriques de votre sélection",
     tituloDe: "Das gesamte Journal und die Kennzahlen Ihrer Filter",
-    tituloIt: "L'intero registro e le metriche di ciò che filtri",
+    tituloIt: "L’intero registro e le metriche di ciò che filtri",
     notaEs:
       "Filtros por instrumento, dirección, resultado, cumplimiento, setup, conducta, " +
       "comisión y sesión. Lo que importa no es la tabla: es la fila de encima, rotulada " +

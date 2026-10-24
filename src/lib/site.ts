@@ -157,7 +157,7 @@ export function esquemasGlobales(
     es: "El diario de trading profesional, nativo de Windows. Explora el producto antes de instalarlo: métricas institucionales, disciplina y datos locales.",
     en: "The professional trading journal, native to Windows. Explore the product before installing it: institutional metrics, discipline and local data.",
     pt: "O diário de trading profissional, nativo para Windows. Conheça o produto antes de instalar: métricas institucionais, disciplina e dados locais.",
-    fr: "Le journal de trading professionnel, natif Windows. Découvrez le produit avant de l'installer : métriques institutionnelles, discipline et données locales.",
+    fr: "Le journal de trading professionnel, natif Windows. Découvrez le produit avant de l’installer : métriques institutionnelles, discipline et données locales.",
     de: "Das professionelle Trading-Journal, nativ für Windows. Testen Sie das Produkt vor der Installation: institutionelle Kennzahlen, Disziplin und lokale Daten.",
     it: "Il diario di trading professionale, nativo per Windows. Esplora il prodotto prima di installarlo: metriche istituzionali, disciplina e dati locali.",
   };

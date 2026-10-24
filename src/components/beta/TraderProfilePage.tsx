@@ -275,7 +275,7 @@ export function TraderProfileBody({ profile, terminos }: { profile: TraderProfil
             <SectionHeader
               etiqueta={es ? "Playbooks en vivo" : "Live playbooks"}
               titulo={es ? "Separa tus patrones ganadores de tus impulsos." : "Separate your winning patterns from your impulses."}
-              entradilla={es ? "Un trader manual rara vez falla por el análisis: falla porque no ejecuta siempre igual. El playbook compara la muestra real de cada setup; aquí, con datos de muestra." : "A manual trader does not fail because of technical analysis: they fail because execution is not consistent. The playbook compares the real sample of each setup — here, with sample data."}
+              entradilla={es ? "Un trader manual rara vez falla por el análisis: falla porque no ejecuta siempre igual. El playbook compara los resultados de cada setup; aquí, con datos de muestra." : "A manual trader does not fail because of technical analysis: they fail because execution is not consistent. The playbook compares the results of each setup; here, with sample data."}
               className="mb-10"
             />
 

@@ -426,7 +426,9 @@
 
   /* Titulares sin palabra suelta en la última línea. `.text-balance` sigue
      disponible para otros elementos. */
-  h1, h2, h3 { text-wrap: balance; }
+  /* Una palabra más ancha que la línea (alemán a 320 px, letra grande o
+     espaciado ampliado) parte en vez de salirse bajo un recorte. */
+  h1, h2, h3 { text-wrap: balance; overflow-wrap: break-word; }
 
   /* Sin el recuadro gris que iOS y Android pintan al tocar (ignora el radio
      de esquina). El sustituto va justo debajo. */
@@ -2105,14 +2107,19 @@ button.icon-btn:hover > svg,
   align-items: center;
   justify-content: center;
   gap: 0.625rem;
-  height: 48px;
-  padding: 0 1.375rem;
+  /* En una línea mientras quepa; si no (letra grande, espaciado ampliado),
+     parte dentro del botón en vez de recortarse. Sin encoger: en una fila
+     de botones salta de línea entero antes de partir su texto. */
+  min-height: 48px;
+  max-width: 100%;
+  flex-shrink: 0;
+  padding: 0.375rem 1.375rem;
   border-radius: 4px;
   border: 1px solid transparent;
   font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.005em;
-  white-space: nowrap;
+  text-align: center;
   outline: none;
   transition: background-color 160ms var(--ease-suave), border-color 160ms var(--ease-suave), color 160ms var(--ease-suave);
 }
@@ -2814,6 +2821,7 @@ select.tj-campo:invalid {
   }
   .tj-matriz > * {
     min-width: 0;
+    overflow-wrap: break-word;
     box-shadow: -1px 0 0 var(--ficha-division), 0 -1px 0 var(--ficha-division);
   }
 }
@@ -4516,6 +4524,10 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
 }
 .tj-pal > span {
   display: inline-block;
+  /* Cada palabra es un bloque en línea: solo parte si es más ancha que
+     la línea entera (alemán a 320 px, letra grande, espaciado ampliado). */
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 @media (prefers-reduced-motion: no-preference) {
   .tj-pal > span {

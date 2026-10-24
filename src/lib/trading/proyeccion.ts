@@ -1,4 +1,4 @@
-import { esperanzaEnR, sinRuido } from "./estadistica";
+import { esperanzaEnR, kellyPct, sinRuido } from "./estadistica";
 
 /** Racha máxima de pérdidas al nivel de confianza fijado en el motor. */
 export const CONFIANZA_RACHA = 0.99;
@@ -48,8 +48,9 @@ export interface ResultadoProyeccion {
   netExpectancyR: number;
   hasEdge: boolean;
   profitFactor: number;
-  fullKellyPct: number;
-  halfKellyPct: number;
+  /** null si no se puede calcular (ver `kellyPct`). */
+  fullKellyPct: number | null;
+  halfKellyPct: number | null;
   growthPerTrade: number;
   monthlyPoints: PuntoMensual[];
   finalBalance: number;
@@ -98,9 +99,8 @@ export function proyectaCapital(p: ParametrosProyeccion): ResultadoProyeccion {
   const grossLossTotal = lr * avgLossR;
   const profitFactor = grossLossTotal > 0 ? grossWinTotal / grossLossTotal : 0;
 
-  const b = avgLossR > 0 ? avgWinR / avgLossR : 1;
-  const fullKellyPct = b > 0 ? Math.max(0, ((wr * b - lr) / b) * 100) : 0;
-  const halfKellyPct = fullKellyPct / 2;
+  const fullKellyPct = kellyPct(wr, avgLossR > 0 ? avgWinR / avgLossR : 0);
+  const halfKellyPct = fullKellyPct === null ? null : fullKellyPct / 2;
 
   const diffWin = avgWinR - grossExpectancyR;
   const diffLoss = -avgLossR - grossExpectancyR;

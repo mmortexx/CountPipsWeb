@@ -11,6 +11,7 @@ import {
   monthlyBreakdown,
   cumplimientoMensual,
   nivelDisciplina,
+  notaEnIdioma,
   type Trade,
 } from "@/lib/trading/data";
 import { useAllTrades } from "@/lib/trading/demoStore";
@@ -1485,7 +1486,7 @@ export function JournalPage() {
                           </span>
                         </div>
                         <p className="text-sm text-secondary mt-1 line-clamp-1">
-                          {entry.note}
+                          {notaEnIdioma(entry.note, lang)}
                         </p>
                       </div>
                     </div>

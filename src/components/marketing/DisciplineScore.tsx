@@ -317,7 +317,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
         <div className={enPagina ? "sr-only" : "mb-8 max-w-[46em]"}>
           <div className="inline-flex items-center gap-3 mb-5">
             <span className="eyebrow">
-              {es ? "Diagnóstico" : "Diagnosis"}
+              {es ? "Autoevaluación" : "Self-assessment"}
             </span>
           </div>
           <h2 className="t-h2 m-0 text-primary">

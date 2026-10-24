@@ -267,7 +267,7 @@ const PRICING_FAQ_IT: QA[] = [
   },
   {
     q: "Cosa includono i prezzi di lancio?",
-    a: `Core è previsto a ${core("it")} e Pro a ${pro("it")}. Sono prezzi di lancio indicativi finché distribuzione commerciale, licenza e supporto non saranno attivi.`,
+    a: `Core è previsto a ${core("it")} e Pro a ${pro("it")}. Sono prezzi di lancio indicativi finché la distribuzione commerciale, la licenza e il supporto non saranno attivi.`,
   },
   {
     q: "Quali dati non vengono richiesti?",

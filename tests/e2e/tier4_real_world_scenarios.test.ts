@@ -159,26 +159,26 @@ describe("Tier 4: Real-World Application Workloads & User Journeys", () => {
     // Kelly de la calculadora de riesgo y el riesgo que aplica su botón: medio
     // Kelly al paso de 0,05 y dentro del control (0,25-3 %).
     // Tendencia alcista (60 % de acierto, payoff 2,2): topado al 3 %.
-    const regimeA = fraccionesKelly(60, 2.2);
+    const regimeA = fraccionesKelly(60, 2.2)!;
     expect(regimeA.completo).toBeCloseTo((0.92 / 2.2) * 100, 9); // 41,82 %
     expect(regimeA.medio).toBeCloseTo(regimeA.completo / 2, 12);
     expect(regimeA.cuarto).toBeCloseTo(regimeA.completo / 4, 12);
     expect(riesgoDeKelly(regimeA.medio)).toBe(3);
 
     // Lateral (46 %, payoff 1,5): completo 10 %, medio 5 %, topado al 3 %.
-    const regimeB = fraccionesKelly(46, 1.5);
+    const regimeB = fraccionesKelly(46, 1.5)!;
     expect(regimeB.completo).toBeCloseTo(10, 9);
     expect(riesgoDeKelly(regimeB.medio)).toBe(3);
 
     // Ventaja escasa (51 %, 1:1): medio 1 %, dentro del control.
-    expect(riesgoDeKelly(fraccionesKelly(51, 1).medio)).toBe(1);
+    expect(riesgoDeKelly(fraccionesKelly(51, 1)!.medio)).toBe(1);
     // Casi sin ventaja (50,2 %, 1:1): medio 0,2 %, sube al mínimo del control.
-    expect(riesgoDeKelly(fraccionesKelly(50.2, 1).medio)).toBe(0.25);
+    expect(riesgoDeKelly(fraccionesKelly(50.2, 1)!.medio)).toBe(0.25);
     // Fuera del paso se redondea al más cercano.
     expect(riesgoDeKelly(1.23)).toBe(1.25);
 
     // Crisis (35 %, payoff 1,2): ventaja negativa, cero en todo.
-    const regimeC = fraccionesKelly(35, 1.2);
+    const regimeC = fraccionesKelly(35, 1.2)!;
     expect(regimeC).toEqual({ completo: 0, medio: 0, cuarto: 0 });
     expect(riesgoDeKelly(regimeC.medio)).toBe(0);
   });

@@ -9,7 +9,7 @@ import {
 } from "../src/lib/trading/fugaComisiones";
 
 /**
- * Fronteras de «Parte de la ganancia» en CommissionDragCalculator (>30 alto,
+ * Fronteras de «Se lo llevan los costes» en CommissionDragCalculator (>30 alto,
  * >15 moderado, resto bajo), en una función pura para no repetir el umbral.
  */
 describe("clasificaFugaComisiones", () => {

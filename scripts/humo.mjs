@@ -1962,6 +1962,7 @@ if (SERVIR) {
 // lector: los titulares que el borde corta se miran aparte.
 const ANCHO_ESTRECHO = 320;
 let estrechasMedidas = 0;
+let espaciadosMedidos = 0;
 {
   const compiladas = async (carpeta, rel = "") => {
     const rutas = [];
@@ -2037,6 +2038,53 @@ let estrechasMedidas = 0;
           if (r.sobra > 1) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el contenido se sale ${r.sobra} px por «${r.texto}»`);
           else for (const c of r.cortados) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el borde corta el titular ${c}`);
           if (r.migaLineas > 1) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px la miga de pan ocupa ${r.migaLineas} líneas`);
+          // Con el espaciado de texto de WCAG 1.4.12 (o la letra grande del
+          // móvil), titulares, botones, pestañas y cifras de matriz siguen
+          // enteros: lo que no cabe parte línea o se desliza, no se recorta.
+          // Los conmutadores segmentados quedan fuera: sus columnas iguales
+          // no admiten partir sin cambiar el reparto en escritorio.
+          await pagina.addStyleTag({
+            content: "*{line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important}p{margin-bottom:2em!important}",
+          });
+          const recortes = await pagina.evaluate(async () => {
+            await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok)));
+            const ancho = document.documentElement.clientWidth;
+            const fuera = [];
+            for (const el of document.querySelectorAll("main h1, main h2, main h3, main .cta, main [role=tab], main .tj-matriz > *")) {
+              if (!el.getClientRects().length || el.closest(".tj-segmentado")) continue;
+              const textos = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+              for (let n = textos.nextNode(); n; n = textos.nextNode()) {
+                if (!n.textContent.trim()) continue;
+                const rango = document.createRange();
+                rango.selectNodeContents(n);
+                const cajas = [...rango.getClientRects()].filter((q) => q.width > 0);
+                if (!cajas.length) continue;
+                const der = Math.max(...cajas.map((q) => q.right));
+                const izq = Math.min(...cajas.map((q) => q.left));
+                let limite = { left: 0, right: ancho };
+                let ignorar = false;
+                for (let p = n.parentElement; p && p !== document.body; p = p.parentElement) {
+                  const s = getComputedStyle(p);
+                  if (p.getBoundingClientRect().width <= 1 || s.textOverflow === "ellipsis") ignorar = true;
+                  if (s.overflowX === "auto" || s.overflowX === "scroll") ignorar = true;
+                  if (ignorar) break;
+                  if (s.overflowX === "hidden" || s.overflowX === "clip") {
+                    limite = p.getBoundingClientRect();
+                    break;
+                  }
+                }
+                if (ignorar) continue;
+                const px = Math.round(Math.max(der - Math.min(limite.right, ancho), Math.max(limite.left, 0) - izq));
+                if (px > 1) {
+                  fuera.push(`«${n.textContent.replace(/\s+/g, " ").trim().slice(0, 40)}» (${px} px)`);
+                  break;
+                }
+              }
+            }
+            return fuera;
+          });
+          for (const c of recortes) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px con el texto espaciado se recorta ${c}`);
+          espaciadosMedidos++;
         } catch (e) {
           fallos.push(`estrecho ${ruta}: ${String(e).split("\n")[0]}`);
         }
@@ -2045,6 +2093,74 @@ let estrechasMedidas = 0;
     }),
   );
   if (!estrechasMedidas) fallos.push("estrecho: no se midió ninguna página");
+  if (espaciadosMedidos < estrechasMedidas) fallos.push(`estrecho: texto espaciado medido en ${espaciadosMedidos} de ${estrechasMedidas} páginas`);
+}
+
+// Las cinco cifras de percentil del simulador de rachas, a 320 px con el texto
+// espaciado: si no caben, parten entre cifra y unidad, nunca entre dígitos.
+// Con los valores de partida son de miles; se recorre el deslizador de riesgo
+// con el resto al máximo para pasar por millones y miles de millones. Si el
+// recorrido no llega a una cifra de cuatro caracteres, no ha medido el caso
+// difícil y eso también es un fallo.
+const cifrasPercentil = [];
+{
+  const ctx = await navegador.newContext({ viewport: { width: ANCHO_ESTRECHO, height: 640 }, reducedMotion: "reduce" });
+  const pagina = await ctx.newPage();
+  for (const ruta of ["/features/disciplina/", "/en/features/disciplina/"]) {
+    try {
+      await pagina.goto(`${BASE}${ruta}`, { waitUntil: "load", timeout: 30000 });
+      await pagina.addStyleTag({ content: ".cv-auto{content-visibility:visible!important}" });
+      await pagina.addStyleTag({
+        content: "*{line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important}p{margin-bottom:2em!important}",
+      });
+      const deslizadores = pagina.locator("main input.tj-range");
+      const etiquetas = await deslizadores.evaluateAll((es) => es.map((e) => e.getAttribute("aria-label") ?? ""));
+      const riesgo = etiquetas.findIndex((e) => /riesgo|risk/i.test(e));
+      if (riesgo < 0) throw new Error("no está el deslizador de riesgo");
+      for (const [i, e] of etiquetas.entries()) {
+        if (/retir|withdraw/i.test(e)) continue;
+        await deslizadores.nth(i).focus();
+        await pagina.keyboard.press(i === riesgo ? "Home" : "End");
+      }
+      await deslizadores.nth(riesgo).focus();
+      const partidas = new Set();
+      for (let paso = 0; paso < 60; paso++) {
+        const celdas = await pagina.evaluate(async () => {
+          await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok)));
+          return [...document.querySelectorAll("main .tj-matriz > .caja-cifra")].map((celda) => {
+            const cifra = celda.lastElementChild;
+            const letras = [];
+            const textos = document.createTreeWalker(cifra, NodeFilter.SHOW_TEXT);
+            for (let t = textos.nextNode(); t; t = textos.nextNode()) {
+              for (let i = 0; i < t.length; i++) {
+                const rango = document.createRange();
+                rango.setStart(t, i);
+                rango.setEnd(t, i + 1);
+                const caja = rango.getClientRects()[0];
+                if (caja) letras.push({ c: t.textContent[i], arriba: Math.round(caja.top) });
+              }
+            }
+            const numero = /[\d.,]/;
+            let parte = false;
+            for (let i = 1; i < letras.length; i++) {
+              if (letras[i].arriba !== letras[i - 1].arriba && numero.test(letras[i].c) && numero.test(letras[i - 1].c)) parte = true;
+            }
+            return { texto: (cifra.textContent || "").trim(), parte };
+          });
+        });
+        for (const c of celdas) {
+          cifrasPercentil.push(c.texto);
+          if (c.parte) partidas.add(c.texto);
+        }
+        await pagina.keyboard.press("ArrowRight");
+      }
+      for (const t of partidas) fallos.push(`percentiles ${ruta}: a ${ANCHO_ESTRECHO} px con el texto espaciado «${t}» se parte entre dígitos`);
+    } catch (e) {
+      fallos.push(`percentiles ${ruta}: ${String(e).split("\n")[0]}`);
+    }
+  }
+  await ctx.close();
+  if (!cifrasPercentil.some((t) => /\d[\d.,]{3}/.test(t))) fallos.push("percentiles: el recorrido no llegó a ninguna cifra de cuatro caracteres");
 }
 
 await navegador.close();

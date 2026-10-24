@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { TRADES, nombreSetup, type Trade } from "@/lib/trading/data";
+import { TRADES, nombreSetup, notaEnIdioma, operacionesExportables, type Trade } from "@/lib/trading/data";
 import { coincideOperacion } from "@/lib/trading/filtros";
 import { comandosDemo, filtraComandos } from "@/components/demo/DemoCommandPalette";
 
@@ -24,6 +24,28 @@ describe("búsqueda de Operaciones: sin tildes, sin mayúsculas, cualquier orden
     for (const q of ["es", "breakout", "ruptura", "retroceso", "objetivo"]) {
       expect(coincideOperacion(operacion(), q, rotulo), q).toBe(true);
     }
+  });
+
+  it("una nota de la muestra se busca en el idioma en que se lee: en /en/demo, en inglés y no en español", () => {
+    const muestra = operacion({ entryNote: TRADES[0].entryNote, closeNote: "" });
+    const inglesa = notaEnIdioma(TRADES[0].entryNote, "en");
+    expect(inglesa).not.toBe(TRADES[0].entryNote);
+    const enIngles = inglesa.split(/\s+/).slice(0, 3).join(" ");
+    const enEspanol = TRADES[0].entryNote.split(/\s+/).slice(0, 3).join(" ");
+    expect(coincideOperacion(muestra, enIngles, rotulo, "en")).toBe(true);
+    expect(coincideOperacion(muestra, enEspanol, rotulo, "en")).toBe(false);
+    expect(coincideOperacion(muestra, enEspanol, rotulo, "es")).toBe(true);
+    expect(coincideOperacion(muestra, enIngles, rotulo, "es")).toBe(false);
+  });
+
+  it("el JSON exportado lleva las notas en el idioma de la demo", () => {
+    const [en] = operacionesExportables([TRADES[0]], "en");
+    const [es] = operacionesExportables([TRADES[0]], "es");
+    expect(en.entryNote).toBe(notaEnIdioma(TRADES[0].entryNote, "en"));
+    expect(en.closeNote).toBe(notaEnIdioma(TRADES[0].closeNote, "en"));
+    expect(en.entryNote).not.toBe(TRADES[0].entryNote);
+    expect(es.entryNote).toBe(TRADES[0].entryNote);
+    expect(es.closedAt).toBe(TRADES[0].closedAt.toISOString());
   });
 
   it("varias palabras, en cualquier orden y repartidas entre campos", () => {

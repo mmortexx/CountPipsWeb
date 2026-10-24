@@ -83,7 +83,7 @@ export const DESCRIPCION_A_MANO: Record<string, { es?: string; en?: string }> = 
     en: "The probability that losses take the account down to the level you count as ruin. It grows exponentially with risk per trade.",
   },
   margin: {
-    es: "Colateral que el broker retiene para cubrir una posición apalancada. Por debajo del margen de mantenimiento llega el margin call o el cierre forzoso.",
+    es: "Colateral que el bróker retiene para cubrir una posición apalancada. Por debajo del margen de mantenimiento llega el margin call o el cierre forzoso.",
     en: "Collateral the broker holds to cover a leveraged position. Below the maintenance margin comes a margin call or forced liquidation.",
   },
   discipline: {
@@ -98,7 +98,7 @@ export const DESCRIPCION_A_MANO: Record<string, { es?: string; en?: string }> = 
     en: "A simulation that reshuffles your trades thousands of times to estimate the probable range of drawdowns and returns. It reveals the risk tail.",
   },
   "market-order": {
-    es: "Orden que se ejecuta al instante al mejor precio disponible. Garantiza la ejecución, no el precio: en mercados poco líquidos puede haber slippage.",
+    es: "Orden que se ejecuta al instante al mejor precio disponible. Garantiza la ejecución, no el precio: en mercados poco líquidos puede haber deslizamiento.",
   },
   leverage: {
     es: "Relación entre el tamaño de la posición y el capital depositado. Multiplica ganancias y pérdidas por igual y amplifica el riesgo de ruina.",
@@ -365,8 +365,8 @@ export const FORMULAS_GLOSARIO: Record<
   "risk-of-ruin": {
     formulaEs: "P(Ruina) = z^U, con p · z^b + q / z = 1",
     formulaEn: "P(Ruin) = z^U, where p · z^b + q / z = 1",
-    variablesEs: "p: probabilidad de acierto, q: 1 − p, b: payoff (ganancia entre pérdida), U: umbral de ruina entre riesgo por operación, z: la raíz entre q y 1",
-    variablesEn: "p: win probability, q: 1 − p, b: payoff (win over loss), U: ruin threshold over risk per trade, z: the root between q and 1",
+    variablesEs: "p: probabilidad de acierto, q: 1 − p, b: payoff (ganancia entre pérdida), U: umbral de ruina dividido entre el riesgo por operación, z: la raíz entre q y 1",
+    variablesEn: "p: win probability, q: 1 − p, b: payoff (win over loss), U: ruin threshold divided by the risk per trade, z: the root between q and 1",
   },
   cagr: {
     formulaEs: "CAGR = (Vf / Vi)^(1 / t) − 1",
@@ -393,10 +393,10 @@ export const FORMULAS_GLOSARIO: Record<
     variablesEn: "Ratio of projected target reward versus stop loss risk",
   },
   "win-rate": {
-    formulaEs: "WR = (Operaciones ganadoras / N) × 100",
-    formulaEn: "WR = (Winning trades / N) × 100",
-    variablesEs: "Porcentaje de operaciones con resultado neto positivo",
-    variablesEn: "Percentage of total trades that closed with a positive net return",
+    formulaEs: "WR = Operaciones ganadoras / N",
+    formulaEn: "WR = Winning trades / N",
+    variablesEs: "Proporción de operaciones con resultado neto positivo; se enseña en porcentaje",
+    variablesEn: "Share of trades that closed with a positive net return, shown as a percentage",
   },
   payoff: {
     formulaEs: "Payoff = W̄ / L̄ = Ganancia media / Pérdida media",

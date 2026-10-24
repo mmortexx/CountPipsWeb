@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   // `absolute` evita la plantilla `%s — CountPips` del layout (saldría duplicada).
   title: { absolute: "Diario de trading local, sin cuenta — CountPips" },
   description:
-    "Local-first: tus operaciones en tu equipo, sin cuenta ni telemetría. Ficha técnica, la lista completa de conexiones y cómo se importan tus datos.",
+    "Tus operaciones, en tu equipo: sin cuenta ni telemetría. Ficha técnica, la lista completa de conexiones y cómo se importan tus datos.",
   alternates: { canonical: `${SITE_URL}/features/seguridad/`, languages: hreflangDe("/features/seguridad") },
   openGraph: {
     title: "Diario de trading local, sin cuenta — CountPips",

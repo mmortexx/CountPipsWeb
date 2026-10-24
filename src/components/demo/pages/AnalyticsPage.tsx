@@ -19,7 +19,7 @@ import {
   heatmap as heatmapGrid,
   computeSqn,
   computeUlcerIndex,
-  computeHalfKelly,
+  medioKellySeleccion,
   computeOmega,
   INITIAL_BALANCE_CONST,
   type Trade,
@@ -749,7 +749,7 @@ function computeEdge(trades: Trade[], lang: Lang) {
       ? `Necesitas al menos ${fmtOperaciones(MUESTRA_MINIMA, lang)} para emitir un veredicto con confianza estadística.`
       : `You need at least ${fmtOperaciones(MUESTRA_MINIMA, lang)} to reach a verdict with statistical confidence.`;
   } else if (loR > 0) {
-    verdict = lang === "es" ? "Edge confirmado" : "Confirmed edge";
+    verdict = lang === "es" ? "Ventaja confirmada" : "Confirmed edge";
     verdictTone = "pos";
     hint = lang === "es"
       ? "El intervalo de confianza del 95\u00a0% de la expectativa R excluye al cero: tu ventaja es estadísticamente significativa."
@@ -761,7 +761,7 @@ function computeEdge(trades: Trade[], lang: Lang) {
       ? "La señal apunta en la dirección correcta pero el intervalo aún incluye el cero: sigue operando para estrecharlo."
       : "The signal points the right way but the interval still includes zero — keep trading to narrow it.";
   } else {
-    verdict = lang === "es" ? "Sin edge" : "No edge";
+    verdict = lang === "es" ? "Sin ventaja" : "No edge";
     verdictTone = "neutral";
     hint = lang === "es"
       ? "El intervalo de confianza incluye al cero y la media es cercana o negativa: no hay evidencia de ventaja real."
@@ -798,9 +798,15 @@ function normCdf(z: number): number {
 }
 
 /** SQN, índice Ulcer, CAGR, medio Kelly y Omega, calculados aquí porque `Metrics` no los expone. */
-function computeAdvanced(trades: Trade[], mStats?: { winRate: number; payoff: number }) {
+function computeAdvanced(trades: Trade[], mStats: { winRate: number; payoff: number }) {
   const n = trades.length;
-  if (n < 2) return { sqn: 0, ulcer: 0, cagr: 0, halfKelly: 0, omega: 1 };
+  const kelly = medioKellySeleccion(
+    trades.filter((t) => t.netPnl > 0).length,
+    trades.filter((t) => t.netPnl < 0).length,
+    mStats.winRate,
+    mStats.payoff,
+  );
+  if (n < 2) return { sqn: 0, ulcer: 0, cagr: 0, halfKelly: kelly.medio, kellyFalta: kelly.falta, omega: 1 };
 
   const sqn = computeSqn(trades);
   const ulcer = computeUlcerIndex(trades, INITIAL_BALANCE_CONST);
@@ -821,18 +827,32 @@ function computeAdvanced(trades: Trade[], mStats?: { winRate: number; payoff: nu
       ? (Math.pow(final / INITIAL_BALANCE_CONST, 1 / yearsSpan) - 1) * 100
       : 0;
 
-  const p = mStats?.winRate ?? (trades.filter((t) => t.netPnl > 0).length / n);
-  const wins = trades.filter((t) => t.netPnl > 0);
-  const losses = trades.filter((t) => t.netPnl < 0);
-  const avgW = wins.length > 0 ? wins.reduce((s, t) => s + t.netPnl, 0) / wins.length : 1;
-  const avgL = losses.length > 0 ? Math.abs(losses.reduce((s, t) => s + t.netPnl, 0) / losses.length) : 1;
-  const b = mStats?.payoff ?? (avgL > 0 ? avgW / avgL : 1);
-  const halfKelly = computeHalfKelly(p, b);
-
   // Omega de Keating y Shadwick con umbral L = 0.
   const omega = computeOmega(trades, 0);
 
-  return { sqn, ulcer, cagr, halfKelly, omega };
+  return { sqn, ulcer, cagr, halfKelly: kelly.medio, kellyFalta: kelly.falta, omega };
+}
+
+/** Medio Kelly de la selección. Sin pérdidas o sin ganancias no se calcula:
+ *  «—» y lo que falta, en color neutro (un 0 en ámbar se leía «sin ventaja»). */
+export function CifraKelly({ medio, falta, lang }: { medio: number | null; falta: "perdidas" | "ganancias" | null; lang: Lang }) {
+  if (medio === null) {
+    const nota = falta === "perdidas"
+      ? (lang === "es" ? "sin pérdidas aún" : "no losses yet")
+      : falta === "ganancias"
+        ? (lang === "es" ? "sin ganancias aún" : "no wins yet")
+        : null;
+    return (
+      <span className="text-secondary">
+        —{nota && <span className="block text-[11px] font-normal text-tertiary">{nota}</span>}
+      </span>
+    );
+  }
+  return (
+    <span className={medio > 0 ? "text-pnl-pos" : "text-pnl-warn"}>
+      {fmtNum(medio, lang, 1)}{pctSep(lang)}
+    </span>
+  );
 }
 
 const dayMs = 86_400_000;
@@ -1159,7 +1179,7 @@ export function AnalyticsPage() {
                       {t("profitFactor")}
                     </th>
                     <th className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
-                      {lang === "es" ? "Máx. caída" : "Max drawdown"}
+                      {t("maxDrawdown")}
                     </th>
                   </tr>
                 </thead>
@@ -1343,9 +1363,7 @@ export function AnalyticsPage() {
                   label="Half Kelly"
                   hint={desc("Criterio de Kelly al 50\u00a0% (riesgo óptimo)", "Half Kelly sizing (optimal fraction)")}
                 >
-                  <span className={adv.halfKelly > 0 ? "text-pnl-pos" : "text-pnl-warn"}>
-                    {fmtNum(adv.halfKelly, lang, 1)}{pctSep(lang)}
-                  </span>
+                  <CifraKelly medio={adv.halfKelly} falta={adv.kellyFalta} lang={lang} />
                 </RatioCell>
                 <RatioCell
                   label={t("recoveryFactor")}

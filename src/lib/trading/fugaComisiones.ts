@@ -6,7 +6,7 @@ export type NivelFugaComisiones = "alto" | "moderado" | "bajo";
 export const UMBRAL_FUGA_ALTA = 30;
 const UMBRAL_FUGA_MODERADA = 15;
 
-/** La palabra que acompaña al color de «Parte de la ganancia», para quien no lo distingue: >30 alto, >15 moderado, el resto bajo. */
+/** La palabra que acompaña al color de «Se lo llevan los costes», para quien no lo distingue: >30 alto, >15 moderado, el resto bajo. */
 export function clasificaFugaComisiones(costDragPct: number): NivelFugaComisiones {
   if (costDragPct > UMBRAL_FUGA_ALTA) return "alto";
   if (costDragPct > UMBRAL_FUGA_MODERADA) return "moderado";

@@ -50,7 +50,7 @@ const TEXTOS = {
     en: ["Before you pay,", "watch it work.", "The demo shows the program with {n} sample trades. Purchase opens at launch."],
     pt: ["Antes de pagar,", "veja-o funcionar.", "A demo mostra o software com {n} operações de exemplo. As compras serão abertas no lançamento."],
     fr: ["Avant de payer,", "voyez-le fonctionner.", "La démo présente le logiciel avec {n} opérations d’exemple. L’achat sera ouvert au lancement."],
-    de: ["Bevor Sie zahlen,", "sehen Sie es im Einsatz.", "Die Demo zeigt das Programm mit {n} Beispiel-Trades. Der Kauf öffnet beim Launch."],
+    de: ["Bevor Sie zahlen,", "sehen Sie es im Einsatz.", "Die Demo zeigt das Programm mit {n} Beispiel-Trades. Der Kauf öffnet zum Verkaufsstart."],
     it: ["Prima di pagare,", "guardalo in azione.", "La demo mostra il programma con {n} operazioni di esempio. L’acquisto sarà disponibile al lancio."],
   },
   glosario: {

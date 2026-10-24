@@ -34,7 +34,7 @@ const faqSchema = jsonLdFaq(FAQ_ES);
 export const metadata: Metadata = {
   title: "Preguntas frecuentes antes de instalar",
   description:
-    "Preguntas frecuentes sobre CountPips: precio, privacidad, compatibilidad, importación, actualizaciones y más.",
+    "Preguntas frecuentes sobre CountPips: precio, privacidad, compatibilidad, importación, exportación y más.",
   alternates: {
     canonical: `${SITE_URL}/faq/`,
     languages: hreflangDe("/faq"),
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Preguntas frecuentes antes de instalar — CountPips",
     description:
-      "Preguntas frecuentes sobre CountPips: precio, privacidad, compatibilidad, importación, actualizaciones y más.",
+      "Preguntas frecuentes sobre CountPips: precio, privacidad, compatibilidad, importación, exportación y más.",
   },
 };
 

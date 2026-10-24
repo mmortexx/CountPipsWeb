@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CONEXIONES, LO_QUE_VA_SOLO, RESUMEN_SEGURIDAD } from "@/lib/conexiones";
+import { CONEXIONES, ENTRADILLA_FICHA_TECNICA, LO_QUE_VA_SOLO, RESUMEN_SEGURIDAD } from "@/lib/conexiones";
 import { FAQ_EN, FAQ_ES } from "@/lib/faq";
 
 /**
@@ -35,6 +35,8 @@ describe("conexiones del programa", () => {
     ["entradilla de seguridad EN", RESUMEN_SEGURIDAD.en, "en"],
     ["LO_QUE_VA_SOLO ES", LO_QUE_VA_SOLO.es, "es"],
     ["LO_QUE_VA_SOLO EN", LO_QUE_VA_SOLO.en, "en"],
+    ["entradilla de la ficha técnica ES", ENTRADILLA_FICHA_TECNICA.es, "es"],
+    ["entradilla de la ficha técnica EN", ENTRADILLA_FICHA_TECNICA.en, "en"],
   ];
 
   const NINGUNA = { es: /nada se conecta solo/i, en: /nothing connects on its own/i };
@@ -45,4 +47,5 @@ describe("conexiones del programa", () => {
       expect(texto.toLowerCase(), `falta «${c[l].nombre}»`).toContain(c[l].nombre.toLowerCase());
     }
   });
+
 });
