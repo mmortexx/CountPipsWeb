@@ -16,6 +16,7 @@ import {
   type Metrics,
 } from "@/lib/trading/data";
 import { addTrade, useAllTrades } from "@/lib/trading/demoStore";
+import { fraseOperacionesHoy, operacionesDeHoy, operacionesDelMismoDia } from "@/lib/trading/parteDeHoy";
 import { useToast } from "@/hooks/use-toast";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useTeclaMando } from "@/hooks/use-tecla-mando";
@@ -1052,14 +1053,20 @@ function TodayBriefing() {
     ? new Date().toLocaleDateString(LOCALE_FECHA[lang], { weekday: "long" })
     : null;
 
-  // Operaciones de la muestra en el mismo día de la semana: con ella la app decide si afirma algo.
+  // Muestra y operaciones registradas: lo que registras hoy cuenta aquí igual que en el resto de la demo.
+  const allTrades = useAllTrades(TRADES);
+
+  // Operaciones en el mismo día de la semana: con ellas la app decide si afirma algo.
   const sameWeekdayCount = useMemo(() => {
     if (!weekday) return 0;
-    const target = new Date().getDay();
     /* La operación se fecha en UTC (ver `data.ts`) y «hoy» es el día local
        del visitante: cada lado se lee en su huso a propósito. */
-    return TRADES.filter((tr) => tr.closedAt.getUTCDay() === target).length;
-  }, [weekday]);
+    return operacionesDelMismoDia(allTrades, new Date().getDay());
+  }, [weekday, allTrades]);
+  const closedTodayCount = useMemo(
+    () => (weekday ? operacionesDeHoy(allTrades, new Date()) : 0),
+    [weekday, allTrades]
+  );
 
   const streak = METRICS.currentStreak;
 
@@ -1082,11 +1089,7 @@ function TodayBriefing() {
               : `It is ${weekday}. Across ${fmtOperaciones(sameWeekdayCount, lang)}, your results that day fall on both sides of zero: there is no edge or disadvantage to claim.`
             : " "}
         </p>
-        <p>
-          {es
-            ? "Todavía no has cerrado ninguna operación hoy."
-            : "You have not closed any trade today."}
-        </p>
+        <p>{weekday ? fraseOperacionesHoy(closedTodayCount, lang) : " "}</p>
         {/* Con una sola operación no hay racha que anunciar. */}
         {streak.kind !== "none" && streak.count > 1 && (
           <p>
