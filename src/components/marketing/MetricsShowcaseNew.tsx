@@ -440,9 +440,9 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
       c: "rgb(var(--pnl-neg))",
       enlaza: "maxDd",
     },
-    /* «Win rate» también en español, como «Expectancy». La fórmula sí se
-       traduce («G / N»): son letras, no el nombre de la métrica. */
-    { id: "winRate", l: "Win rate", v: fmtPct(METRICS.winRate, lang, 1), f: tx(lang, { es: "G / N", en: "W / N", pt: "G / N", fr: "G / N", de: "G / N", it: "G / N" }), d: tx(lang, { es: "Operaciones cerradas en beneficio.", en: "Trades closed at a profit.", pt: "Operações encerradas com lucro.", fr: "Opérations clôturées avec profit.", de: "Mit Gewinn geschlossene Trades.", it: "Operazioni chiuse in profitto." }), enlaza: "winRate" },
+    /* «Win rate» también en español, como «Expectancy». Las letras de las
+       fórmulas son las del glosario en todos los idiomas (WR, W̄, L̄): W / N. */
+    { id: "winRate", l: "Win rate", v: fmtPct(METRICS.winRate, lang, 1), f: "W / N", d: tx(lang, { es: "Operaciones cerradas en beneficio.", en: "Trades closed at a profit.", pt: "Operações encerradas com lucro.", fr: "Opérations clôturées avec profit.", de: "Mit Gewinn geschlossene Trades.", it: "Operazioni chiuse in profitto." }), enlaza: "winRate" },
     { id: "payoff", l: "Payoff", v: fmtNum(METRICS.payoff, lang, 2), f: "W̄ / L̄", d: tx(lang, { es: "Ganancia media frente a pérdida media.", en: "Average win against average loss.", pt: "Ganho médio em relação à perda média.", fr: "Gain moyen rapporté à la perte moyenne.", de: "Durchschnittlicher Gewinn im Verhältnis zum Verlust.", it: "Guadagno medio rispetto alla perdita media." }) },
   ];
 
