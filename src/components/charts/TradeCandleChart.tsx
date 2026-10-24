@@ -206,7 +206,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
                   setTimeframe(tf);
                   setReplayIdx(candles.length);
                 }}
-                className={`min-h-[44px] sm:min-h-0 min-w-[44px] sm:min-w-0 px-2 sm:px-2 py-2 sm:py-0.5 text-xs sm:text-[10px] font-mono uppercase rounded-[1px] inline-flex items-center justify-center transition-colors ${
+                className={`min-h-[44px] sm:min-h-0 min-w-[44px] sm:min-w-0 px-2 sm:px-2 py-2 sm:py-0.5 text-xs sm:text-[11px] font-mono uppercase rounded-[1px] inline-flex items-center justify-center transition-colors ${
                   timeframe === tf
                     ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
                     : "text-tertiary hover:text-primary"
@@ -217,7 +217,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             ))}
           </div>
 
-          <div className="flex items-center gap-1 text-[10.5px] font-mono" role="group" aria-label={es ? "Indicadores" : "Indicators"}>
+          <div className="flex items-center gap-1 text-[11px] font-mono" role="group" aria-label={es ? "Indicadores" : "Indicators"}>
             <button
               type="button"
               aria-pressed={showSma}
@@ -440,7 +440,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
         </svg>
 
         {hoveredCandle && (
-          <div className="absolute top-2 left-2 bg-[var(--paper-dense)] border border-[rgb(var(--divider)/0.2)] rounded-[4px] p-2 text-[10.5px] font-mono text-secondary flex items-center gap-3">
+          <div className="absolute top-2 left-2 bg-[var(--paper-dense)] border border-[rgb(var(--divider)/0.2)] rounded-[4px] p-2 text-[11px] font-mono text-secondary flex items-center gap-3">
             <span>T: <b className="text-primary">{hoveredCandle.time}</b></span>
             <span>O: <b className="text-primary">{fmtPrice(hoveredCandle.open, decimals, lang)}</b></span>
             <span>H: <b className="text-primary">{fmtPrice(hoveredCandle.high, decimals, lang)}</b></span>

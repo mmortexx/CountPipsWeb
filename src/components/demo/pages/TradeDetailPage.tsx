@@ -234,7 +234,7 @@ function buildFills(trade: Trade, decimals: number, lang: Lang): FillRow[] {
 function Detail({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
-      <dt className="text-[10px] uppercase tracking-[0.15em] text-tertiary mb-1">
+      <dt className="text-[11px] uppercase tracking-[0.15em] text-tertiary mb-1">
         {label}
       </dt>
       <dd className="text-sm">{children}</dd>
@@ -282,7 +282,7 @@ function HeroStat({
           : ""
       }`}
     >
-      <div className="text-[10px] uppercase tracking-[0.15em] text-tertiary mb-1.5">
+      <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary mb-1.5">
         {label}
       </div>
       <div>{children}</div>
@@ -323,7 +323,7 @@ function RiskRewardBar({
   const rewardFraction = plannedRr / (1 + plannedRr);
   return (
     <div>
-      <div className="flex items-center justify-between mb-2 text-[10px] tracking-[0.15em] text-tertiary tnum">
+      <div className="flex items-center justify-between mb-2 text-[11px] tracking-[0.15em] text-tertiary tnum">
         <span>{lang === "es" ? "Riesgo" : "Risk"} · 1R</span>
         <span>
           {lang === "es" ? "Recompensa" : "Reward"} · {fmtNum(plannedRr, lang, 1)}R
@@ -622,7 +622,7 @@ export function TradeDetailPage() {
                   value={riskAmount}
                   className="text-2xl md:text-3xl font-semibold"
                 />
-                <span className="text-[10px] text-tertiary tnum">
+                <span className="text-[11px] text-tertiary tnum">
                   {fmtNum(riskPct, lang, 2)}
                   {pctSep(lang)} {lang === "es" ? "de la cuenta" : "of the account"}
                 </span>
@@ -642,7 +642,7 @@ export function TradeDetailPage() {
               </Eyebrow>
               <div className="flex items-center gap-5 text-xs">
                 <span className="inline-flex items-center gap-1.5">
-                  <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary">
+                  <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary">
                     MAE
                   </span>
                   <span className="text-pnl-neg font-semibold tnum">
@@ -650,7 +650,7 @@ export function TradeDetailPage() {
                   </span>
                 </span>
                 <span className="inline-flex items-center gap-1.5">
-                  <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary">
+                  <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary">
                     MFE
                   </span>
                   <span className="text-pnl-pos font-semibold tnum">
@@ -719,14 +719,14 @@ export function TradeDetailPage() {
               <Eyebrow>
                 {lang === "es" ? "Anatomía" : "Anatomy"}
               </Eyebrow>
-              <Chip variant="count" size="xs" rounded="sm" className="tnum">
+              <Chip variant="count" size="sm" rounded="sm" className="tnum">
                 {fmtInt(fills.length, lang)} {lang === "es" ? "ejecuciones" : "fills"}
               </Chip>
             </div>
             {/* Con `overflow-x-auto` las columnas fijas (~356 px) se desplazan dentro
                 de la tarjeta en estrecho en vez de forzar la columna. */}
             <div className="overflow-x-auto custom-scroll -mx-1 px-1">
-              <div className="grid grid-cols-[3.5rem_1fr_3.5rem_4rem_3rem_3.5rem] gap-x-3 pb-2 min-w-[24rem] text-[10px] uppercase tracking-[0.14em] text-tertiary border-b border-[rgb(var(--divider)/0.1)]">
+              <div className="grid grid-cols-[3.5rem_1fr_3.5rem_4rem_3rem_3.5rem] gap-x-3 pb-2 min-w-[24rem] text-[11px] uppercase tracking-[0.14em] text-tertiary border-b border-[rgb(var(--divider)/0.1)]">
                 <div>{lang === "es" ? "Lado" : "Side"}</div>
                 <div>{lang === "es" ? "Hora" : "Time"}</div>
                 <div className="text-right">{lang === "es" ? "Cant." : "Qty"}</div>
@@ -757,7 +757,7 @@ export function TradeDetailPage() {
                       >
                         {dirLabel(f.dir, lang)}
                       </span>
-                      <span className="text-[10px] text-tertiary">
+                      <span className="text-[11px] text-tertiary">
                         {sideLabel(f.side, lang)}
                       </span>
                     </div>
@@ -811,7 +811,7 @@ export function TradeDetailPage() {
               <p className="text-sm text-secondary">{dayOrdinal}</p>
               <p className="text-sm text-secondary">{sincePrevious}</p>
               <div className="flex items-center gap-2.5">
-                <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary">
+                <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
                   {lang === "es" ? "P&L previo" : "P&L before"}
                 </span>
                 <Money
@@ -880,7 +880,7 @@ export function TradeDetailPage() {
 
           <div className="flex items-center gap-6 flex-wrap text-xs">
             <div>
-              <div className="text-[10px] uppercase tracking-[0.15em] text-tertiary mb-0.5">
+              <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary mb-0.5">
                 {lang === "es" ? "Apertura" : "Opened"}
               </div>
               <div className="tnum text-secondary">
@@ -888,7 +888,7 @@ export function TradeDetailPage() {
               </div>
             </div>
             <div>
-              <div className="text-[10px] uppercase tracking-[0.15em] text-tertiary mb-0.5">
+              <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary mb-0.5">
                 {t("colClosed")}
               </div>
               <div className="tnum text-secondary">
@@ -896,7 +896,7 @@ export function TradeDetailPage() {
               </div>
             </div>
             <div>
-              <div className="text-[10px] uppercase tracking-[0.15em] text-tertiary mb-0.5">
+              <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary mb-0.5">
                 {lang === "es" ? "Duración" : "Duration"}
               </div>
               <div className="tnum font-semibold text-primary">
@@ -998,7 +998,7 @@ export function TradeDetailPage() {
 
             <div className="space-y-3 mb-5">
               <div>
-                <div className="text-[10px] uppercase tracking-[0.15em] text-tertiary mb-1">
+                <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary mb-1">
                   {t("entryNote")}
                 </div>
                 <blockquote className="border-l-2 border-solid border-[rgb(var(--divider)/0.25)] pl-3 py-1 text-sm text-secondary italic leading-relaxed">
@@ -1006,7 +1006,7 @@ export function TradeDetailPage() {
                 </blockquote>
               </div>
               <div>
-                <div className="text-[10px] uppercase tracking-[0.15em] text-tertiary mb-1">
+                <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary mb-1">
                   {t("manageNote")}
                 </div>
                 <blockquote className="border-l-2 border-solid border-[rgb(var(--divider)/0.25)] pl-3 py-1 text-sm text-secondary italic leading-relaxed">
@@ -1016,7 +1016,7 @@ export function TradeDetailPage() {
                 </blockquote>
               </div>
               <div>
-                <div className="text-[10px] uppercase tracking-[0.15em] text-tertiary mb-1">
+                <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary mb-1">
                   {t("closeNote")}
                 </div>
                 <blockquote className="border-l-2 border-solid border-[rgb(var(--divider)/0.25)] pl-3 py-1 text-sm text-secondary italic leading-relaxed">

@@ -192,7 +192,7 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
                 ))}
             </ul>
 
-            <div className="mt-3 pt-3 border-t border-[rgb(var(--divider)/0.1)] text-[10px] text-tertiary leading-snug">
+            <div className="mt-3 pt-3 border-t border-[rgb(var(--divider)/0.1)] text-[11px] text-tertiary leading-snug">
               {es
                 ? "Funcionan sobre la demo · pulsa ? cuando quieras"
                 : "Work while on the demo · press ? anytime"}
@@ -204,14 +204,14 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
 
 function Kbd({ children }: { children: ReactNode }) {
   return (
-    <kbd className="inline-flex items-center justify-center min-w-[18px] h-5 px-1.5 rounded bg-[rgb(var(--divider)/0.1)] border border-[rgb(var(--divider)/0.15)] text-[10px] font-mono tnum text-secondary">
+    <kbd className="inline-flex items-center justify-center min-w-[18px] h-5 px-1.5 rounded bg-[rgb(var(--divider)/0.1)] border border-[rgb(var(--divider)/0.15)] text-[11px] font-mono tnum text-secondary">
       {children}
     </kbd>
   );
 }
 
 function Dash() {
-  return <span className="text-tertiary text-[10px] mx-0.5">–</span>;
+  return <span className="text-tertiary text-[11px] mx-0.5">–</span>;
 }
 
 function KeyboardIcon() {

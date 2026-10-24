@@ -186,6 +186,8 @@ const laminasVistas = [];
 const temasLaminaVistos = [];
 /** Dónde se abrió la ayuda de atajos de la demo, por pantalla. */
 const ayudasDemo = [];
+/** Letra de la demo: qué pestañas y cuántos textos se midieron. */
+const letraDemo = [];
 /** Caracteres leídos en cada página inglesa (un `innerText` vacío pasaría en verde). */
 const idiomasRevisados = [];
 /** Vuelta a la cabecera: de dónde salió, dónde apareció y dónde acabó. */
@@ -734,6 +736,63 @@ for (const pantalla of PANTALLAS) {
           }
         } else {
           avisos.push(`${etiqueta}: no encuentro las pestañas de la demo para abrir su ayuda`);
+        }
+      }
+
+      // Letra de la demo: nada por debajo de 11 px, el peldaño menor del sitio,
+      // en ninguna pestaña ni en el detalle de una operación. El texto de los
+      // gráficos SVG escala con su caja y no cuenta. Los `sm:` se aplican desde
+      // 640 px, así que basta el escritorio.
+      if (ruta.endsWith("/demo") && pantalla.nombre === "escritorio") {
+        const pestanas = pagina.locator(".demo-window [role=tab]");
+        const total = await pestanas.count();
+        const medir = () =>
+          pagina.evaluate(() => {
+            const out = [];
+            let vistos = 0;
+            for (const el of document.querySelectorAll(".demo-window *")) {
+              if (el.closest("svg, .sr-only")) continue;
+              if (![...el.childNodes].some((x) => x.nodeType === 3 && x.textContent.trim())) continue;
+              if (typeof el.checkVisibility === "function" && !el.checkVisibility({ visibilityProperty: true })) continue;
+              vistos++;
+              const px = parseFloat(getComputedStyle(el).fontSize);
+              if (px < 10.95) out.push(`${px} px «${el.textContent.trim().slice(0, 30)}»`);
+            }
+            return { vistos, out };
+          });
+        let vistos = 0;
+        let detalle = false;
+        let internas = 0;
+        const pequenas = new Set();
+        const anota = (r) => {
+          vistos += r.vistos;
+          r.out.forEach((x) => pequenas.add(x));
+        };
+        for (let i = 0; i < total; i++) {
+          await pestanas.nth(i).click();
+          await pagina.waitForTimeout(400);
+          anota(await medir());
+          // Las pestañas de dentro de cada pantalla (semanal/mensual, secciones de Analítica) van detrás de las de la barra.
+          for (let j = total; j < (await pestanas.count()); j++) {
+            await pestanas.nth(j).click();
+            await pagina.waitForTimeout(300);
+            anota(await medir());
+            internas++;
+          }
+          const fila = pagina.locator(".demo-window tr[data-operacion]").first();
+          if (!detalle && (await fila.count())) {
+            await fila.click();
+            await pagina.waitForTimeout(400);
+            anota(await medir());
+            detalle = true;
+          }
+        }
+        letraDemo.push(`${etiqueta} ${vistos} textos en ${total} pestañas, ${internas} internas${detalle ? " y el detalle" : ""}`);
+        if (total < 4 || !internas || !detalle || vistos < 500) {
+          fallos.push(`${etiqueta}: letra de la demo — ${vistos} textos en ${total} pestañas, ${internas} internas${detalle ? "" : ", sin detalle"}: la guarda no está mirando`);
+        }
+        if (pequenas.size) {
+          fallos.push(`${etiqueta}: ${pequenas.size} texto(s) de la demo bajo 11 px — ${[...pequenas].slice(0, 4).join("; ")}`);
         }
       }
 
@@ -2004,6 +2063,7 @@ const MINIMOS = [
   [laminasVistas, 1, "ninguna lámina de producto en las rutas auditadas"],
   [temasLaminaVistos, 1, "ninguna lámina comprobada por tema"],
   [ayudasDemo, 1, "la ayuda de atajos de la demo no se abrió en ninguna pantalla"],
+  [letraDemo, 2, "no se midió la letra de la demo en español e inglés"],
   [idiomasRevisados, 1, "ninguna página inglesa revisada palabra a palabra"],
   [pliegues, 1, "no se comprobó dónde cae la llamada a la acción de la portada"],
   [opacidadesFinales, 1, "no se comprobó la opacidad al final del scroll"],
@@ -2056,6 +2116,7 @@ if (calculadorasVistas) {
   console.log(`[humo] calculadoras — ${calculadorasVistas} de 2 no dan por bueno lo imposible (plan con el objetivo del lado del stop; proyección fuera de escala)`);
 }
 console.log(`[humo] ayuda de la demo — abierta con «?» en ${ayudasDemo.length} pantallas: ${ayudasDemo.join("; ")}`);
+console.log(`[humo] letra de la demo — ${letraDemo.join("; ")}`);
 console.log(
   `[humo] idioma — ${idiomasRevisados.length} páginas inglesas revisadas palabra a palabra:\n` +
     idiomasRevisados.map((s) => `         ${s}`).join("\n")

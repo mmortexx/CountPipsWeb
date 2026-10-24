@@ -90,7 +90,7 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
 
       <div className="grid grid-cols-7 gap-1 mb-1">
         {weekdayHeaders.map((d, idx) => (
-          <div key={`${d}-${idx}`} className="text-[9.5px] text-tertiary text-center font-medium">{d}</div>
+          <div key={`${d}-${idx}`} className="text-[11px] text-tertiary text-center font-medium">{d}</div>
         ))}
       </div>
       <div className="grid grid-cols-7 gap-1">
@@ -109,7 +109,7 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
             <div
               data-entra="sello"
               key={i}
-              className="tj-realce aspect-square rounded-[4px] flex flex-col items-center justify-center text-[10px] tnum cursor-default relative group"
+              className="tj-realce aspect-square rounded-[4px] flex flex-col items-center justify-center text-[11px] tnum cursor-default relative group"
               style={{ backgroundColor: bg, border: pnl !== undefined ? "1px solid rgb(var(--divider) / 0.06)" : "1px solid transparent" }}
               onMouseEnter={(e) => {
                 const cell = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -129,7 +129,7 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
                    color que el tinte de la celda el contraste es imposible (en
                    claro caía a 2,2:1). La clase mantiene el token en oscuro y usa
                    texto primario en claro; el signo lo dan el fondo y el +/− escrito. */
-                <span className="text-[9.5px] leading-none cal-day-pnl" data-neg={!pos}>
+                <span className="text-[11px] leading-none cal-day-pnl" data-neg={!pos}>
                   {fmtCifraCorta(pnl, lang)}
                 </span>
               )}
@@ -148,7 +148,7 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
             transform: "translate(-50%, -100%)",
           }}
         >
-          <div className="text-tertiary text-[10px]">
+          <div className="text-tertiary text-[11px]">
             {hovered.day} {monthName} {year}
           </div>
           {dailyPnl.get(String(hovered.day)) !== undefined ? (
