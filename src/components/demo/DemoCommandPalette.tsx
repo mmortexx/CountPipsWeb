@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { usePresencia } from "@/hooks/use-presencia";
 import { coincide } from "@/lib/busqueda";
 import { useLang } from "@/lib/i18n";
@@ -311,17 +311,16 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
     }
   }
 
-  useEffect(() => {
-    if (!open) return;
-    const id = requestAnimationFrame(() => inputRef.current?.focus());
-    return () => cancelAnimationFrame(id);
-  }, [open]);
-
-  /* Devuelve el foco previo al cerrar, sea por Esc, clic fuera o comando.
-     Mismo patrón que ShortcutsHelp.tsx. */
-  useEffect(() => {
+  /* Foco antes de pintar, no en el siguiente fotograma: las teclas de ese
+     hueco iban a los atajos de la demo y se perdía el principio de lo escrito
+     («set-demo» en vez de «reset-demo»). El panel se monta en el mismo render
+     en que se abre (`usePresencia`). Al cerrar, sea por Esc, clic fuera o
+     comando, el foco vuelve adonde estaba (mismo patrón que ShortcutsHelp.tsx);
+     se lee antes de enfocar el campo, o el «foco previo» sería él. */
+  useLayoutEffect(() => {
     if (!open) return;
     const previouslyFocused = document.activeElement as HTMLElement | null;
+    inputRef.current?.focus({ preventScroll: true });
     return () => {
       previouslyFocused?.focus?.();
     };
