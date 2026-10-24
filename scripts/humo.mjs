@@ -1301,11 +1301,8 @@ for (const pantalla of PANTALLAS) {
       }
 
       if (SHOTS) {
-        // Se espera a que se retire la cortina de la intro y no queden
-        // animaciones corriendo: si no, la captura sale a mitad de transición.
-        await pagina
-          .waitForFunction(() => !document.getElementById("tj-loader"), null, { timeout: 6000 })
-          .catch(() => {});
+        // Se espera a que no queden animaciones corriendo: si no, la captura
+        // sale a mitad de transición.
         await pagina
           .waitForFunction(
             () => document.getAnimations().every((a) => a.playState !== "running"),

@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
 
 /**
  * Marcadores de carga. `Skeleton` es un bloque que pulsa; con `shimmer` añade
@@ -53,35 +53,6 @@ export function SkeletonText({
       {Array.from({ length: lines }).map((_, i) => (
         <Skeleton key={i} className={`${lineHeight} ${TEXT_WIDTHS[i % TEXT_WIDTHS.length]}`} />
       ))}
-    </div>
-  );
-}
-
-/** Ficha de carga: barra de título, líneas de texto y un bloque de gráfico; `children` sustituye el contenido. */
-interface SkeletonCardProps {
-  className?: string;
-  children?: ReactNode;
-  /** Barra de título arriba. */
-  showTitle?: boolean;
-  /** Bloque de gráfico abajo. */
-  showChart?: boolean;
-}
-
-export function SkeletonCard({
-  className = "",
-  children,
-  showTitle = true,
-  showChart = true,
-}: SkeletonCardProps) {
-  return (
-    <div className={`tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-5 ${className}`} aria-hidden="true">
-      {children ?? (
-        <>
-          {showTitle && <Skeleton shimmer className="h-4 w-1/3 mb-4" />}
-          <SkeletonText lines={3} className="mb-4" />
-          {showChart && <Skeleton shimmer className="h-28 w-full" />}
-        </>
-      )}
     </div>
   );
 }

@@ -38,18 +38,3 @@ export const ULTIMA_ACTUALIZACION_ISO: string = ULTIMA_ACTUALIZACION.toISOString
  * hay que actualizarla a mano.
  */
 export const PUBLICACION_ISO = "2026-07-20";
-
-/**
- * Validez del precio en los datos estructurados de la oferta: un año desde la
- * última publicación, para que nunca caduque (pasada la fecha, el buscador
- * retira el precio).
- */
-export const PRECIO_VALIDO_HASTA: string = new Date(
-  Date.UTC(
-    ULTIMA_ACTUALIZACION.getUTCFullYear() + 1,
-    ULTIMA_ACTUALIZACION.getUTCMonth(),
-    ULTIMA_ACTUALIZACION.getUTCDate(),
-  ),
-)
-  .toISOString()
-  .slice(0, 10);

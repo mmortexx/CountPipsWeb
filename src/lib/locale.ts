@@ -92,11 +92,6 @@ export function prefijoDeIdioma(lang: Lang): string {
   return item ? item.prefijo : "";
 }
 
-/** El `codigo` del idioma cuyo `htmlLang` es este (`pt-BR` → `pt`); `null` si no está en la tabla. */
-export function idiomaDeHtmlLang(htmlLang: string): Lang | null {
-  return TABLA_IDIOMAS.find((i) => i.htmlLang === htmlLang)?.codigo ?? null;
-}
-
 /**
  * Quita el prefijo de idioma a cualquier ruta prefijada (`/en/pricing` → `/pricing`,
  * `/pt/pricing` → `/pricing`, `/en` → `/`).

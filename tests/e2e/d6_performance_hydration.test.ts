@@ -5,7 +5,6 @@ import {
   ULTIMA_ACTUALIZACION,
   ULTIMA_ACTUALIZACION_ISO,
   PUBLICACION_ISO,
-  PRECIO_VALIDO_HASTA,
 } from "@/lib/fechas";
 import { addTrade, getCustomTrades, type CustomTrade } from "@/lib/trading/demoStore";
 
@@ -28,14 +27,8 @@ describe("Dimension D6: Performance, SSG & Hydration", () => {
 
       expect(ULTIMA_ACTUALIZACION_ISO).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(PUBLICACION_ISO).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-      expect(PRECIO_VALIDO_HASTA).toMatch(/^\d{4}-\d{2}-\d{2}$/);
 
       expect(PUBLICACION_ISO).toBe("2026-07-20");
-
-      // La validez del precio es el año siguiente a la última actualización (UTC).
-      const lastYear = ULTIMA_ACTUALIZACION.getUTCFullYear();
-      const validYear = parseInt(PRECIO_VALIDO_HASTA.slice(0, 4), 10);
-      expect(validYear).toBe(lastYear + 1);
     });
 
     it("D6-T1-2: Dynamic component lazy-loading in HerramientaVista avoids bloated initial bundles", () => {
