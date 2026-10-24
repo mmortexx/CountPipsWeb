@@ -85,7 +85,7 @@ export function ProductStatus() {
     <section className="section">
       <div className="tj-container">
         <div className="tj-split grid gap-8 lg:items-end">
-          <div>
+          <div className="min-w-0">
             <h2 className="t-h2 text-primary">
               {tx(lang, {
                 es: (

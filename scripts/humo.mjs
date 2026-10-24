@@ -1903,6 +1903,7 @@ if (SERVIR) {
 // lector: los titulares que el borde corta se miran aparte.
 const ANCHO_ESTRECHO = 320;
 let estrechasMedidas = 0;
+let espaciadosMedidos = 0;
 {
   const compiladas = async (carpeta, rel = "") => {
     const rutas = [];
@@ -1978,6 +1979,53 @@ let estrechasMedidas = 0;
           if (r.sobra > 1) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el contenido se sale ${r.sobra} px por «${r.texto}»`);
           else for (const c of r.cortados) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el borde corta el titular ${c}`);
           if (r.migaLineas > 1) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px la miga de pan ocupa ${r.migaLineas} líneas`);
+          // Con el espaciado de texto de WCAG 1.4.12 (o la letra grande del
+          // móvil), titulares, botones, pestañas y cifras de matriz siguen
+          // enteros: lo que no cabe parte línea o se desliza, no se recorta.
+          // Los conmutadores segmentados quedan fuera: sus columnas iguales
+          // no admiten partir sin cambiar el reparto en escritorio.
+          await pagina.addStyleTag({
+            content: "*{line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important}p{margin-bottom:2em!important}",
+          });
+          const recortes = await pagina.evaluate(async () => {
+            await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok)));
+            const ancho = document.documentElement.clientWidth;
+            const fuera = [];
+            for (const el of document.querySelectorAll("main h1, main h2, main h3, main .cta, main [role=tab], main .tj-matriz > *")) {
+              if (!el.getClientRects().length || el.closest(".tj-segmentado")) continue;
+              const textos = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+              for (let n = textos.nextNode(); n; n = textos.nextNode()) {
+                if (!n.textContent.trim()) continue;
+                const rango = document.createRange();
+                rango.selectNodeContents(n);
+                const cajas = [...rango.getClientRects()].filter((q) => q.width > 0);
+                if (!cajas.length) continue;
+                const der = Math.max(...cajas.map((q) => q.right));
+                const izq = Math.min(...cajas.map((q) => q.left));
+                let limite = { left: 0, right: ancho };
+                let ignorar = false;
+                for (let p = n.parentElement; p && p !== document.body; p = p.parentElement) {
+                  const s = getComputedStyle(p);
+                  if (p.getBoundingClientRect().width <= 1 || s.textOverflow === "ellipsis") ignorar = true;
+                  if (s.overflowX === "auto" || s.overflowX === "scroll") ignorar = true;
+                  if (ignorar) break;
+                  if (s.overflowX === "hidden" || s.overflowX === "clip") {
+                    limite = p.getBoundingClientRect();
+                    break;
+                  }
+                }
+                if (ignorar) continue;
+                const px = Math.round(Math.max(der - Math.min(limite.right, ancho), Math.max(limite.left, 0) - izq));
+                if (px > 1) {
+                  fuera.push(`«${n.textContent.replace(/\s+/g, " ").trim().slice(0, 40)}» (${px} px)`);
+                  break;
+                }
+              }
+            }
+            return fuera;
+          });
+          for (const c of recortes) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px con el texto espaciado se recorta ${c}`);
+          espaciadosMedidos++;
         } catch (e) {
           fallos.push(`estrecho ${ruta}: ${String(e).split("\n")[0]}`);
         }
@@ -1986,6 +2034,7 @@ let estrechasMedidas = 0;
     }),
   );
   if (!estrechasMedidas) fallos.push("estrecho: no se midió ninguna página");
+  if (espaciadosMedidos < estrechasMedidas) fallos.push(`estrecho: texto espaciado medido en ${espaciadosMedidos} de ${estrechasMedidas} páginas`);
 }
 
 await navegador.close();

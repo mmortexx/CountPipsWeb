@@ -488,7 +488,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
               </p>
             )}
           </div>
-          <div role="tablist" aria-label={tx(lang, { es: "Vista del gráfico", en: "Chart view", pt: "Visualização do gráfico", fr: "Vue du graphique", de: "Diagrammansicht", it: "Vista del grafico" })} className="tj-pestanas flex-none">
+          <div role="tablist" aria-label={tx(lang, { es: "Vista del gráfico", en: "Chart view", pt: "Visualização do gráfico", fr: "Vue du graphique", de: "Diagrammansicht", it: "Vista del grafico" })} className="tj-pestanas flex-none -m-2 p-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {vistas.map((v) => (
               <button
                 key={v.id}

@@ -61,9 +61,9 @@ export function RMultipleSimulator() {
     const signo = n < 0 ? "−" : "";
     /* Por encima del billón ya no se muestra cifra. */
     if (!Number.isFinite(a) || a > LIMITE_PROYECCION_USD) return "—";
-    if (a >= 1_000_000_000) return es ? `${signo}${fmtNum(a / 1_000_000_000, 1)}\u00a0mil\u00a0M $` : `${signo}$${fmtNum(a / 1_000_000_000, 1)}B`;
-    if (a >= 1_000_000) return es ? `${signo}${fmtNum(a / 1_000_000, 2)}\u00a0M $` : `${signo}$${fmtNum(a / 1_000_000, 2)}M`;
-    if (a >= 10_000) return es ? `${signo}${fmtNum(a / 1_000, 0)}\u00a0k $` : `${signo}$${fmtNum(a / 1_000, 0)}k`;
+    if (a >= 1_000_000_000) return es ? `${signo}${fmtNum(a / 1_000_000_000, 1)}\u00a0mil\u00a0M\u00a0$` : `${signo}$${fmtNum(a / 1_000_000_000, 1)}B`;
+    if (a >= 1_000_000) return es ? `${signo}${fmtNum(a / 1_000_000, 2)}\u00a0M\u00a0$` : `${signo}$${fmtNum(a / 1_000_000, 2)}M`;
+    if (a >= 10_000) return es ? `${signo}${fmtNum(a / 1_000, 0)}\u00a0k\u00a0$` : `${signo}$${fmtNum(a / 1_000, 0)}k`;
     return fmtUsd(n);
   };
 
@@ -362,7 +362,7 @@ export function RMultipleSimulator() {
                 </span>
                 <span className="mt-0.5 block text-[12px] leading-[1.2] text-tertiary">{p.n}</span>
                 <span
-                  className="tnum cifra-sm mt-1.5 block whitespace-nowrap font-semibold"
+                  className="tnum cifra-sm mt-1.5 block font-semibold [overflow-wrap:anywhere]"
                   style={{ color: p.col }}
                 >
                   {fmtUsdCorto(p.v)}
