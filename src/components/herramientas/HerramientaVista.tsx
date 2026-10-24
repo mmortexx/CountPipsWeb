@@ -6,6 +6,7 @@ import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { HERRAMIENTAS, type Herramienta } from "@/lib/herramientas";
 import { EnElGlosario } from "@/components/glosario/EnElGlosario";
+import { EnHerramienta } from "@/components/herramientas/EnHerramienta";
 import type { EnlaceTermino } from "@/lib/glosario";
 
 /**
@@ -68,9 +69,11 @@ export function HerramientaVista({
 
   return (
     <>
-      {/* La cabecera de la página ya titula: la de la calculadora queda solo para lectores de pantalla. */}
+      {/* La cabecera de la página ya titula: la de la calculadora no se ve ni se oye. */}
       <div className="tj-en-herramienta contents">
-        <Componente />
+        <EnHerramienta.Provider value={true}>
+          <Componente />
+        </EnHerramienta.Provider>
       </div>
 
 

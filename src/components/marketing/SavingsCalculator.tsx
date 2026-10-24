@@ -6,6 +6,7 @@ import { fmtMoney, fmtNum as fmtNumBase, fmtPct, pctSep } from "@/lib/trading/fo
 import { amortizacion, PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
 import { TASA_REINVERSION_ANUAL } from "@/lib/supuestos";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
+import { useEnHerramienta } from "@/components/herramientas/EnHerramienta";
 
 /**
  * Escenario de coste ilustrativo posterior a la beta: compara los precios de
@@ -25,6 +26,7 @@ const COUNTPIPS_PLANS: { id: PlanId; label: string; price: number }[] = [
 
 export function SavingsCalculator() {
   const { lang } = useLang();
+  const enHerramienta = useEnHerramienta();
   const es = lang === "es";
 
   // Alternativas por suscripción típicas (15-30 $/mes).
@@ -95,7 +97,7 @@ export function SavingsCalculator() {
               {es ? "Escenario" : "Scenario"}
             </span>
           </div>
-          <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]">
+          <h2 data-titular-herramienta aria-hidden={enHerramienta || undefined} className="t-h2 m-0 text-primary max-w-[24ch]">
             {es ? (
               <>
                 Un escenario de coste. No es una oferta.

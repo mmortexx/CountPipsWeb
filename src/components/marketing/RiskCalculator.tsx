@@ -19,6 +19,7 @@ import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { CampoCifra } from "@/components/tj/CampoCifra";
 import { BotonCopiar } from "@/components/tj/BotonCopiar";
 import { componerInforme } from "@/lib/informe";
+import { useEnHerramienta } from "@/components/herramientas/EnHerramienta";
 
 /**
  * Calculadora de tamaño de posición: acciones/cripto (unidades), forex (lotes
@@ -54,6 +55,7 @@ const LOTES: { id: TipoLote; labelEs: string; labelEn: string }[] = [
 
 export function RiskCalculator() {
   const { lang } = useLang();
+  const enHerramienta = useEnHerramienta();
   /* Separador antes del %: espacio duro en español, pegado en inglés
      (`PCT_SEP` de lib/trading/format.ts). */
   const PCT = pctSep(lang);
@@ -287,7 +289,7 @@ export function RiskCalculator() {
             </span>
           </div>
 
-          <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]">
+          <h2 data-titular-herramienta aria-hidden={enHerramienta || undefined} className="t-h2 m-0 text-primary max-w-[24ch]">
             {es ? (
               <>
                 Calcula tu riesgo antes de operar.

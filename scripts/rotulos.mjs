@@ -1,5 +1,5 @@
 /**
- * RÓTULOS: comprueba, en el HTML compilado de todas las páginas, seis cosas
+ * RÓTULOS: comprueba, en el HTML compilado de todas las páginas, siete cosas
  * que con la vista no se notan y con un lector de pantalla dejan la
  * herramienta muda:
  *  1. Grupos de opciones sin nombre.
@@ -8,6 +8,7 @@
  *  4. Botones dentro de un grupo que no dicen si están elegidos.
  *  5. Deslizadores sin `aria-valuetext` (leen el número crudo).
  *  6. Rótulos en inglés en una página española («Close», «Notifications»).
+ *  7. Un título h2–h6 que repite el h1 (en la lista de títulos se oye dos veces).
  *
  * Va sin navegador: es el HTML que llega antes de cualquier script, que es lo
  * primero que lee un lector, y React lo escribe bien formado. Los diálogos y
@@ -77,6 +78,10 @@ const grupoDe = (n) => {
   return null;
 };
 
+/** Mismo título salvo mayúsculas, espacios y el punto final: en la lista de títulos se oye dos veces. */
+const normaTitulo = (s) => s.replace(/\s+/g, " ").replace(/[.\s]+$/, "").trim().toLowerCase();
+const mismoTitulo = (a, b) => normaTitulo(a) !== "" && normaTitulo(a) === normaTitulo(b);
+
 const TODO = process.argv.includes("--todo");
 const fallos = [];
 const anota = (regla, ruta, detalle) => fallos.push({ regla, ruta, detalle });
@@ -90,6 +95,7 @@ for (const f of ficheros) {
   const nodos = [...recorre(raiz)];
   const ids = new Set(nodos.map((n) => n.attr.id).filter(Boolean));
   const corto = (n) => (textoDe(n) || n.attr.class || "").slice(0, 50);
+  const h1 = textoDe(nodos.find((n) => n.tag === "h1") ?? { attr: {}, texto: "", hijos: [] });
 
   for (const n of nodos) {
     const a = n.attr;
@@ -111,6 +117,9 @@ for (const f of ficheros) {
 
     if (n.tag === "input" && a.type === "range" && !a["aria-valuetext"])
       anota("deslizador sin valor legible", ruta, `«${a["aria-label"] ?? a.id ?? "?"}» lee «${a.value ?? a["aria-valuenow"] ?? "?"}»`);
+
+    if (/^h[2-6]$/.test(n.tag) && h1 && mismoTitulo(textoDe(n), h1))
+      anota("título que repite el h1", ruta, `<${n.tag}> «${textoDe(n).slice(0, 50)}»`);
 
     if (lang.startsWith("es")) {
       const rotulo = a["aria-label"]?.trim();

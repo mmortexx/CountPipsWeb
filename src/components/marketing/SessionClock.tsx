@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
 
 import { PLAZAS, cuentaAtras, estaAbierta, horaLocal, proximaApertura, ventanaUtc, type Plaza } from "@/lib/sesiones";
+import { useEnHerramienta } from "@/components/herramientas/EnHerramienta";
 
 /**
  * Reloj de sesiones con los horarios locales de la app de escritorio: cada plaza
@@ -33,6 +34,7 @@ const norm = (h: number) => ((h % 24) + 24) % 24;
 
 export function SessionClock() {
   const { lang } = useLang();
+  const enHerramienta = useEnHerramienta();
   const es = lang === "es";
 
   const [ahora, setAhora] = useState<Date | null>(null);
@@ -136,7 +138,7 @@ export function SessionClock() {
         <div className="mb-10 grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
           <div className="max-w-2xl">
             <span className="eyebrow" data-titular-herramienta>{es ? "Sesiones de mercado" : "Market sessions"}</span>
-            <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch] mt-5"
+            <h2 data-titular-herramienta aria-hidden={enHerramienta || undefined} className="t-h2 m-0 text-primary max-w-[24ch] mt-5"
             >
               {es ? (
                 <>

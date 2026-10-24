@@ -53,7 +53,8 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
             <h2
               className={enPagina ? "sr-only" : "t-h2 m-0 text-primary"}
             >
-              {tx<ReactNode>(lang, {
+              {/* En su página el h1 ya dice el titular: oculto, este h2 nombra lo que sigue. */}
+              {enPagina ? tx(lang, { es: "Las tres guardas antes de registrar", en: "Three guards before you log" }) : tx<ReactNode>(lang, {
                 es: (
                   <>
                     Disciplina que actúa,

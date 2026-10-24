@@ -8,6 +8,7 @@ import { BotonCopiar } from "@/components/tj/BotonCopiar";
 import { componerInforme } from "@/lib/informe";
 import { pctSep, fmtR, fmtNum as fmtNumBase, fmtOperaciones, fmtPct } from "@/lib/trading/format";
 import { Z_UNA_COLA, contrasteVentaja, esperanzaEnR, normalCdf } from "@/lib/trading/estadistica";
+import { useEnHerramienta } from "@/components/herramientas/EnHerramienta";
 
 export { normalCdf };
 
@@ -23,6 +24,7 @@ export { normalCdf };
  */
 export function EdgeSignificanceChecker() {
   const { lang } = useLang();
+  const enHerramienta = useEnHerramienta();
   const es = lang === "es";
   /* Separador antes del %: espacio duro en español, pegado en inglés
      (`PCT_SEP` de lib/trading/format.ts). */
@@ -176,7 +178,7 @@ export function EdgeSignificanceChecker() {
               {es ? "Test estadístico" : "Statistical test"}
             </span>
           </div>
-          <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]">
+          <h2 data-titular-herramienta aria-hidden={enHerramienta || undefined} className="t-h2 m-0 text-primary max-w-[24ch]">
             {es ? (
               <>
                 ¿Tu ventaja es real o es suerte?

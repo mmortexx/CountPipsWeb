@@ -4201,10 +4201,9 @@ svg [data-entra="sello"] {
   }
 }
 
-.tj-en-herramienta h2[data-titular-herramienta] {
-  position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden;
-  clip-path: inset(50%); white-space: nowrap;
-}
+/* En la página de la herramienta el h1 ya titula y nada cuelga de este h2:
+   oculto solo a la vista se oía como el mismo título dos veces. */
+.tj-en-herramienta h2[data-titular-herramienta] { display: none; }
 .tj-en-herramienta span[data-titular-herramienta] { display: none; }
 .tj-en-herramienta :has(> span[data-titular-herramienta]:only-child) { display: none; }
 /* La cabecera de la página ya dice lo que hace la herramienta: la entradilla

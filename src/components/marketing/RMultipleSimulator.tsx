@@ -9,6 +9,7 @@ import { LIMITE_PROYECCION_USD } from "@/lib/trading/proyeccion";
 import { UMBRAL_RUINA_PCT } from "@/lib/trading/estadistica";
 import { fmtMoney, fmtNum as fmtNumBase, fmtOperaciones, fmtR, pctSep } from "@/lib/trading/format";
 import { CAMINOS_MONTE_CARLO } from "@/lib/herramientas";
+import { useEnHerramienta } from "@/components/herramientas/EnHerramienta";
 
 const SIM_RUNS = CAMINOS_MONTE_CARLO;
 
@@ -23,6 +24,7 @@ const SIM_RUNS = CAMINOS_MONTE_CARLO;
 export function RMultipleSimulator() {
   const idPerfiles = useId();
   const { lang } = useLang();
+  const enHerramienta = useEnHerramienta();
   const es = lang === "es";
 
   const [startBalance, setStartBalance] = useState(10000);
@@ -163,7 +165,7 @@ export function RMultipleSimulator() {
               {es ? "Simulador" : "Simulator"}
             </span>
           </div>
-          <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]">
+          <h2 data-titular-herramienta aria-hidden={enHerramienta || undefined} className="t-h2 m-0 text-primary max-w-[24ch]">
             {es ? (
               <>
                 El edge existe. <span className="tj-frase-nueva">La varianza, también.</span>

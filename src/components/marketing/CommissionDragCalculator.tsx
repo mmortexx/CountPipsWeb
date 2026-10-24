@@ -15,12 +15,14 @@ import {
   resultadoBrutoPorOperacion,
   ticksAUnidades,
 } from "@/lib/trading/fugaComisiones";
+import { useEnHerramienta } from "@/components/herramientas/EnHerramienta";
 
 /** Ratio objetivo:riesgo usado para el win rate de equilibrio de la ficha. */
 const RATIO_RR_EQUILIBRIO = 1.5;
 
 export function CommissionDragCalculator() {
   const { lang } = useLang();
+  const enHerramienta = useEnHerramienta();
   const es = lang === "es";
 
   const [selectedInstId, setSelectedInstId] = useState<string>("MNQ");
@@ -97,7 +99,7 @@ export function CommissionDragCalculator() {
 
         <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-10 items-start">
           <div>
-            <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]">
+            <h2 data-titular-herramienta aria-hidden={enHerramienta || undefined} className="t-h2 m-0 text-primary max-w-[24ch]">
               {es ? (
                 <>
                   Lo que se queda por el camino.

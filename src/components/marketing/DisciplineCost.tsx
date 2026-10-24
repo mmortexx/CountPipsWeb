@@ -10,6 +10,7 @@ import { fmtMoney, fmtNum, fmtOperaciones, fmtPct, pctSep } from "@/lib/trading/
 import { LIMITES } from "@/lib/trading/limites";
 import { TASA_REINVERSION_ANUAL } from "@/lib/supuestos";
 import { costeIndisciplina } from "@/lib/trading/indisciplina";
+import { useEnHerramienta } from "@/components/herramientas/EnHerramienta";
 
 interface MistakeItem {
   id: string;
@@ -71,6 +72,7 @@ const ESCENARIOS_EVITAR = [0.5, 0.8] as const;
 export function DisciplineCost() {
   const idEscenarios = useId();
   const { lang } = useLang();
+  const enHerramienta = useEnHerramienta();
   const es = lang === "es";
 
   // Estado editable
@@ -192,7 +194,7 @@ export function DisciplineCost() {
 
         <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-12 items-start">
           <div>
-            <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]"
+            <h2 data-titular-herramienta aria-hidden={enHerramienta || undefined} className="t-h2 m-0 text-primary max-w-[24ch]"
             >
               {es ? (
                 <>
