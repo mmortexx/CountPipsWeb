@@ -304,7 +304,7 @@ export function EdgeSignificanceChecker() {
               {c.minSample95 === null
                 ? (es ? "Sin ventaja que detectar: con este acierto y este payoff, ninguna muestra la encontrará." : "No edge to detect: with this win rate and payoff, no sample size will find one.")
                 : c.sampleAdequate
-                  ? (es ? `Muestra suficiente: con ${ops}, un ${aciertoTxt} real se distingue del ${equilibrioTxt} de equilibrio al 95${PCT} de confianza en 8 de cada 10 muestras.` : `Sample sufficient: with ${ops}, a real ${aciertoTxt} is told apart from the ${equilibrioTxt} breakeven at 95% confidence in 8 samples out of 10.`)
+                  ? (es ? `Muestra suficiente: con ${ops}, un ${aciertoTxt} real se distingue del ${equilibrioTxt} de equilibrio al 95${PCT} de confianza en al menos 8 de cada 10 muestras.` : `Sample sufficient: with ${ops}, a real ${aciertoTxt} is told apart from the ${equilibrioTxt} breakeven at 95% confidence in at least 8 samples out of 10.`)
                   : (es ? `Te faltan ${fmtOperaciones(c.minSample95 - trades, lang)} para distinguir un ${aciertoTxt} real del ${equilibrioTxt} de equilibrio al 95${PCT} de confianza.` : `You need ${fmtNum(c.minSample95 - trades, 0)} more ${c.minSample95 - trades === 1 ? "trade" : "trades"} to tell a real ${aciertoTxt} from the ${equilibrioTxt} breakeven at 95% confidence.`)}
             </p>
           </div>

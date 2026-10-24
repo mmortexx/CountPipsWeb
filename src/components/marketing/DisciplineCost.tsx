@@ -21,10 +21,10 @@ interface MistakeItem {
 /** Reparto de la fuga mensual por tipo de fallo, en %: suma 100. */
 export const ERRORES_INDISCIPLINA: MistakeItem[] = [
   { id: "offhours", labelEs: "Operar fuera de horario", labelEn: "Trading off-hours", pct: 32 },
-  { id: "oversize", labelEs: "Tamaño excesivo (oversize)", labelEn: "Oversized position", pct: 27 },
+  { id: "oversize", labelEs: "Tamaño excesivo", labelEn: "Oversized position", pct: 27 },
   { id: "nostop", labelEs: "Sin stop loss / omitido", labelEn: "No stop loss / omitted", pct: 18 },
   { id: "chasing", labelEs: "Perseguir el precio (FOMO)", labelEn: "Chasing price (FOMO)", pct: 14 },
-  { id: "movingstop", labelEs: "Mover stop loss en contra", labelEn: "Manually moving stop", pct: 9 },
+  { id: "movingstop", labelEs: "Mover el stop en contra", labelEn: "Moving the stop against you", pct: 9 },
 ];
 
 export const PRESETS = [

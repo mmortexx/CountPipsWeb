@@ -127,7 +127,7 @@ export function DrawdownRecovery() {
             </h2>
             <p className="medida mt-3 text-sm leading-relaxed text-secondary md:text-base">
               {es
-                ? "Una caída del 50\u00a0% no se recupera con un 50\u00a0%: hace falta un 100\u00a0%. Mueve tu caída y tu forma de operar."
+                ? "Una caída del 50\u00a0% no se recupera con una subida del 50\u00a0%: hace falta una del 100\u00a0%. Mueve tu caída y tu forma de operar."
                 : "A 50% drawdown is not undone by a 50% gain: it takes 100%. Set your drawdown and how you trade."}
             </p>
 
