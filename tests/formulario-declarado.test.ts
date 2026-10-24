@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { FAQ_EN, FAQ_ES } from "@/lib/faq";
-import { documentoPorSlug } from "@/lib/legal/documentos";
+import { SUBTITULO_PRIVACIDAD, documentoPorSlug } from "@/lib/legal/documentos";
 
 // La FAQ y la política de privacidad dicen qué pide el formulario de acceso
 // anticipado. Se cuentan los campos del HTML compilado (lo que el visitante
@@ -49,6 +49,30 @@ describe("a dónde va la solicitud de acceso anticipado", () => {
     for (const destino of [fila.es[2], fila.en[2]]) {
       expect(destino).toMatch(/endpoint/);
       expect(destino).toMatch(/Web3Forms/);
+    }
+  });
+});
+
+// La solicitud de acceso manda, además de lo escrito, el idioma y la página o
+// campaña de origen (`procedencia()` en forms.ts). El subtítulo de /privacidad
+// decía «…y nada más» encima de una entrada que sí lo cuenta.
+describe("el subtítulo de privacidad dice lo mismo que su entrada", () => {
+  const doc = documentoPorSlug("privacidad")!;
+  const forms = readFileSync(join(process.cwd(), "src", "lib", "forms.ts"), "utf8");
+
+  it("forms.ts manda el idioma y la página y campaña de origen", () => {
+    expect(forms).toMatch(/lang\?: string/);
+    expect(forms).toMatch(/source: enNavegador \? window\.location\.pathname/);
+    expect(forms).toMatch(/utmCampaign: params\.get\("utm_campaign"\)/);
+  });
+
+  it.each([
+    ["es", SUBTITULO_PRIVACIDAD.es, doc.entradaEs, /idioma/, /p[aá]gina o campa[ñn]a/],
+    ["en", SUBTITULO_PRIVACIDAD.en, doc.entradaEn, /language/, /page or campaign/],
+  ])("%s: los dos nombran el idioma y la página o campaña", (_, subtitulo, entrada, idioma, origen) => {
+    for (const texto of [subtitulo, entrada]) {
+      expect(texto, texto).toMatch(idioma);
+      expect(texto, texto).toMatch(origen);
     }
   });
 });

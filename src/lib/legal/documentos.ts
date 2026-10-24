@@ -13,6 +13,12 @@ import { fmtMoney } from "@/lib/trading/format";
  * profesional antes de cobrar nada, sobre todo términos de venta y licencia.
  */
 
+/** Subtítulo de /privacidad: resume la entrada de su documento y debe decir lo mismo de lo que se recoge. */
+export const SUBTITULO_PRIVACIDAD = {
+  es: "Lo que escribes en un formulario y, en la solicitud de acceso, el idioma y la página o campaña desde la que llegas; las comunicaciones, con un consentimiento aparte. Sin cookies ni analítica. Aquí está qué se recoge y cómo pedir que se borre.",
+  en: "What you type into a form and, with the early-access request, the language and the page or campaign you came from; communications need separate consent. No cookies or analytics. Here is what is collected and how to have it deleted.",
+};
+
 export type Bloque =
   | { tipo: "parrafo"; es: string; en: string }
   | { tipo: "lista"; es: string[]; en: string[] }
