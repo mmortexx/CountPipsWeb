@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { usePresencia } from "@/hooks/use-presencia";
+import { coincide } from "@/lib/busqueda";
 import { useLang } from "@/lib/i18n";
 import { useTheme, type PaletteName } from "@/lib/theme";
 import { useDemo } from "./DemoContext";
@@ -41,6 +42,13 @@ interface AccionesPaleta {
   lang: "es" | "en";
   /** Pregunta antes de lo que no se puede deshacer; en el navegador, `window.confirm`. */
   confirmar: (texto: string) => boolean;
+}
+
+/** El filtro de la paleta: como los demás buscadores del sitio, sin tildes ni
+ *  mayúsculas y con todas las palabras en cualquier orden, en el rótulo (en
+ *  los dos idiomas) o el id. */
+export function filtraComandos(comandos: Command[], consulta: string): Command[] {
+  return comandos.filter((c) => coincide(consulta, c.labelEs, c.labelEn, c.id));
 }
 
 export function comandosDemo({
@@ -265,7 +273,7 @@ export function destinoTrampaTab(opts: {
  * interceptor de `?` también se aparte.
  *
  * Teclado: flechas para moverse, Enter ejecuta, Esc cierra. El filtro
- * ignora mayúsculas y busca en el rótulo o el id.
+ * ignora mayúsculas y tildes y busca en el rótulo o el id (`filtraComandos`).
  */
 export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
   const { lang, toggle: toggleLang } = useLang();
@@ -331,15 +339,7 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
     [setPage, goDetail, setFilters, clearFilters, toggleLang, toggleTheme, setPalette, palette, paletteOrder, theme, es],
   );
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return commands;
-    return commands.filter((c) => {
-      const labelEs = c.labelEs.toLowerCase();
-      const labelEn = c.labelEn.toLowerCase();
-      return labelEs.includes(q) || labelEn.includes(q) || c.id.includes(q);
-    });
-  }, [commands, query]);
+  const filtered = useMemo(() => filtraComandos(commands, query), [commands, query]);
 
   /* El índice se acota al leer, no con un efecto (react-hooks/set-state-in-effect):
      `active` puede ir un render por detrás del filtro, pero el mostrado y el de

@@ -35,7 +35,7 @@ import { Reveal } from "@/components/tj/Reveal";
 import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
 import { compararSeleccion, type Comparacion } from "@/lib/trading/comparacion";
-import { pasaCumplimiento } from "@/lib/trading/filtros";
+import { coincideOperacion, pasaCumplimiento } from "@/lib/trading/filtros";
 
 const DECIMALS: Record<string, number> = Object.fromEntries(
   INSTRUMENTS.map((i) => [i.symbol, i.decimals])
@@ -738,7 +738,6 @@ export function TradesPage() {
   };
 
   const filtered = useMemo(() => {
-    const q = debounced.trim().toLowerCase();
     return allTrades.filter((tr) => {
       if (filters.instrument !== "all" && tr.instrument !== filters.instrument) return false;
       if (filters.direction !== "all" && tr.direction !== filters.direction) return false;
@@ -747,13 +746,7 @@ export function TradesPage() {
       if (outcome === "loss" && tr.netPnl >= 0) return false;
       if (outcome === "be" && tr.netPnl !== 0) return false;
       if (setupSel !== "all" && tr.setup !== setupSel) return false;
-      if (q) {
-        /* El buscador mira la clave del setup y su rótulo visible («Ruptura», no solo «Breakout»). */
-        const hay =
-          `${tr.instrument} ${tr.setup} ${nombreSetup(tr.setup, lang)} ${tr.entryNote} ${tr.closeNote}`.toLowerCase();
-        if (!hay.includes(q)) return false;
-      }
-      return true;
+      return coincideOperacion(tr, debounced, nombreSetup(tr.setup, lang));
     });
   }, [
     allTrades,
