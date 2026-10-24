@@ -32,6 +32,12 @@ describe("campo de cifra en reposo: los millares se escriben", () => {
     expect(valores(htmlDe("/")).slice(1)).toEqual(["100", "95", "115"]);
   });
 
+  it("al cargar ningún campo está marcado ni lleva aviso", () => {
+    const html = htmlDe("/");
+    expect(html).not.toContain("aria-invalid");
+    expect(html).not.toContain("Escribe una cifra");
+  });
+
   it("cifraReposo agrupa desde cuatro cifras, conserva los decimales que hay y pone el menos tipográfico", () => {
     expect(cifraReposo(1234, "es")).toBe("1.234");
     expect(cifraReposo(1234.5, "es")).toBe("1.234,5");
