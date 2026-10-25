@@ -47,8 +47,8 @@ describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 1 Feature Coverage)"
     expect(overlayHost).toContain("e.preventDefault()");
     expect(overlayHost).not.toContain("CommandPalette");
 
-    expect(globalShortcuts).toContain('key === "?"');
-    expect(globalShortcuts).toContain('e.shiftKey && (key === "/" || e.code === "Slash")');
+    // Qué tecla es `?` lo prueba atajos-teclas.test.ts.
+    expect(globalShortcuts).toContain("pideAyuda(e)");
     expect(globalShortcuts).toContain("openShortcutsHelp()");
   });
 

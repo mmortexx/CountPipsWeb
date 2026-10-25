@@ -78,7 +78,7 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
   }, [open, onClose]);
 
   // `/` solo existe donde está el buscador; en otras páginas se oculta para no mentir.
-  const showSearch = page === "trades" || page === "detail";
+  const showSearch = page === "trades";
 
   const shortcuts: {
     keys: ReactNode;

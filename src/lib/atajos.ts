@@ -7,6 +7,12 @@
 const CLAVE_ATAJOS = "tj-atajos";
 let enEstaVisita: boolean | null = null;
 
+/** `?` abre la ayuda de atajos. Por el carácter y no por la tecla física: en el
+ *  teclado español Mayús+7 escribe «/» y la tecla del «/» inglés escribe «_». */
+export function pideAyuda(e: Pick<KeyboardEvent, "key">): boolean {
+  return e.key === "?";
+}
+
 export function atajosEncendidos(): boolean {
   if (enEstaVisita !== null) return enEstaVisita;
   try {

@@ -6,7 +6,7 @@ import { useLang } from "@/lib/i18n";
 import { withLocale } from "@/lib/locale";
 import { useTheme } from "@/lib/theme";
 import { openShortcutsHelp } from "@/lib/overlays";
-import { atajosEncendidos } from "@/lib/atajos";
+import { atajosEncendidos, pideAyuda } from "@/lib/atajos";
 import { G_NAV_MAP } from "@/lib/saltos-teclado";
 
 /**
@@ -79,10 +79,7 @@ export function GlobalShortcuts() {
 
       const key = e.key;
 
-      if (
-        key === "?" ||
-        (e.shiftKey && (key === "/" || e.code === "Slash"))
-      ) {
+      if (pideAyuda(e)) {
         e.preventDefault();
         openShortcutsHelp();
         return;

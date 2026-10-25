@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { useLang } from "@/lib/i18n";
+import { pideAyuda } from "@/lib/atajos";
 import { DemoProvider, useDemo, type DemoPage } from "./DemoContext";
 import { WindowChrome } from "./WindowChrome";
 import { TopNav } from "./TopNav";
@@ -127,6 +128,13 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
       if (e.key.toLowerCase() === "f") {
         e.preventDefault();
         setFullscreen(!fullscreen);
+      } else if (e.key === "/") {
+        // Solo Operaciones tiene buscador; en las demás páginas la tecla no hace nada.
+        const buscador = target.closest("[data-demo-raiz]")?.querySelector<HTMLInputElement>("input[type='search']");
+        if (buscador) {
+          e.preventDefault();
+          buscador.focus();
+        }
       }
     };
     window.addEventListener("keydown", onKey);
@@ -141,7 +149,7 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
     const onKey = (e: KeyboardEvent) => {
       const root = demoRootRef.current;
       if (!root) return;
-      if (!root.matches(":hover, :focus-within")) return;
+      if (!root.contains(document.activeElement) && !root.matches(":hover")) return;
       const target = e.target as HTMLElement | null;
       if (target) {
         const tag = target.tagName;
@@ -167,10 +175,7 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
       ) {
         return;
       }
-      if (
-        e.key === "?" ||
-        (e.shiftKey && (e.key === "/" || e.code === "Slash"))
-      ) {
+      if (pideAyuda(e)) {
         e.preventDefault();
         e.stopPropagation();
         setShortcutsOpen(true);
