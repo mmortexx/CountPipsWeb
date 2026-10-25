@@ -12,12 +12,14 @@
  */
 
 import { useMemo, useSyncExternalStore } from "react";
-import type {
-  Compliance,
-  Direction,
-  Session,
-  SetupName,
-  Trade,
+import {
+  INSTRUMENTS,
+  getInstrumentMultiplier,
+  type Compliance,
+  type Direction,
+  type Session,
+  type SetupName,
+  type Trade,
 } from "@/lib/trading/data";
 
 export const DEMO_TRADES_KEY = "tj-demo-trades";
@@ -63,7 +65,8 @@ function precioTecleado(precio: number | undefined, entrada: number): number | n
  *  gráficos y métricas la consuman sin cambios. El composer recoge
  *  instrumento, setup, dirección, entrada, salida, cantidad, stop, objetivo,
  *  P&L, R, cumplimiento, cierre y nota; el resto se sintetiza:
- *   - riskUsd = |netPnl / rMultiple| (0 si R es 0 o NaN).
+ *   - riskUsd = distancia al stop × cantidad × multiplicador, como lo anuncia el
+ *     composer; sin stop tecleado, |netPnl / rMultiple| (0 si R es 0 o NaN).
  *   - fees = 3 % de |netPnl| y grossPnl = netPnl + fees, como en data.ts.
  *   - mae y mfe derivados de R, con un valor plausible por operación.
  *   - durationMin entre 30 y 120 min, determinista por id, para no volcar
@@ -75,7 +78,6 @@ export function customTradeToTrade(c: CustomTrade): Trade {
   const closedAt = new Date(c.closedAt);
   const isWin = c.netPnl > 0;
   const r = Number.isFinite(c.rMultiple) ? c.rMultiple : 0;
-  const riskUsd = r !== 0 ? Math.abs(c.netPnl / r) : 0;
   const fees = +(Math.abs(c.netPnl) * 0.03).toFixed(2);
   const grossPnl = +(c.netPnl + fees).toFixed(2);
   const mae = isWin ? -0.2 : Math.min(r - 0.3, -0.9);
@@ -83,6 +85,18 @@ export function customTradeToTrade(c: CustomTrade): Trade {
   const long = c.direction === "long";
   const stopTecleado = precioTecleado(c.stop, c.entry);
   const stopDist = stopTecleado !== null ? Math.abs(c.entry - stopTecleado) : c.entry * 0.01;
+  /* Del R guardado (dos decimales) no sale: a la par es 0 y, con R pequeño, el
+     redondeo desvía el riesgo varios puntos. */
+  const multiplicador = getInstrumentMultiplier(
+    c.instrument,
+    INSTRUMENTS.find((i) => i.symbol === c.instrument)?.assetClass
+  );
+  const riskUsd =
+    stopTecleado !== null && Number.isFinite(c.qty) && c.qty > 0
+      ? +(stopDist * c.qty * multiplicador).toFixed(2)
+      : r !== 0
+        ? Math.abs(c.netPnl / r)
+        : 0;
   const initialStop =
     stopTecleado ?? +(long ? c.entry - stopDist : c.entry + stopDist).toFixed(2);
   const objetivoTecleado = stopDist > 0 ? precioTecleado(c.target, c.entry) : null;
