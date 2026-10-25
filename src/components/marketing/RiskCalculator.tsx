@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
+import type { Lang } from "@/lib/locale";
 import { computeRiskOfRuin, computeParametricVaR, tramosRiesgoBeneficio, UMBRAL_RUINA_PCT } from "@/lib/trading/estadistica";
 import { TOPE_APALANCAMIENTO, type MercadoPlan } from "@/lib/trading/validaPlan";
 import {
@@ -46,6 +47,15 @@ const MODOS_ACTIVO: { id: AssetMode; labelEs: string; labelEn: string }[] = [
   { id: "forex", labelEs: "Forex (lotes)", labelEn: "Forex (Lots)" },
   { id: "futures", labelEs: "Futuros (contratos)", labelEn: "Futures (Contracts)" },
 ];
+
+/** Lo que mueve la posición un escalón de precio (`valorPip`, `plan.ts`): un pip,
+ *  un tick del contrato o un céntimo. */
+export function rotuloValorEscalon(mercado: AssetMode, lang: Lang): string {
+  const es = lang === "es";
+  if (mercado === "forex") return es ? "Valor del pip" : "Pip value";
+  if (mercado === "futures") return es ? "Valor del tick" : "Tick value";
+  return es ? "Valor de un céntimo" : "One-cent value";
+}
 
 const LOTES: { id: TipoLote; labelEs: string; labelEn: string }[] = [
   { id: "standard", labelEs: "Estándar (100k)", labelEn: "Standard (100k)" },
@@ -270,7 +280,7 @@ export function RiskCalculator() {
           rotulo: es ? "Resultado" : "Result",
           lineas: [
             `${es ? "Tamaño de posición" : "Position size"}: ${tamanoTxt}`,
-            `${es ? "Valor del pip / punto" : "Pip / point value"}: ${fmtUsd(c.valorPip)}`,
+            `${rotuloValorEscalon(assetMode, lang)}: ${fmtUsd(c.valorPip)}`,
             `R:R: 1:${fmtNum(c.rr, 2)}`,
             `${es ? "Beneficio neto" : "Net profit"}: ${fmtUsd(c.beneficioNeto)} (${fmtPct(c.profitPct / 100, lang, 1)})`,
             `${es ? "Valor nocional" : "Notional value"}: ${fmtUsd(c.nocional)}`,
@@ -642,7 +652,7 @@ export function RiskCalculator() {
             <Result label={es ? "Beneficio neto" : "Net profit"} value={siPlan(fmtUsd(c.beneficioNeto))} color={!c.valid || c.beneficioNeto === 0 ? "var(--ink-2)" : c.beneficioNeto > 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
             <Result label={es ? "Tamaño de posición" : "Position size"} value={siPlan(tamanoTxt)} color={c.noCabe ? "rgb(var(--pnl-neg))" : "var(--ink)"} />
             <Result label="R:R" value={siPlan(`1:${fmtNum(c.rr, 2)}`)} color="var(--ink)" />
-            <Result label={es ? "Valor del pip / punto" : "Pip / point value"} value={siPlan(fmtUsd(c.valorPip))} color="var(--ink)" />
+            <Result label={rotuloValorEscalon(assetMode, lang)} value={siPlan(fmtUsd(c.valorPip))} color="var(--ink)" />
             <Result label={es ? "Fricción estimada" : "Est. friction"} value={siPlan(friccionTxt)} color="var(--ink-2)" />
           </div>
 

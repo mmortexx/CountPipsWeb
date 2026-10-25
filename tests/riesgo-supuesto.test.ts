@@ -6,7 +6,7 @@ let ruta = "/";
 vi.mock("next/navigation", () => ({ usePathname: () => ruta, useRouter: () => ({ push() {}, replace() {} }) }));
 
 import { LanguageProvider } from "@/lib/i18n";
-import { RiskCalculator } from "@/components/marketing/RiskCalculator";
+import { RiskCalculator, rotuloValorEscalon } from "@/components/marketing/RiskCalculator";
 import { UMBRAL_RUINA_PCT } from "@/lib/trading/estadistica";
 
 /** Texto visible de la calculadora tal como sale del servidor, con la Kelly plegada. */
@@ -32,5 +32,23 @@ describe("calculadora de riesgo: ruina y medio Kelly dicen de qué win rate sale
     const t = textoDe("/en/");
     expect(t).toContain(`Risk of ruin (−${UMBRAL_RUINA_PCT}%) at a 55% win rate`);
     expect(t).toContain("Half-Kelly at a 55% win rate:");
+  });
+});
+
+/* `valorPip` es lo que mueve la posición un escalón de precio: un pip en forex,
+   un tick en futuros y un céntimo en acciones. El rótulo nombra ese escalón. */
+describe("calculadora de riesgo: el valor por escalón dice qué escalón es", () => {
+  it("en acciones, que es el mercado de partida", () => {
+    expect(textoDe("/")).toContain("Valor de un céntimo");
+    expect(textoDe("/en/")).toContain("One-cent value");
+  });
+
+  it.each([
+    ["forex", "es", "Valor del pip"],
+    ["forex", "en", "Pip value"],
+    ["futures", "es", "Valor del tick"],
+    ["futures", "en", "Tick value"],
+  ] as const)("en %s (%s): «%s»", (mercado, lang, rotulo) => {
+    expect(rotuloValorEscalon(mercado, lang)).toBe(rotulo);
   });
 });
