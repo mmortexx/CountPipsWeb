@@ -10,7 +10,6 @@ const EXCEPCIONES: string[] = [
   "demo/StatusBar.tsx",
   "demo/WindowChrome.tsx",
   "marketing/SessionClock.tsx",
-  "marketing/DisciplineScore.tsx",
 ];
 
 function ficheros(dir: string): string[] {
