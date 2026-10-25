@@ -311,11 +311,28 @@ async function mideContraste(pagina, cand) {
    El último trozo (`__next.…txt?_rsc=`) son los prefetch de segmento de Next:
    al exportar en Windows se escriben como carpeta y el cliente los pide en
    plano, así que dan 404 en todas las páginas; compilando en Linux (CI) sale
-   el fichero plano y no falla. Es un artefacto de la máquina que compila.
-   Para comprobarlo: `find out -name "__next.*.__PAGE__.txt" | wc -l` sobre la
-   exportación; cero significa que compiló Windows. */
-const RUIDO =
-  /favicon|ERR_CONNECTION|net::ERR_|Download the React DevTools|challenges\.cloudflare|\[Fast Refresh\]|webpack-hmr|Warning: Extra attributes from the server|__next\.[^"'\s]*\.txt(\?|$)/i;
+   el fichero plano y no falla. Es un artefacto de la máquina que compila, y
+   solo se tolera si la exportación servida no trae ningún fichero plano
+   (`__next.*.__PAGE__.txt`); si los trae, o no se sirve una exportación, un
+   404 de prefetch es un fallo como cualquier otro. */
+async function hayFicherosPlanos(carpeta) {
+  for (const e of await readdir(carpeta, { withFileTypes: true })) {
+    if (e.isDirectory()) {
+      if (e.name !== "_next" && (await hayFicherosPlanos(join(carpeta, e.name)))) return true;
+    } else if (/^__next\..+\.__PAGE__\.txt$/.test(e.name)) return true;
+  }
+  return false;
+}
+const PREFETCH_TOLERADO = Boolean(SERVIR) && !(await hayFicherosPlanos(SERVIR));
+if (PREFETCH_TOLERADO) {
+  console.log("[humo] la exportación no trae ficheros planos __next.*.__PAGE__.txt: se ignoran sus 404 de prefetch");
+}
+const RUIDO_BASE =
+  "favicon|ERR_CONNECTION|net::ERR_|Download the React DevTools|challenges\\.cloudflare|\\[Fast Refresh\\]|webpack-hmr|Warning: Extra attributes from the server";
+const RUIDO = new RegExp(
+  PREFETCH_TOLERADO ? `${RUIDO_BASE}|__next\\.[^"'\\s]*\\.txt(\\?|$)` : RUIDO_BASE,
+  "i"
+);
 
 const navegador = await chromium.launch();
 
