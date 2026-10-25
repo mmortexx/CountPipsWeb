@@ -61,9 +61,9 @@ const privacidad: DocumentoLegal = {
   tituloEs: "Política de privacidad",
   tituloEn: "Privacy policy",
   entradaEs:
-    "Esta web solo recoge lo que envías en un formulario: lo que escribes y, en la solicitud de acceso, el idioma y la página o campaña desde la que llegas. No usa cookies ni analítica, y no pedimos credenciales, capital, extractos ni datos financieros.",
+    "Esta web recoge lo que envías en un formulario: lo que escribes y, en la solicitud de acceso, el idioma, la página o campaña desde la que llegas y una huella de tu dirección IP para frenar abusos. No usa cookies ni analítica, y no pedimos credenciales, capital, extractos ni datos financieros.",
   entradaEn:
-    "This site only collects what you send through a form: what you type and, with the early-access request, the language and the page or campaign you came from. It uses no cookies or analytics, and we do not ask for credentials, capital, statements or financial data.",
+    "This site collects what you send through a form: what you type and, with the early-access request, the language, the page or campaign you came from and a fingerprint of your IP address to curb abuse. It uses no cookies or analytics, and we do not ask for credentials, capital, statements or financial data.",
   descripcionEs:
     "Qué datos recoge la web de CountPips, quién los trata y cómo pedir que se borren. Sin cookies ni analítica.",
   descripcionEn:
@@ -125,6 +125,11 @@ const privacidad: DocumentoLegal = {
         },
         {
           tipo: "parrafo",
+          es: "Al recibir una solicitud, el endpoint de admisión guarda una huella de tu dirección IP: un código que se calcula a partir de ella con una clave secreta y del que no se puede recuperar la IP. Sirve para limitar los envíos repetidos y frenar abusos del formulario. La IP en sí no se guarda.",
+          en: "When it receives an application, the admission endpoint stores a fingerprint of your IP address: a code computed from it with a secret key, from which the IP cannot be recovered. It is used to limit repeated submissions and curb abuse of the form. The IP itself is not stored.",
+        },
+        {
+          tipo: "parrafo",
           es: "El campo oculto que ambos formularios incluyen no recoge nada tuyo: está ahí para que los programas automáticos lo rellenen y así poder descartarlos. Una persona nunca lo ve.",
           en: "The hidden field both forms include collects nothing about you: it is there for automated programs to fill in so they can be discarded. A human never sees it.",
         },
@@ -169,10 +174,12 @@ const privacidad: DocumentoLegal = {
           es: [
             "Acceso anticipado: evaluar tu solicitud, asignar un piloto y contactar contigo si encaja. La base es tu consentimiento al enviarla.",
             "Contacto: responder a tu consulta. La base es tu consentimiento al escribirnos.",
+            "Huella de la IP: limitar los envíos repetidos y proteger el formulario de abusos. La base es el interés legítimo en mantener el servicio seguro.",
           ],
           en: [
             "Early access: evaluate your application, assign a pilot and contact you if it fits. The basis is your consent when you submit it.",
             "Contact: reply to your query. The basis is your consent when you write to us.",
+            "IP fingerprint: limit repeated submissions and protect the form from abuse. The basis is the legitimate interest in keeping the service secure.",
           ],
         },
         {
@@ -196,12 +203,12 @@ const privacidad: DocumentoLegal = {
           tipo: "lista",
           es: [
             "Endpoint de admisión: recibe las solicitudes, descarta las repetidas y las guarda para el equipo de selección.",
-            "Cloudflare Turnstile: valida que la solicitud procede de una persona cuando el control está activado.",
+            "Cloudflare Turnstile: valida que la solicitud procede de una persona cuando el control está activado; para comprobarlo recibe tu dirección IP.",
             "Web3Forms: recibe el formulario de contacto, y las solicitudes cuando el endpoint no está activo, y los reenvía al correo del titular.",
           ],
           en: [
             "Admission endpoint — receives applications, drops repeats and stores them for the selection team.",
-            "Cloudflare Turnstile — checks that an application comes from a person when enabled.",
+            "Cloudflare Turnstile — checks that an application comes from a person when enabled; to do so it receives your IP address.",
             "Web3Forms — receives the contact form, and applications when the endpoint is not active, and forwards them to the owner’s email.",
           ],
         },
