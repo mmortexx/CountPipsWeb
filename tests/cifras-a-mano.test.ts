@@ -27,6 +27,7 @@ function fuentes(dir: string, out: string[] = []): string[] {
 const PRECIO_A_MANO = /(?<!\d[.,]?)(?:149|249)(?:\s|\\u00a0)*(?:\$|USD\b)|\$(?:\s|\\u00a0)*(?:149|249)(?!\d|[.,]\d)/;
 const TERMINOS_A_MANO = /(?<!\d[.,]?)57(?:\s|\\u00a0)+(?:términos|terms|termos|termes|Begriffe|termini)\b/i;
 const METRICAS_A_MANO = /(?<![\d.,])40\+|(?<!\p{L})(?:más de|over|mais de|plus de|über|oltre)\s+40(?!\d)/iu;
+const CUENTAS_A_MANO = /(?<![\d.,])2(?:\s|\\u00a0)+(?:[\p{L}-]+(?:\s+|-))?(?:cuentas|accounts|contas|comptes|Konten|conti)\b/iu;
 
 function hallazgos(archivos: string[], patron: RegExp, excepto: string[] = []): string[] {
   const out: string[] = [];
@@ -73,6 +74,15 @@ describe("los patrones cazan lo que deben y nada más", () => {
   it.each(["140+ ms", "más de 400", "h-40 md", "0.40+x"])("«%s» no lo es", (linea) => {
     expect(METRICAS_A_MANO.test(linea)).toBe(false);
   });
+  it.each(["2 cuentas de trading", "2 trading accounts", "2 contas de trading", "2 comptes de trading", "2 Trading-Konten", "2 conti di trading"])(
+    "«%s» es el número de cuentas a mano",
+    (linea) => {
+      expect(CUENTAS_A_MANO.test(linea)).toBe(true);
+    }
+  );
+  it.each(["12 cuentas", "tiene 2 casos", "2,5 cuentas"])("«%s» no lo es", (linea) => {
+    expect(CUENTAS_A_MANO.test(linea)).toBe(false);
+  });
 });
 
 describe("ninguna cifra de precio ni de glosario se escribe a mano en src/", () => {
@@ -94,6 +104,11 @@ describe("ninguna cifra de precio ni de glosario se escribe a mano en src/", () 
 
   it("«40+» y «más de 40» salen de PROGRAMA.metricasMinimo", () => {
     const sueltos = hallazgos(archivos, METRICAS_A_MANO, ["src/lib/producto.ts"]);
+    expect(sueltos, sueltos.join("\n")).toEqual([]);
+  });
+
+  it("«2 cuentas» y sus variantes salen de PROGRAMA.cuentasCore", () => {
+    const sueltos = hallazgos(archivos, CUENTAS_A_MANO);
     expect(sueltos, sueltos.join("\n")).toEqual([]);
   });
 });

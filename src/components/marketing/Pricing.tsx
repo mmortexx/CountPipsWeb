@@ -8,7 +8,7 @@ import { MagneticButton } from "@/components/tj/MagneticButton";
 import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
 import { PRECIO_CORE, PRECIO_PRO, equivalenciaEur } from "@/lib/precios";
 import { fmtInt } from "@/lib/trading/format";
-import { METRICAS } from "@/lib/producto";
+import { METRICAS, PROGRAMA } from "@/lib/producto";
 
 type Plan = {
   id: "core" | "pro";
@@ -38,7 +38,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
     tx(lang, { es: "Importación CSV y exportación completa", en: "CSV import and full export", pt: "Importação CSV e exportação completa", fr: "Import CSV et export complet", de: "CSV-Import und vollständiger Export", it: "Importazione CSV ed esportazione completa" }),
     tx(lang, { es: "Copias de seguridad automáticas", en: "Automatic backups", pt: "Backups automáticos", fr: "Sauvegardes automatiques", de: "Automatische Backups", it: "Backup automatici" }),
     tx(lang, { es: "Informe mensual en PDF", en: "Monthly PDF report", pt: "Relatório mensal em PDF", fr: "Rapport mensuel en PDF", de: "Monatlicher PDF-Bericht", it: "Report mensile in PDF" }),
-    tx(lang, { es: "2 cuentas de trading", en: "2 trading accounts", pt: "2 contas de trading", fr: "2 comptes de trading", de: "2 Trading-Konten", it: "2 conti di trading" }),
+    tx(lang, { es: `${PROGRAMA.cuentasCore} cuentas de trading`, en: `${PROGRAMA.cuentasCore} trading accounts`, pt: `${PROGRAMA.cuentasCore} contas de trading`, fr: `${PROGRAMA.cuentasCore} comptes de trading`, de: `${PROGRAMA.cuentasCore} Trading-Konten`, it: `${PROGRAMA.cuentasCore} conti di trading` }),
   ];
 
   const proFeatures = [
