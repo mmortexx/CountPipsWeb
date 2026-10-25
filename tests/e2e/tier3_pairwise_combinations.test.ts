@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { GLOSSARY, GLOSSARY_CATEGORIES } from "@/lib/trading/glossary";
 import { withLocale } from "@/lib/locale";
+import { nombreTermino, slugTermino } from "@/lib/trading/nombre-termino";
 import { filtraGlosario } from "@/components/tj/GlossaryModal";
 import { PRESETS } from "@/components/marketing/DisciplineCost";
 import { riesgoDeKelly } from "@/components/marketing/RiskCalculator";
@@ -118,11 +119,37 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
     expect(GLOSSARY).toHaveLength(57);
 
     for (const item of GLOSSARY) {
-      expect(item.term).toBeTruthy();
-      expect(item.es).toBeTruthy();
-      expect(item.en).toBeTruthy();
       expect(item.es.trim().length).toBeGreaterThan(10);
       expect(item.en.trim().length).toBeGreaterThan(10);
+      // Cambiar de idioma no toca el término inglés ni su dirección.
+      expect(nombreTermino(item, "en")).toBe(item.term);
+      expect(slugTermino(item.term)).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
+    }
+
+    // [término inglés, dirección, nombre en español si el glosario lo registra]:
+    // sin nombre propio, la interfaz española conserva el término inglés.
+    const CONGELADOS: [string, string, string | null][] = [
+      ["Stop loss", "stop-loss", null],
+      ["Take profit", "take-profit", null],
+      ["Drawdown", "drawdown", null],
+      ["Profit factor", "profit-factor", null],
+      ["Breakout", "breakout", null],
+      ["Backtesting", "backtesting", null],
+      ["FOMO", "fomo", null],
+      ["R-multiple", "r-multiple", null],
+      ["Monte Carlo", "monte-carlo", null],
+      ["SQN (System Quality Number)", "sqn-system-quality-number", null],
+      ["Sharpe ratio", "sharpe-ratio", "Ratio de Sharpe"],
+      ["Win rate", "win-rate", "Tasa de acierto"],
+      ["Slippage", "slippage", "Deslizamiento"],
+      ["Leverage", "leverage", "Apalancamiento"],
+    ];
+    for (const [term, slug, nombreEs] of CONGELADOS) {
+      const item = GLOSSARY.find((g) => g.term === term);
+      expect(item, `falta el término «${term}»`).toBeDefined();
+      expect(slugTermino(term)).toBe(slug);
+      expect(nombreTermino(item!, "en")).toBe(term);
+      expect(nombreTermino(item!, "es")).toBe(nombreEs ?? term);
     }
   });
 
