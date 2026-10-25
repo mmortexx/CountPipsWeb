@@ -1387,12 +1387,14 @@ for (const pantalla of PANTALLAS) {
 // falla, un visitante o un buscador que no ejecute la página ve contenido
 // ausente u oculto. Recorre todas las rutas de `RUTAS`, inglesas incluidas,
 // pero no el export entero: un defecto en un componente que solo aparece en
-// una plantilla no muestreada no se vería aquí.
-const sinJs = await navegador.newContext({
-  javaScriptEnabled: false,
-  viewport: { width: 1440, height: 900 },
-});
+// una plantilla no muestreada no se vería aquí. Cada ruta se mide en un
+// contexto nuevo: compartido entre rutas, el titular salía invisible aunque
+// una medición aislada lo diera visible.
 for (const { ruta } of RUTAS) {
+  const sinJs = await navegador.newContext({
+    javaScriptEnabled: false,
+    viewport: { width: 1440, height: 900 },
+  });
   const pagina = await sinJs.newPage();
   try {
     await pagina.goto(`${BASE}${ruta}`, { waitUntil: "load", timeout: 30000 });
@@ -1431,14 +1433,8 @@ for (const { ruta } of RUTAS) {
     if (!r.hay) fallos.push(`sin-JS ${ruta}: no hay h1 en el HTML`);
     else if (!r.texto) fallos.push(`sin-JS ${ruta}: el h1 no tiene texto`);
     else if (!r.visible) {
-      // Aviso y no fallo, a propósito: esta medición no es de fiar. Aquí el
-      // titular sale invisible, y con un script aparte (contexto nuevo por ruta)
-      // sale visible; sin cerrar cuál está mal, tumbar el build con una barrera
-      // que nadie entiende acaba desactivándola entera. Sospecha: el contexto
-      // sin JavaScript compartido entre rutas.
-      avisos.push(
-        `sin-JS ${ruta}: el h1 se mide como no visible — PENDIENTE de confirmar, una medición aislada dice lo contrario ` +
-          `(rects=${r.rects}, checkVisibility=${r.checkVis})`
+      fallos.push(
+        `sin-JS ${ruta}: el h1 se mide como no visible (rects=${r.rects}, checkVisibility=${r.checkVis})`
       );
     } else if (!r.enMain) {
       avisos.push(`sin-JS ${ruta}: el titular no aparece en el texto de <main>`);
@@ -1573,9 +1569,8 @@ for (const { ruta } of RUTAS) {
   } catch (e) {
     fallos.push(`sin-JS ${ruta}: ${String(e).split("\n")[0]}`);
   }
-  await pagina.close();
+  await sinJs.close();
 }
-await sinJs.close();
 
 // La 404 en los dos idiomas: GitHub Pages sirve un único `404.html`, compilado
 // en español, también bajo `/en/`. Si el idioma hidrata con el de la URL en
