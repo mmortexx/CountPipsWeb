@@ -125,9 +125,19 @@ await Promise.all(
         await pagina
           .waitForSelector('[role="tab"]', { timeout: 15000 })
           .catch(() => errores.push("la demo no llegó a montar sus pestañas"));
-        for (const pestana of await pagina.$$('[role="tab"]')) {
-          await pestana.click({ timeout: 1000 }).catch(() => {});
-          demoRecorrida++;
+        const pestanas = await pagina.$$('[role="tab"]');
+        let abiertas = 0;
+        for (const pestana of pestanas) {
+          try {
+            await pestana.click({ timeout: 1000 });
+            abiertas++;
+          } catch (e) {
+            errores.push(`pestaña de la demo sin abrir: ${String(e).split("\n")[0].slice(0, 120)}`);
+          }
+        }
+        demoRecorrida += abiertas;
+        if (abiertas < pestanas.length) {
+          errores.push(`la demo tiene ${pestanas.length} pestañas y solo se abrieron ${abiertas}`);
         }
         await pagina.waitForTimeout(300);
       }
@@ -144,6 +154,7 @@ servidor.close();
 console.log(
   `[cabeceras] ${paginas.length} páginas con ${Object.keys(CABECERAS).length} cabeceras de _headers; ${demoRecorrida} pestañas de la demo abiertas`,
 );
+if (demoRecorrida === 0) bloqueos.push("(demo)  no se abrió ninguna pestaña de la demo");
 if (bloqueos.length) {
   console.log(`[cabeceras] FALLO — ${bloqueos.length} bloqueo(s) de la política de contenido:`);
   for (const b of bloqueos.slice(0, 40)) console.log(`   ${b}`);
