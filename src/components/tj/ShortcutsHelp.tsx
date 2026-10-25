@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { useLang } from "@/lib/i18n";
+import { tx, useLang } from "@/lib/i18n";
 import { atajosEncendidos, fijarAtajos } from "@/lib/atajos";
 import { usePresencia } from "@/hooks/use-presencia";
 import { useTeclaMando } from "@/hooks/use-tecla-mando";
 import { SALTOS_TECLADO } from "@/lib/saltos-teclado";
+import { PESTANAS_DEMO } from "@/components/demo/pestanas";
 
 /**
  * Ventana de atajos de teclado. Componente controlado: `open` y la escucha del
@@ -22,7 +23,6 @@ export function ShortcutsHelp({
   onOpenChange: (open: boolean) => void;
 }) {
   const { lang } = useLang();
-  const es = lang === "es";
   const mando = useTeclaMando();
   const setOpen = onOpenChange;
   // Solo esta ventana lo cambia, así que el estado no se desfasa del guardado.
@@ -105,7 +105,7 @@ export function ShortcutsHelp({
     filas: { keys: ReactNode; label: string }[];
   }[] = [
     {
-      titulo: "General",
+      titulo: tx(lang, { es: "General", en: "General", pt: "Geral", fr: "Général", de: "Allgemein", it: "Generale" }),
       filas: [
         {
           keys: (
@@ -115,23 +115,23 @@ export function ShortcutsHelp({
               <Kbd>G</Kbd>
             </>
           ),
-          label: es ? "Abrir el glosario" : "Open the glossary",
+          label: tx(lang, { es: "Abrir el glosario", en: "Open the glossary", pt: "Abrir o glossário", fr: "Ouvrir le glossaire", de: "Glossar öffnen", it: "Apri il glossario" }),
         },
         {
           keys: <Kbd>?</Kbd>,
-          label: es ? "Mostrar esta ayuda" : "Show this help",
+          label: tx(lang, { es: "Mostrar esta ayuda", en: "Show this help", pt: "Mostrar esta ajuda", fr: "Afficher cette aide", de: "Diese Hilfe anzeigen", it: "Mostra questo aiuto" }),
         },
         {
           keys: <Kbd>T</Kbd>,
-          label: es ? "Cambiar tema" : "Toggle theme",
+          label: tx(lang, { es: "Cambiar tema", en: "Toggle theme", pt: "Alternar tema", fr: "Changer de thème", de: "Design wechseln", it: "Cambia tema" }),
         },
         {
           keys: <Kbd>L</Kbd>,
-          label: es ? "Cambiar idioma" : "Toggle language",
+          label: tx(lang, { es: "Cambiar idioma", en: "Toggle language", pt: "Alternar idioma", fr: "Changer de langue", de: "Sprache wechseln", it: "Cambia lingua" }),
         },
         {
           keys: <Kbd>Esc</Kbd>,
-          label: es ? "Cerrar" : "Close",
+          label: tx(lang, { es: "Cerrar", en: "Close", pt: "Fechar", fr: "Fermer", de: "Schließen", it: "Chiudi" }),
         },
       ],
     },
@@ -139,17 +139,17 @@ export function ShortcutsHelp({
       titulo: "Demo",
       filas: [
         {
-          keys: <Kbd>1–6</Kbd>,
-          label: es ? "Cambiar de pestaña" : "Switch tab",
+          keys: <Kbd>{`1–${PESTANAS_DEMO.length}`}</Kbd>,
+          label: tx(lang, { es: "Cambiar de pestaña", en: "Switch tab", pt: "Mudar de aba", fr: "Changer d’onglet", de: "Tab wechseln", it: "Cambia scheda" }),
         },
         {
           keys: <Kbd>F</Kbd>,
-          label: es ? "Pantalla completa" : "Toggle fullscreen",
+          label: tx(lang, { es: "Pantalla completa", en: "Toggle fullscreen", pt: "Tela cheia", fr: "Plein écran", de: "Vollbild", it: "Schermo intero" }),
         },
       ],
     },
     {
-      titulo: es ? "Ir a" : "Go to",
+      titulo: tx(lang, { es: "Ir a", en: "Go to", pt: "Ir para", fr: "Aller à", de: "Gehe zu", it: "Vai a" }),
       filas: SALTOS_TECLADO.map((s) => ({
         keys: (
           <>
@@ -157,7 +157,7 @@ export function ShortcutsHelp({
             <Kbd>{s.tecla}</Kbd>
           </>
         ),
-        label: es ? s.es : s.en,
+        label: tx(lang, s),
       })),
     },
   ];
@@ -199,12 +199,17 @@ export function ShortcutsHelp({
                   id="tj-atajos-titulo"
                   className="t-h4 m-0 text-primary"
                 >
-                  {es ? "Atajos de teclado" : "Keyboard shortcuts"}
+                  {tx(lang, { es: "Atajos de teclado", en: "Keyboard shortcuts", pt: "Atalhos de teclado", fr: "Raccourcis clavier", de: "Tastenkürzel", it: "Scorciatoie da tastiera" })}
                 </h2>
                 <p id="tj-atajos-sub" className="m-0 mt-1 text-sm text-secondary">
-                  {es
-                    ? "Muévete más rápido por la app."
-                    : "Move faster through the app."}
+                  {tx(lang, {
+                    es: "Muévete más rápido por la web.",
+                    en: "Move faster through the site.",
+                    pt: "Navegue mais rápido pelo site.",
+                    fr: "Parcourez le site plus vite.",
+                    de: "Schneller durch die Website.",
+                    it: "Muoviti più veloce nel sito.",
+                  })}
                 </p>
                 {/* Solo en papel: la hoja impresa necesita decir de qué marca es. */}
                 <p className="tj-solo-papel hidden mt-1 text-[11px] text-tertiary">
@@ -214,7 +219,7 @@ export function ShortcutsHelp({
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                aria-label={es ? "Cerrar" : "Close"}
+                aria-label={tx(lang, { es: "Cerrar", en: "Close", pt: "Fechar", fr: "Fermer", de: "Schließen", it: "Chiudi" })}
                 className="tj-no-print icon-btn -mr-2 -mt-1.5 shrink-0 w-9 h-9 rounded-[4px] flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
               >
                 <svg
@@ -239,12 +244,17 @@ export function ShortcutsHelp({
             <div className="tj-no-print flex items-center justify-between gap-4 px-5 py-3 border-b border-[var(--ficha-division)]">
               <div className="min-w-0">
                 <span id="tj-atajos-interruptor" className="block text-sm font-medium text-primary">
-                  {es ? "Atajos de una sola tecla" : "Single-key shortcuts"}
+                  {tx(lang, { es: "Atajos de una sola tecla", en: "Single-key shortcuts", pt: "Atalhos de uma só tecla", fr: "Raccourcis à une touche", de: "Einzeltasten-Kürzel", it: "Scorciatoie a tasto singolo" })}
                 </span>
                 <span id="tj-atajos-interruptor-nota" className="block text-[12px] text-tertiary">
-                  {es
-                    ? "?, T, L y g + letra. Apágalos si dictas por voz."
-                    : "?, T, L and g + letter. Turn them off if you use voice control."}
+                  {tx(lang, {
+                    es: "?, T, L y g + letra. Apágalos si dictas por voz.",
+                    en: "?, T, L and g + letter. Turn them off if you use voice control.",
+                    pt: "?, T, L e g + letra. Desative-os se usa controle por voz.",
+                    fr: "?, T, L et g + lettre. Désactivez-les si vous utilisez la commande vocale.",
+                    de: "?, T, L und g + Buchstabe. Schalten Sie sie aus, wenn Sie die Sprachsteuerung nutzen.",
+                    it: "?, T, L e g + lettera. Disattivale se usi il controllo vocale.",
+                  })}
                 </span>
               </div>
               <button
@@ -303,12 +313,12 @@ export function ShortcutsHelp({
             >
               <span className="flex items-center gap-1.5">
                 <Kbd>esc</Kbd>
-                <span>{es ? "cerrar" : "close"}</span>
+                <span>{tx(lang, { es: "cerrar", en: "close", pt: "fechar", fr: "fermer", de: "schließen", it: "chiudi" })}</span>
               </span>
               <span>
                 {encendidos
-                  ? es ? "Pulsa ? cuando quieras" : "Press ? anytime"
-                  : es ? "Ábrela desde el pie de la página" : "Open it from the page footer"}
+                  ? tx(lang, { es: "Pulsa ? cuando quieras", en: "Press ? anytime", pt: "Pressione ? quando quiser", fr: "Appuyez sur ? à tout moment", de: "Drücken Sie jederzeit ?", it: "Premi ? quando vuoi" })
+                  : tx(lang, { es: "Ábrela desde el pie de la página", en: "Open it from the page footer", pt: "Abra-a pelo rodapé da página", fr: "Ouvrez-la depuis le pied de page", de: "Öffnen Sie sie über die Fußzeile", it: "Aprila dal piè di pagina" })}
               </span>
             </div>
           </div>

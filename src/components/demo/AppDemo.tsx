@@ -11,6 +11,7 @@ import { TopNav } from "./TopNav";
 import { StatusBar } from "./StatusBar";
 import { DemoCommandPalette } from "./DemoCommandPalette";
 import { DemoShortcutsHint } from "./DemoShortcutsHint";
+import { PESTANAS_DEMO } from "./pestanas";
 import { DashboardPage } from "./pages/DashboardPage";
 import { TradesPage } from "./pages/TradesPage";
 import { TradeDetailPage } from "./pages/TradeDetailPage";
@@ -189,12 +190,7 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
   // detalle (que cuelga de operaciones), derecha vuelve a la lista e izquierda va a
   // análisis. Umbral de 50 px con eje dominante horizontal, para no pisar el scroll
   // vertical; se ignora si empieza en un control interactivo.
-  const PAGES_ORDER: readonly DemoPage[] = [
-    "dashboard",
-    "trades",
-    "analytics",
-    "journal",
-  ] as const;
+  const PAGES_ORDER: readonly DemoPage[] = PESTANAS_DEMO;
   const SWIPE_THRESHOLD = 50;
   const touchStart = useRef<{ x: number; y: number } | null>(null);
 

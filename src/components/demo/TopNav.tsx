@@ -6,6 +6,7 @@ import { useDemo, type DemoPage } from "./DemoContext";
 import { useLang } from "@/lib/i18n";
 import { useTheme } from "@/lib/theme";
 import { destinoConFlechas } from "@/lib/flechas";
+import { PESTANAS_DEMO } from "./pestanas";
 
 /*
  * Menú superior, réplica del NavigationView en modo Top de la app
@@ -18,39 +19,37 @@ import { destinoConFlechas } from "@/lib/flechas";
  * iconos son trazos equivalentes a los glifos Segoe Fluent (E80F, E8AB, E9D2,
  * E70B), que no existen fuera de Windows.
  */
-const NAV_ITEMS: {
-  key: DemoPage;
-  icon: React.ReactNode;
-  labelKey: "pageDashboard" | "pageTrades" | "pageAnalytics" | "pageJournal";
-}[] = [
-  {
-    // E80F "Home" — la casa del Resumen.
-    key: "dashboard",
+const DETALLE_PESTANA: Record<
+  (typeof PESTANAS_DEMO)[number],
+  { icon: React.ReactNode; labelKey: "pageDashboard" | "pageTrades" | "pageAnalytics" | "pageJournal" }
+> = {
+  // E80F "Home" — la casa del Resumen.
+  dashboard: {
     labelKey: "pageDashboard",
     icon: <path d="M4 10.5L12 4l8 6.5V19a1 1 0 01-1 1h-4v-6H9v6H5a1 1 0 01-1-1v-8.5z" />,
   },
-  {
-    // E8AB "Switch" — las dos flechas cruzadas de Operaciones.
-    key: "trades",
+  // E8AB "Switch" — las dos flechas cruzadas de Operaciones.
+  trades: {
     labelKey: "pageTrades",
     icon: <path d="M4 8h13l-3-3M20 16H7l3 3" />,
   },
-  {
-    // E9D2 "StackedLineChart" — la analítica.
-    key: "analytics",
+  // E9D2 "StackedLineChart" — la analítica.
+  analytics: {
     labelKey: "pageAnalytics",
     icon: <path d="M3 17l5-6 4 3 4-6 5 5" />,
   },
-  {
-    // E70B "Edit" (nota) — el Diario.
-    key: "journal",
+  // E70B "Edit" (nota) — el Diario.
+  journal: {
     labelKey: "pageJournal",
     icon: <path d="M5 4h11l4 4v12H5V4zM16 4v4h4M8 12h8M8 16h5" />,
   },
-];
+};
+
+const NAV_ITEMS: { key: DemoPage; icon: React.ReactNode; labelKey: (typeof DETALLE_PESTANA)[keyof typeof DETALLE_PESTANA]["labelKey"] }[] =
+  PESTANAS_DEMO.map((key) => ({ key, ...DETALLE_PESTANA[key] }));
 
 /** Cuántas pestañas se alcanzan con las teclas 1…n; la ayuda de atajos lo cita de aquí. */
-export const PESTANAS_NUMERADAS = NAV_ITEMS.length;
+export const PESTANAS_NUMERADAS = PESTANAS_DEMO.length;
 
 export function TopNav() {
   const { page, setPage } = useDemo();
