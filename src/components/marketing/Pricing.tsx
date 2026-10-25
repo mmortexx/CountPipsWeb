@@ -187,7 +187,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
               es: "La demo es pública; la compra se abrirá con el lanzamiento. ",
               en: "The demo is public; purchase opens at launch. ",
               pt: "A demo é pública; as compras serão abertas no lançamento. ",
-              fr: "La démo est publique ; l’achat sera ouvert au lancement. ",
+              fr: "La démo est publique\u00a0; l’achat sera ouvert au lancement. ",
               de: "Die Demo ist öffentlich; der Kauf öffnet zum Verkaufsstart. ",
               it: "La demo è pubblica; l’acquisto sarà disponibile al lancio. ",
             })}

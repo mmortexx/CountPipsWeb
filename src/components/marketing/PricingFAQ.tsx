@@ -93,7 +93,7 @@ export function PricingFAQ() {
               es: "¿Más dudas?",
               en: "More questions?",
               pt: "Mais dúvidas?",
-              fr: "D’autres questions ?",
+              fr: "D’autres questions\u00a0?",
               de: "Weitere Fragen?",
               it: "Altre domande?",
             })}{" "}

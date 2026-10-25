@@ -37,10 +37,10 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
     homeTitle: "Application de journal de trading pour Windows — CountPips",
     homeSlogan: "CountPips — Tradez comme un desk institutionnel.",
     homeDescription:
-      `Journal de trading pour Windows : ${METRICAS} métriques, un gardien de discipline et vos données sur votre machine. Essayez la démo sans inscription.`,
+      `Journal de trading pour Windows\u00a0: ${METRICAS} métriques, un gardien de discipline et vos données sur votre machine. Essayez la démo sans inscription.`,
     pricingTitle: "Tarifs",
     pricingDescription:
-      `Démo interactive sans inscription. Tarifs de lancement prévus : Core ${fmtMoney(PRECIO_CORE, "fr", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "fr", { decimals: 0 })}.`,
+      `Démo interactive sans inscription. Tarifs de lancement prévus\u00a0: Core ${fmtMoney(PRECIO_CORE, "fr", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "fr", { decimals: 0 })}.`,
     pricingTwitterDesc:
       `Démo interactive sans inscription. Core ${fmtMoney(PRECIO_CORE, "fr", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "fr", { decimals: 0 })} comme tarifs de lancement prévus.`,
     breadcrumbHome: "Accueil",

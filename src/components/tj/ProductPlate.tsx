@@ -137,7 +137,7 @@ export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
             es: `Ampliar captura: ${titulo}`,
             en: `Enlarge screenshot: ${titulo}`,
             pt: `Ampliar captura: ${titulo}`,
-            fr: `Agrandir la capture : ${titulo}`,
+            fr: `Agrandir la capture\u00a0: ${titulo}`,
             de: `Screenshot vergrößern: ${titulo}`,
             it: `Ingrandisci screenshot: ${titulo}`,
           })}
@@ -206,7 +206,7 @@ export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
         <h3 className="tj-lamina-titulo t-h3">{titulo}</h3>
         <p className="tj-lamina-nota">{nota}</p>
         <p className="tj-lamina-detalle">
-          {tx(lang, { es: "Detalle: ", en: "Detail: ", pt: "Detalhe: ", fr: "Détail : ", de: "Detail: ", it: "Dettaglio: " })}{detalleTexto}.
+          {tx(lang, { es: "Detalle: ", en: "Detail: ", pt: "Detalhe: ", fr: "Détail\u00a0: ", de: "Detail: ", it: "Dettaglio: " })}{detalleTexto}.
         </p>
       </figcaption>
     </figure>

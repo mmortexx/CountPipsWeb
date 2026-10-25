@@ -46,7 +46,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "briefing de hoje — o que seu histórico diz antes de operar —, os avisos de comportamento " +
       "e uma pergunta sobre como você se sentiu operando hoje, registrada nas operações do dia.",
     notaFr:
-      "Sous le formulaire de saisie, l’écran Tableau de bord se divise en deux : la courbe de " +
+      "Sous le formulaire de saisie, l’écran Tableau de bord se divise en deux\u00a0: la courbe de " +
       "performance avec ses zones de drawdown grisées et le solde en pointillés, et le " +
       "calendrier du mois avec le résultat de chaque jour et le total de chaque semaine. Au-dessus, " +
       "le briefing du jour — ce que votre historique dit de la séance avant de trader —, les " +
@@ -83,9 +83,9 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "desempenho e saldo, e um calendário mensal com o lucro ou prejuízo de cada dia, o " +
       "acumulado semanal na margem e o melhor e pior dia no rodapé.",
     altFr:
-      "Écran de vue d’ensemble : en haut, la fin du briefing du jour avec les indications de " +
+      "Écran de vue d’ensemble\u00a0: en haut, la fin du briefing du jour avec les indications de " +
       "l’historique et une question pour évaluer de « très mal » à « très bien » le ressenti de " +
-      "la séance, aux côtés des alertes de comportement ; en bas, la courbe de performance avec " +
+      "la séance, aux côtés des alertes de comportement\u00a0; en bas, la courbe de performance avec " +
       "les cases de performance et de solde, et un calendrier mensuel avec les gains ou pertes " +
       "de chaque jour, le total hebdomadaire dans la marge et le meilleur et pire jour au bas.",
     altDe:
@@ -143,7 +143,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "stop a 1 R, e uma nota compara seu lote com o meio-Kelly. Todo o resto — o restante desta " +
       "tela e as outras dez — mede o que é preenchido aqui.",
     notaFr:
-      "Le formulaire occupe tout l’écran à dessein : instrument, sens, entrée, stop, objectif " +
+      "Le formulaire occupe tout l’écran à dessein\u00a0: instrument, sens, entrée, stop, objectif " +
       "et sortie, à côté d’un espace généreux pour glisser ou coller les captures de graphiques. " +
       "À mesure que vous écrivez, le risque est recalculé en devise et en pourcentage du compte " +
       "sur une règle allant du stop à 1 R, et une note compare votre taille au demi-Kelly. Tout le " +
@@ -183,8 +183,8 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "e botões para adicionar detalhes, calcular lote, salvar rascunho, «Vi e não entrei» e " +
       "registrar a operação. Abaixo, linha com as métricas da conta.",
     altFr:
-      "Formulaire de saisie sous la question « Qu’avez-vous tradé aujourd’hui ? » : à gauche, " +
-      "zone pour glisser ou coller des graphiques ; à droite, instrument, sélecteur Long ou " +
+      "Formulaire de saisie sous la question « Qu’avez-vous tradé aujourd’hui\u00a0? »\u00a0: à gauche, " +
+      "zone pour glisser ou coller des graphiques\u00a0; à droite, instrument, sélecteur Long ou " +
       "Short, entrée, stop, objectif facultatif et sortie ouverte, le risque en dollars et en " +
       "pourcentage du compte sur une règle stop–entrée–1 R, note comparant la position au demi-Kelly, " +
       "quantité et boutons pour ajouter des détails, calculer la taille, sauvegarder un brouillon, " +
@@ -286,9 +286,9 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "remover os dias em que quebrei meu plano?» deixa de ser uma hipótese e passa a ser dois cliques.",
     notaFr:
       "Filtres par instrument, sens, résultat, respect du plan, setup, comportement, frais " +
-      "et session. L’essentiel n’est pas le tableau : c’est la ligne au-dessus, intitulée " +
+      "et session. L’essentiel n’est pas le tableau\u00a0: c’est la ligne au-dessus, intitulée " +
       "« ce qui est à l’écran », recalculée sur les opérations filtrées. Se demander « et si " +
-      "j’enlevais les jours où j’ai enfreint mon plan ? » cesse d’être une hypothèse pour devenir deux clics.",
+      "j’enlevais les jours où j’ai enfreint mon plan\u00a0? » cesse d’être une hypothèse pour devenir deux clics.",
     notaDe:
       "Filter nach Instrument, Richtung, Ergebnis, Einhaltung der Regeln, Setup, Verhalten, " +
       "Gebühren und Handelssitzung. Entscheidend ist nicht die Tabelle: es ist die Zeile darüber " +
@@ -318,7 +318,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "verticais com seleção, direção, ativo, setup, sessão, percurso da entrada à saída, " +
       "duração, data de fechamento, P&L líquido, múltiplo de R e indicação de cumprimento do plano.",
     altFr:
-      "Écran des opérations avec deux cents enregistrements : huit filtres, barre de recherche, " +
+      "Écran des opérations avec deux cents enregistrements\u00a0: huit filtres, barre de recherche, " +
       "ligne affichant le P&L total, le win rate et l’espérance en R calculés sur la sélection, " +
       "et tableau épuré listant sélection, sens, instrument, setup, session, parcours entrée-sortie, " +
       "durée, date de clôture, P&L net, multiple de R et respect du plan.",
@@ -375,7 +375,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     notaFr:
       "Un tableau compare le mois, le trimestre, l’année et tout l’historique selon les mêmes " +
       "critères, sans jamais omettre le nombre de trades sur lequel repose chaque ligne. En bas, " +
-      "le verdict : si l’espérance se distingue de zéro, avec sa p-valeur. Et il le précise nettement : " +
+      "le verdict\u00a0: si l’espérance se distingue de zéro, avec sa p-valeur. Et il le précise nettement\u00a0: " +
       "il ne garantit pas l’avenir, il indique que ce qui a été réalisé jusqu’ici ne relève pas du hasard.",
     notaDe:
       "Eine Tabelle vergleicht Monat, Quartal, Jahr und die gesamte Historie nach denselben Maßstäben, " +
@@ -406,9 +406,9 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "bloco de risco e qualidade com drawdown máximo, Sharpe, Sortino, Calmar, SQN e outros índices; " +
       "e o veredito «Vantagem confirmada» com valor-p e intervalo de confiança de cada métrica.",
     altFr:
-      "Écran d’analyse : le net historique global en grand et un tableau par période avec opérations, " +
-      "net, win rate, profit factor et pire drawdown ; résumé de la période filtrée ; bloc de risque " +
-      "et qualité avec drawdown maximal, Sharpe, Sortino, Calmar, SQN et autres ratios ; et le " +
+      "Écran d’analyse\u00a0: le net historique global en grand et un tableau par période avec opérations, " +
+      "net, win rate, profit factor et pire drawdown\u00a0; résumé de la période filtrée\u00a0; bloc de risque " +
+      "et qualité avec drawdown maximal, Sharpe, Sortino, Calmar, SQN et autres ratios\u00a0; et le " +
       "verdict « Avantage confirmé » avec sa p-valeur et l’intervalle de confiance de chaque chiffre.",
     altDe:
       "Analysebildschirm: historischer Gesamtertrag in großer Schrift und Periodentabelle mit " +

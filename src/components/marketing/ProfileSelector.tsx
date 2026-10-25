@@ -95,7 +95,7 @@ export function ProfileSelector() {
               es: "Elige el contexto que más se parece al tuyo y mira qué mide la app en él: tu proceso si operas por tu cuenta, o las reglas de la firma si te evalúan.",
               en: "Pick the context closest to yours and see what the app measures there: your process if you trade on your own, or the firm’s rules if you’re being evaluated.",
               pt: "Escolha o contexto mais parecido com o seu e veja o que o app mede nele: seu processo se você opera por conta própria, ou as regras da mesa se você estiver em avaliação.",
-              fr: "Choisissez le contexte le plus proche du vôtre et découvrez ce que l’application mesure : votre méthode en compte propre, ou le cadre imposé en évaluation.",
+              fr: "Choisissez le contexte le plus proche du vôtre et découvrez ce que l’application mesure\u00a0: votre méthode en compte propre, ou le cadre imposé en évaluation.",
               de: "Wählen Sie das Umfeld, das Ihrem entspricht, und sehen Sie, was die App misst: Ihren eigenen Prozess oder die Vorgaben der Firma.",
               it: "Scegli il contesto più simile al tuo e scopri cosa misura l’app: il tuo processo se operi in proprio, o le regole della prop firm se sei sotto valutazione.",
             })}

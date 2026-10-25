@@ -92,7 +92,7 @@ export function ProductShowcase() {
                 es: "Capturas reales del programa con datos de muestra. Elige una pantalla.",
                 en: "Real screenshots of the application with sample data, taken in its Spanish interface; it also runs in English. Pick a screen.",
                 pt: "Capturas reais do programa com dados de amostra, na interface em espanhol; ele também opera em inglês. Escolha uma tela.",
-                fr: "Captures réelles de l’application avec données d’exemple, prises dans son interface espagnole ; elle fonctionne aussi en anglais. Choisissez un écran.",
+                fr: "Captures réelles de l’application avec données d’exemple, prises dans son interface espagnole\u00a0; elle fonctionne aussi en anglais. Choisissez un écran.",
                 de: "Echte Screenshots der Anwendung mit Beispieldaten aus der spanischen Oberfläche; sie läuft auch auf Englisch. Wählen Sie eine Ansicht.",
                 it: "Screenshot reali dell’applicazione con dati di esempio, acquisiti dall’interfaccia spagnola; funziona anche in inglese. Scegli una schermata.",
               })}

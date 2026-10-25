@@ -20,7 +20,7 @@ export function Hero({ producto }: { producto?: ReactNode }) {
     es: "Pago único previsto, sin suscripción. Sin servidores de CountPips: tus operaciones, en tu equipo. Demo sin registro.",
     en: "Planned one-time payment, no subscription. No CountPips servers: your trades, on your machine. Demo without sign-up.",
     pt: "Pagamento único previsto, sem assinatura. Sem servidores do CountPips: suas operações, na sua máquina. Demo sem cadastro.",
-    fr: "Paiement unique prévu, sans abonnement. Aucun serveur CountPips : vos opérations, sur votre machine. Démo sans inscription.",
+    fr: "Paiement unique prévu, sans abonnement. Aucun serveur CountPips\u00a0: vos opérations, sur votre machine. Démo sans inscription.",
     de: "Geplante Einmalzahlung, kein Abo. Keine CountPips-Server: Ihre Trades bleiben auf Ihrem Rechner. Demo ohne Registrierung.",
     it: "Pagamento unico previsto, nessun abbonamento. Nessun server CountPips: le tue operazioni restano sul tuo computer. Demo senza registrazione.",
   });
