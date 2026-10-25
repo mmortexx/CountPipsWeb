@@ -210,6 +210,25 @@ export function DashboardPage() {
     });
   }
 
+  /* Al cambiar de dirección, el stop y el objetivo que estaban del lado de la
+     anterior se reflejan al otro lado de la entrada, para que el plan siga
+     siendo posible sin reteclearlo. Lo que ya encaja con la nueva no se toca. */
+  function cambiaDireccion(d: Direction) {
+    if (d === direction) return;
+    const e = num(entry, inst.decimals);
+    const refleja = (s: string, ladoAnterior: (p: number) => boolean) => {
+      const p = num(s, inst.decimals);
+      const espejo = 2 * e - p;
+      return Number.isFinite(e) && e > 0 && Number.isFinite(p) && ladoAnterior(p) && espejo > 0
+        ? precio(espejo, inst.decimals)
+        : s;
+    };
+    const eraLargo = direction === "long";
+    setStop(refleja(stop, (p) => (eraLargo ? p < e : p > e)));
+    setTarget(refleja(target, (p) => (eraLargo ? p > e : p < e)));
+    setDirection(d);
+  }
+
   function selectInstrument(sym: string) {
     const next = INSTRUMENTS.find((i) => i.symbol === sym);
     if (!next) return;
@@ -404,8 +423,8 @@ export function DashboardPage() {
                             role="radio"
                             aria-checked={active}
                             tabIndex={active ? 0 : -1}
-                            onClick={() => setDirection(d)}
-                            onKeyDown={(e) => moverConFlechas(e, i, (j) => setDirection(dirs[j]))}
+                            onClick={() => cambiaDireccion(d)}
+                            onKeyDown={(e) => moverConFlechas(e, i, (j) => cambiaDireccion(dirs[j]))}
                             className={`relative h-11 rounded-[2px] border text-sm font-medium transition-colors ${
                               active
                                 ? d === "long"

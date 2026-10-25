@@ -171,9 +171,50 @@ describe("el contador del pie no promete lo que no sabe", () => {
 });
 
 describe("el registro rápido valida el plan según la dirección", () => {
-  it("un corto con los valores por defecto (stop por debajo, objetivo por encima) no se registra y avisa", () => {
+  it("al pasar a corto, el stop y el objetivo por defecto se reflejan al otro lado de la entrada y se registra", () => {
     monta();
     eligeDireccion(1);
+    // Entrada 65000: stop 64480 → 65520 y objetivo 66560 → 63440.
+    expect(campo("d-stop").value).toBe("65520,0");
+    expect(campo("d-target").value).toBe("63440,0");
+    expect(rrMostrado()).toBe("3,00 R");
+    registra();
+    expect(getCustomTrades()).toHaveLength(1);
+    expect(avisos()).toBe(TITULO_OK);
+  });
+
+  it("volver a largo deshace el reflejo y repetir la dirección no cambia nada", () => {
+    monta();
+    eligeDireccion(1);
+    eligeDireccion(1);
+    expect(campo("d-stop").value).toBe("65520,0");
+    eligeDireccion(0);
+    expect(campo("d-stop").value).toBe("64480,0");
+    expect(campo("d-target").value).toBe("66560,0");
+  });
+
+  it("un precio que ya está del lado de la nueva dirección, uno vacío o uno que quedaría negativo no se tocan", () => {
+    monta();
+    escribe("d-stop", "65520,0");
+    escribe("d-target", "");
+    escribe("d-entry", "10,0");
+    eligeDireccion(1);
+    expect(campo("d-stop").value).toBe("65520,0");
+    expect(campo("d-target").value).toBe("");
+    escribe("d-entry", "65000,0");
+    escribe("d-stop", "1000,0");
+    eligeDireccion(0);
+    escribe("d-entry", "100,0");
+    escribe("d-target", "300,0");
+    eligeDireccion(1);
+    // 2 · 100 − 300 < 0: el objetivo se queda como estaba y el registro avisa.
+    expect(campo("d-target").value).toBe("300,0");
+  });
+
+  it("un corto con el stop por debajo de la entrada no se registra y avisa", () => {
+    monta();
+    eligeDireccion(1);
+    escribe("d-stop", "64480,0");
     registra();
     expect(getCustomTrades()).toHaveLength(0);
     expect(avisos()).toBe(TITULO_ERROR);
