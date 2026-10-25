@@ -191,10 +191,6 @@ export const STR = {
     es: "Tus operaciones personalizadas se han borrado.",
     en: "Your custom trades have been cleared.",
   },
-  sessionCount: {
-    es: (n: number) => `${fmtInt(n, "es")} registradas esta sesión`,
-    en: (n: number) => `${fmtInt(n, "en")} logged this session`,
-  },
   riskUsd: { es: "Riesgo en $", en: "Risk in $" },
   riskEur: { es: "Riesgo en €", en: "Risk in €" },
 
