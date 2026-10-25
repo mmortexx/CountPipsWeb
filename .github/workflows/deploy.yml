@@ -97,12 +97,12 @@ jobs:
 
       - name: Build
         # El script `build` del package.json hace:
-        #   next build && cp -R .next/static .next/standalone/.next/ && cp -R public .next/standalone/
+        #   next build && node scripts/postbuild.mjs
         # `next build` con output:"export" (en producción) genera el
         # sitio estático en ./out/, que es lo que Pages sirve.
-        # El paso `cp -R` solo es útil si ejecutas el server.js en
-        # standalone; para Pages lo descartamos (los assets ya están
-        # copiados a ./out/_next/ por el export).
+        # `postbuild.mjs` retoca ese `out/` (el `lang` de las páginas
+        # traducidas, los ficheros de precarga, las tarjetas sociales y la
+        # CSP de `_headers`) y rompe la compilación si algo no sale bien.
         run: bun run build
         env:
           # PREFIJO DE RUTAS — solo para GitHub Pages.
