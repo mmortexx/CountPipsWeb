@@ -79,7 +79,7 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
       es: <>Las calculadoras abiertas hoy en {enlace("/herramientas", "Herramientas")}; el test de disciplina no entra en la cuenta.</>,
       en: <>The calculators open today under {enlace("/herramientas", "Tools")}; the discipline test is not counted.</>,
       pt: <>As calculadoras disponíveis hoje em {enlace("/herramientas", "Ferramentas")}; o teste de disciplina não entra na contagem.</>,
-      fr: <>Les calculateurs disponibles aujourd’hui dans {enlace("/herramientas", "Outils")} ; le test de discipline n’est pas compté.</>,
+      fr: <>Les calculateurs disponibles aujourd’hui dans {enlace("/herramientas", "Outils")}{" "}; le test de discipline n’est pas compté.</>,
       de: <>Verfügbare Rechner unter {enlace("/herramientas", "Tools")}; der Disziplintest zählt nicht dazu.</>,
       it: <>I calcolatori disponibili oggi su {enlace("/herramientas", "Strumenti")}; il test di disciplina non è conteggiato.</>,
     }),

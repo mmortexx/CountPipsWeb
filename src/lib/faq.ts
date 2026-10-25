@@ -58,7 +58,7 @@ export const FAQ_ES: QAFaq[] = [
     a: "La demo, el diario, las métricas y los recorridos de riesgo están listos para explorar. El piloto privado valida la instalación y el flujo con usuarios reales; en Acerca de, «Qué está listo, qué validamos y qué sigue» detalla lo que todavía no prometemos.",
   },
   {
-    q: "¿Qué métodos de pago aceptáis?",
+    q: "¿Qué métodos de pago se aceptan?",
     categoria: "access",
     a: "Todavía ninguno: la compra no está abierta y nada en esta web cobra. Los métodos de pago se publicarán aquí cuando se abra la venta, junto con la licencia y el soporte. El acceso anticipado no es una preventa y no pide tarjeta.",
   },
@@ -244,7 +244,7 @@ const PRICING_FAQ_DE: QA[] = [
   },
   {
     q: "Kostet die Demo etwas?",
-    a: "Nein. Die Demo ist öffentlich, arbeitet mit Beispieldaten und verlangt weder Karte noch Registrierung oder Installation.",
+    a: "Nein. Die Demo ist öffentlich, arbeitet mit Beispieldaten und verlangt weder Karte noch Registrierung noch Installation.",
   },
   {
     q: "Was beinhalten die Einführungspreise?",

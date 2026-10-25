@@ -59,9 +59,11 @@ function sitiosFr(nombre: string, texto: string): string[] {
   const visita = (nodo: ts.Node, bajoFr: boolean) => {
     const enFr = bajoFr || esClaveFrancesa(nodo);
     if (esTexto(nodo)) {
-      const raw = nodo.getText(sf);
+      /* `getText` salta el espacio inicial de un texto JSX: el de «{enlace} ; le…». */
+      const jsx = ts.isJsxText(nodo);
+      const raw = jsx ? nodo.getFullText(sf) : nodo.getText(sf);
       if (enFr || FRANCES_CLARO.test(raw)) {
-        const inicio = nodo.getStart(sf);
+        const inicio = jsx ? nodo.pos : nodo.getStart(sf);
         for (const m of raw.matchAll(ESPACIO_ANTES)) {
           const linea = sf.getLineAndCharacterOfPosition(inicio + m.index).line + 1;
           out.push(`${nombre}:${linea}  …${raw.slice(Math.max(0, m.index - 14), m.index + 8)}…`);
@@ -82,6 +84,7 @@ describe("el detector distingue el francés de lo que no lo es", () => {
     ["x.ts", 'const x = { es: "Hola ; adiós" };', 0],
     ["x.ts", 'const x = { fr: `Agrandir la capture : ${titulo}` };', 1],
     ["x.tsx", "const x = { fr: <>Les opérations ; {y}</> };", 1],
+    ["x.tsx", "const x = { fr: <>Dans {y} ; le test</> };", 1],
     ["x.tsx", '<Sello detalleFr="défini : x" />', 1],
     ["x.ts", 'const x = "Votre compte ? Oui";', 1],
   ])("%s: «%s» da %i hallazgos", (nombre, codigo, n) => {

@@ -99,7 +99,7 @@ export function PageHeader({
           aria-label={tx(lang, {
             es: "Migas de pan",
             en: "Breadcrumb",
-            pt: "Navegação estrutural",
+            pt: "Trilha de navegação",
             fr: "Fil d’Ariane",
             de: "Brotkrümelnavigation",
             it: "Percorso di navigazione",
