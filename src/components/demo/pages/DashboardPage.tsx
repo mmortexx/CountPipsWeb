@@ -191,6 +191,9 @@ export function DashboardPage() {
       entry: +entryN.toFixed(inst.decimals),
       exit: +exitN.toFixed(inst.decimals),
       qty: +qtyN.toFixed(decCantidad),
+      stop: +stopN.toFixed(inst.decimals),
+      // El objetivo es opcional: vacío o ilegible no se guarda.
+      target: targetNum > 0 ? +targetNum.toFixed(inst.decimals) : undefined,
       netPnl,
       rMultiple,
       // Con stop definido se da por seguido el plan.
