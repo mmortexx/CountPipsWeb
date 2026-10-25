@@ -62,7 +62,7 @@ export function computeRiskOfRuin(
   const p = winRate > 1 ? winRate / 100 : Math.max(0, Math.min(1, winRate));
   const q = 1 - p;
   const b = Math.max(0.01, payoff);
-  const safeRisk = Math.max(0.1, riskPct);
+  const safeRisk = Math.max(Number.EPSILON, riskPct); // solo evita dividir por cero: un riesgo pequeño se respeta tal cual
   const safeDd = Math.max(1, ruinDdPct);
   const units = safeDd / safeRisk;
 

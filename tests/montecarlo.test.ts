@@ -74,6 +74,15 @@ describe("ruina en el simulador de Monte Carlo", () => {
       expect(simulaMonteCarlo(p).analyticalRuinProb).toBeCloseTo(esperado, 2);
     }
   });
+
+  // Riesgo × pérdida media llega a 0,0625 % con los deslizadores al mínimo (0,25 % y 0,25 R):
+  // un suelo de 0,1 % contaba 500 unidades de riesgo en vez de 800.
+  it("con el riesgo efectivo por debajo de 0,1 % la ruina sigue la fórmula del jugador, sin suelo", () => {
+    const p = { ...BASE, caminos: 1, trades: 1, winRate: 50.1, avgWinR: 0.25, avgLossR: 0.25, riskPct: 0.25 };
+    // Pago 1:1 → (q/p)^U con U = 50 / 0,0625 = 800.
+    const esperado = 100 * (0.499 / 0.501) ** 800;
+    expect(simulaMonteCarlo(p).analyticalRuinProb).toBeCloseTo(esperado, 2);
+  });
 });
 
 // «Otra tirada» suma uno a la semilla: pasado el máximo del deslizador, vuelve a 1.
