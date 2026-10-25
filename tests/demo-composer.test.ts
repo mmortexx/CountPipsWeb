@@ -137,10 +137,13 @@ function eligeDireccion(indice: number) {
   });
 }
 
-/** El R:R planificado que enseña el composer («3,00 R», con espacio duro). */
+const NBSP = String.fromCharCode(0xa0);
+const MENOS = String.fromCharCode(0x2212);
+
+/** El R:R planificado que enseña el composer («3,00 R», con espacio duro y menos tipográfico). */
 function rrMostrado() {
-  const celda = [...cont.querySelectorAll("span")].find((s) => /^[−-]?\d[\d.,]* R$/.test(s.textContent ?? ""));
-  return celda?.textContent?.replace(" ", " ");
+  const celda = [...cont.querySelectorAll("span")].find((s) => new RegExp(`^[${MENOS}-]?\\d[\\d.,]*${NBSP}R$`).test(s.textContent ?? ""));
+  return celda?.textContent?.replace(NBSP, " ");
 }
 
 /** El contador del pie del composer, con su rótulo («2registradas»: sin espacio, son dos elementos). */
