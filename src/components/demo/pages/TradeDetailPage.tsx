@@ -417,12 +417,20 @@ export function TradeDetailPage() {
   );
 
   // Etiquetas como las de la app: error, acierto, emoción y libre.
-  const [tags, setTags] = useState<
-    { kind: TagKind; label: string }[]
-  >([
+  const etiquetasDePartida = (): { kind: TagKind; label: string }[] => [
     { kind: "win", label: lang === "es" ? "Buena entrada" : "Good entry" },
     { kind: "emotion", label: lang === "es" ? "Calma" : "Calm" },
-  ]);
+  ];
+  const [tags, setTags] = useState(etiquetasDePartida);
+
+  /* Anterior y siguiente no desmontan la página: lo que el visitante tocó en
+     una operación no debe aparecer en la siguiente. */
+  const [idMostrado, setIdMostrado] = useState(selectedTradeId);
+  if (idMostrado !== selectedTradeId) {
+    setIdMostrado(selectedTradeId);
+    setReview(trade?.compliance ?? "yes");
+    setTags(etiquetasDePartida());
+  }
 
   // Decimales y ejecuciones, antes del `return` temprano para mantener el orden
   // de hooks (rules-of-hooks); sin operación, las ejecuciones son una lista vacía.
