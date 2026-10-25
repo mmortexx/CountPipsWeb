@@ -858,18 +858,12 @@ export function TradesPage() {
     }
   }
 
-  function handleTagAdd(tag: string) {
+  /* Añadir y quitar etiquetas no persiste nada en la demo: el aviso lo dice en vez de fingir que se aplicó. */
+  function handleTag(tag: string) {
     toast({
       title: lang === "es"
-        ? `Etiqueta «${tag}» aplicada a ${fmtOperaciones(selectedIds.size, lang)}`
-        : `Tag “${tag}” applied to ${fmtOperaciones(selectedIds.size, lang)}`,
-    });
-  }
-  function handleTagRemove(tag: string) {
-    toast({
-      title: lang === "es"
-        ? `Etiqueta «${tag}» quitada de ${fmtOperaciones(selectedIds.size, lang)}`
-        : `Tag “${tag}” removed from ${fmtOperaciones(selectedIds.size, lang)}`,
+        ? `Etiqueta «${tag}»: en la demo las etiquetas no se guardan`
+        : `Tag “${tag}”: the demo doesn’t save tags`,
     });
   }
 
@@ -1511,8 +1505,8 @@ export function TradesPage() {
               <BulkActionBar
                 count={selectedIds.size || ultimaSeleccion}
                 onClear={clearSelection}
-                onTagAdd={handleTagAdd}
-                onTagRemove={handleTagRemove}
+                onTagAdd={handleTag}
+                onTagRemove={handleTag}
                 lang={lang}
               />
             </div>

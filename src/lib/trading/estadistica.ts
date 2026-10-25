@@ -62,7 +62,7 @@ export function computeRiskOfRuin(
   const p = winRate > 1 ? winRate / 100 : Math.max(0, Math.min(1, winRate));
   const q = 1 - p;
   const b = Math.max(0.01, payoff);
-  const safeRisk = Math.max(0.1, riskPct);
+  const safeRisk = Math.max(Number.EPSILON, riskPct); // solo evita dividir por cero: un riesgo pequeño se respeta tal cual
   const safeDd = Math.max(1, ruinDdPct);
   const units = safeDd / safeRisk;
 
@@ -145,6 +145,9 @@ export type VeredictoVentaja = "sin-ventaja" | "muestra-insuficiente" | "no-sign
  * La muestra necesaria es la que detecta el acierto observado con una
  * potencia del 80 %: si la muestra ya la alcanza, el contraste sale
  * significativo por construcción.
+ *
+ * Con la muestra por debajo del mínimo válido no hay contraste: `pValor` es
+ * null, no 1, que se leería como «seguro que es azar».
  */
 export function contrasteVentaja(n: number, aciertoPct: number, ganancia: number, perdida: number) {
   const p = Math.min(1, Math.max(0, aciertoPct / 100));
@@ -157,7 +160,7 @@ export function contrasteVentaja(n: number, aciertoPct: number, ganancia: number
   const minimoValido = Math.ceil(5 / (equilibrio * q0));
   const valido = n >= minimoValido;
   const z = sd0 > 0 ? (diferencia * Math.sqrt(n)) / sd0 : 0;
-  const pValor = valido ? 1 - normalCdf(z) : 1;
+  const pValor = valido ? 1 - normalCdf(z) : null;
 
   const muestraPara = (confianza: keyof typeof Z_UNA_COLA): number | null =>
     hayVentaja
@@ -174,7 +177,7 @@ export function contrasteVentaja(n: number, aciertoPct: number, ganancia: number
 
   const veredicto: VeredictoVentaja = !hayVentaja
     ? "sin-ventaja"
-    : !valido
+    : pValor === null
       ? "muestra-insuficiente"
       : pValor >= 0.05
         ? "no-significativo"

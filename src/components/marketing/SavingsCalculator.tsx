@@ -55,7 +55,8 @@ export function SavingsCalculator() {
     for (let m = 1; m <= totalMonths; m++) {
       compoundInvested = (compoundInvested + altMonthly) * (1 + monthlyRate);
     }
-    const compoundAdvantage = Math.max(0, compoundInvested - cpPrice);
+    // Con signo: solo se cita cuando la suscripción ya superó al pago único (seAmortizaDentro), donde no es negativa.
+    const compoundAdvantage = compoundInvested - cpPrice;
 
     // Curva año a año: suscripción acumulada frente a la línea plana de CountPips.
     const curve: { year: number; sub: number; cp: number }[] = [];
@@ -280,7 +281,7 @@ export function SavingsCalculator() {
             <Result label={es ? "Referencia CountPips" : "CountPips reference"} value={fmtUsd(c.cpPrice)} color="rgb(var(--accent-base))" />
             <Result label={es ? "Alternativa acumulada" : "Cumulative alternative"} value={fmtUsd(c.altTotal)} color="rgb(var(--pnl-neg))" />
             <Result label={es ? "Ahorro directo" : "Direct savings"} value={fmtUsd(c.savings)} color={savingsColor} />
-            <Result label={es ? `Reinvertido al ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} anual` : `Compounded at ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} p.a.`} value={fmtUsd(c.compoundAdvantage)} color="rgb(var(--pnl-pos))" />
+            <Result label={es ? `Reinvertido al ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} anual` : `Compounded at ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} p.a.`} value={fmtUsd(c.compoundInvested)} color="rgb(var(--pnl-pos))" />
           </div>
 
           <div
@@ -300,8 +301,8 @@ export function SavingsCalculator() {
                   ? `Con ${fmtUsd(altMonthly)} al mes, en ${years} ${years === 1 ? "año" : "años"} la suscripción no llega a costar el pago único: lo alcanzaría en el mes ${c.breakEvenMonths ?? "—"}.`
                   : `At ${fmtUsd(altMonthly)} a month, over ${years} ${years === 1 ? "year" : "years"} the subscription doesn’t reach the one-time payment: it would in month ${c.breakEvenMonths ?? "—"}.`
                 : es
-                ? `A partir del mes ${c.breakEvenMonths}, la suscripción ya ha costado más que el pago único. Si la diferencia rindiera un ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} anual, a ${years} ${years === 1 ? "año" : "años"} serían ${fmtUsd(c.compoundAdvantage)}; es un supuesto, no una rentabilidad.`
-                : `From month ${c.breakEvenMonths}, the subscription has cost more than the one-time payment. If the difference earned ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} a year, over ${years} ${years === 1 ? "year" : "years"} it would be ${fmtUsd(c.compoundAdvantage)}; an assumption, not a return.`}
+                ? `A partir del mes ${c.breakEvenMonths}, la suscripción ya ha costado más que el pago único. Si cada cuota mensual se reinvirtiera al ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} anual, a ${years} ${years === 1 ? "año" : "años"} serían ${fmtUsd(c.compoundInvested)}, ${fmtUsd(c.compoundAdvantage)} más que el pago único; es un supuesto, no una rentabilidad.`
+                : `From month ${c.breakEvenMonths}, the subscription has cost more than the one-time payment. If each monthly fee were reinvested at ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} a year, over ${years} ${years === 1 ? "year" : "years"} it would be ${fmtUsd(c.compoundInvested)}, ${fmtUsd(c.compoundAdvantage)} more than the one-time payment; an assumption, not a return.`}
             </p>
           </div>
           </div>

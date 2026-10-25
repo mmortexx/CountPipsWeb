@@ -228,7 +228,7 @@ export function Comparison() {
             es: "Una hoja de cálculo guarda lo que apuntas; un diario en la nube lo calcula en su servidor. CountPips lo calcula en tu equipo.",
             en: "A spreadsheet stores what you write down; a cloud journal computes it on its server. CountPips computes it on your machine.",
             pt: "Uma planilha guarda o que você anota; um diário na nuvem calcula no servidor dele. O CountPips calcula na sua máquina.",
-            fr: "Un tableur conserve ce que vous notez ; un journal cloud calcule sur son serveur. CountPips calcule sur votre machine.",
+            fr: "Un tableur conserve ce que vous notez\u00a0; un journal cloud calcule sur son serveur. CountPips calcule sur votre machine.",
             de: "Eine Tabelle speichert, was Sie notieren; ein Cloud-Journal rechnet auf dem Server. CountPips rechnet auf Ihrem Rechner.",
             it: "Un foglio di calcolo memorizza ciò che segni; un diario nel cloud calcola sui suoi server. CountPips calcola sul tuo computer.",
           })}
@@ -312,7 +312,7 @@ export function Comparison() {
               es: "Diarios en la nube: TradeZella, TraderSync, TradesViz y Tradervue, según sus webs en septiembre de 2026; TradesViz y Tradervue tienen además un plan gratuito limitado. Hoja de cálculo sin plantillas avanzadas.",
               en: "Cloud journals: TradeZella, TraderSync, TradesViz and Tradervue, as published on their websites in September 2026; TradesViz and Tradervue also offer a limited free plan. Spreadsheet without advanced templates.",
               pt: "Diários na nuvem: TradeZella, TraderSync, TradesViz e Tradervue, segundo seus sites em setembro de 2026; TradesViz e Tradervue oferecem também um plano gratuito limitado. Planilha sem modelos avançados.",
-              fr: "Journaux cloud : TradeZella, TraderSync, TradesViz et Tradervue, selon leurs sites en septembre 2026 ; TradesViz et Tradervue proposent aussi un forfait gratuit limité. Tableur sans modèles avancés.",
+              fr: "Journaux cloud\u00a0: TradeZella, TraderSync, TradesViz et Tradervue, selon leurs sites en septembre 2026\u00a0; TradesViz et Tradervue proposent aussi un forfait gratuit limité. Tableur sans modèles avancés.",
               de: "Cloud-Journale: TradeZella, TraderSync, TradesViz und Tradervue laut deren Websites im September 2026; TradesViz und Tradervue bieten zudem einen begrenzten Gratis-Tarif. Tabellenkalkulation ohne erweiterte Vorlagen.",
               it: "Diari nel cloud: TradeZella, TraderSync, TradesViz e Tradervue, secondo i loro siti a settembre 2026; TradesViz e Tradervue offrono anche un piano gratuito limitato. Foglio di calcolo senza template avanzati.",
             })}

@@ -32,7 +32,7 @@ import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
 import { moverConFlechas } from "@/lib/flechas";
 import { tamanoParaRiesgo } from "@/lib/trading/plan";
-import { validaRegistro } from "@/lib/trading/validaPlan";
+import { rrPlanificado, validaRegistro } from "@/lib/trading/validaPlan";
 
 // Ventanas de la curva de capital: últimos N días. La muestra cubre ~180, así que «6M» equivale a todo.
 type Timeframe = "1M" | "3M" | "6M";
@@ -139,8 +139,7 @@ export function DashboardPage() {
   const qtyNum = num(quantity, decLecturaCantidad) || 0;
 
   const stopDist = Math.abs(entryNum - stopNum);
-  // R:R planificado = |objetivo − entrada| / |entrada − stop|.
-  const plannedRr = stopDist > 0 ? Math.abs(targetNum - entryNum) / stopDist : 0;
+  const plannedRr = rrPlanificado(direction, entryNum, stopNum, targetNum);
 
   // Riesgo en $: distancia al stop × cantidad × multiplicador; sin stop o
   // cantidad válidos, el riesgo por defecto sobre el saldo inicial.
@@ -157,8 +156,10 @@ export function DashboardPage() {
   function handleRegister() {
     // Sin salida se usa la entrada: queda una operación en tablas (P&L = 0, R = 0), no NaN.
     const registro = validaRegistro({
+      direccion: direction,
       entrada: num(entry, inst.decimals),
       stop: num(stop, inst.decimals),
+      objetivo: num(target, inst.decimals),
       salida: num(exitPrice, inst.decimals),
       cantidad: num(quantity, decLecturaCantidad),
       multiplicador: getInstrumentMultiplier(instrumentSymbol, inst.assetClass),
@@ -172,7 +173,7 @@ export function DashboardPage() {
       });
       return;
     }
-    const { entrada: entryN, stop: stopN, salida: exitN, cantidad: qtyN } = registro;
+    const { entrada: entryN, stop: stopN, objetivo: targetN, salida: exitN, cantidad: qtyN } = registro;
 
     // priceDiff lleva signo: positivo si el movimiento gana.
     const stopDistLocal = Math.abs(entryN - stopN);
@@ -191,6 +192,8 @@ export function DashboardPage() {
       entry: +entryN.toFixed(inst.decimals),
       exit: +exitN.toFixed(inst.decimals),
       qty: +qtyN.toFixed(decCantidad),
+      stop: +stopN.toFixed(inst.decimals),
+      target: targetN === undefined ? undefined : +targetN.toFixed(inst.decimals),
       netPnl,
       rMultiple,
       // Con stop definido se da por seguido el plan.
@@ -207,6 +210,25 @@ export function DashboardPage() {
     });
   }
 
+  /* Al cambiar de dirección, el stop y el objetivo que estaban del lado de la
+     anterior se reflejan al otro lado de la entrada, para que el plan siga
+     siendo posible sin reteclearlo. Lo que ya encaja con la nueva no se toca. */
+  function cambiaDireccion(d: Direction) {
+    if (d === direction) return;
+    const e = num(entry, inst.decimals);
+    const refleja = (s: string, ladoAnterior: (p: number) => boolean) => {
+      const p = num(s, inst.decimals);
+      const espejo = 2 * e - p;
+      return Number.isFinite(e) && e > 0 && Number.isFinite(p) && ladoAnterior(p) && espejo > 0
+        ? precio(espejo, inst.decimals)
+        : s;
+    };
+    const eraLargo = direction === "long";
+    setStop(refleja(stop, (p) => (eraLargo ? p < e : p > e)));
+    setTarget(refleja(target, (p) => (eraLargo ? p > e : p < e)));
+    setDirection(d);
+  }
+
   function selectInstrument(sym: string) {
     const next = INSTRUMENTS.find((i) => i.symbol === sym);
     if (!next) return;
@@ -217,8 +239,8 @@ export function DashboardPage() {
     setTarget(precio(next.basePrice * 1.024, next.decimals));
   }
 
-  // Operaciones registradas en esta sesión (las que no son de la muestra).
-  const sessionCount = allTrades.length - TRADES.length;
+  // Operaciones registradas por el visitante (las que no son de la muestra), también las de visitas anteriores.
+  const registradas = allTrades.length - TRADES.length;
 
   return (
     <div className="p-5 md:p-6 space-y-8 relative">
@@ -401,8 +423,8 @@ export function DashboardPage() {
                             role="radio"
                             aria-checked={active}
                             tabIndex={active ? 0 : -1}
-                            onClick={() => setDirection(d)}
-                            onKeyDown={(e) => moverConFlechas(e, i, (j) => setDirection(dirs[j]))}
+                            onClick={() => cambiaDireccion(d)}
+                            onKeyDown={(e) => moverConFlechas(e, i, (j) => cambiaDireccion(dirs[j]))}
                             className={`relative h-11 rounded-[2px] border text-sm font-medium transition-colors ${
                               active
                                 ? d === "long"
@@ -660,10 +682,10 @@ export function DashboardPage() {
               <div className="mt-6 pt-4 border-t border-[rgb(var(--divider)/0.1)] flex flex-wrap items-center gap-3 justify-between">
                 <div className="flex items-center gap-2 text-xs">
                   <span className="text-sm font-semibold tnum text-primary">
-                    {fmtInt(sessionCount, lang)}
+                    {fmtInt(registradas, lang)}
                   </span>
                   <span className="text-tertiary uppercase tracking-[0.1em]">
-                    {es ? "en la sesión" : "this session"}
+                    {es ? "registradas" : "logged"}
                   </span>
                 </div>
 

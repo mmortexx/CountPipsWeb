@@ -516,7 +516,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                   : ""
               }
             />
-            <div ref={resultadoRef} tabIndex={-1} aria-labelledby={`${uid}-perfil`} className="tj-ficha scroll-mt-24 outline-none">
+            <div ref={resultadoRef} tabIndex={-1} role="group" aria-labelledby={`${uid}-perfil`} className="tj-ficha scroll-mt-24 outline-none">
               <p className="tj-ficha-barra">
                 <span id={`${uid}-perfil`}>{es ? "Tu perfil" : "Your profile"}</span>
                 <span>{es ? "5 ejes" : "5 axes"}</span>

@@ -94,7 +94,7 @@ export function PricingBody() {
         subtitleEs={`Core ${fmtMoney(PRECIO_CORE, "es", { decimals: 0 })} y Pro ${fmtMoney(PRECIO_PRO, "es", { decimals: 0 })} son precios de lanzamiento previstos. Prueba primero la demo; el acceso anticipado privado no es una preventa.`}
         subtitleEn={`Core ${fmtMoney(PRECIO_CORE, "en", { decimals: 0 })} and Pro ${fmtMoney(PRECIO_PRO, "en", { decimals: 0 })} are planned launch prices. Try the demo first; private early access is not a pre-order.`}
         subtitlePt={`Core ${fmtMoney(PRECIO_CORE, "pt", { decimals: 0 })} e Pro ${fmtMoney(PRECIO_PRO, "pt", { decimals: 0 })} são preços de lançamento previstos. Experimente primeiro a demo; o acesso antecipado privado não é uma pré-venda.`}
-        subtitleFr={`Core ${fmtMoney(PRECIO_CORE, "fr", { decimals: 0 })} et Pro ${fmtMoney(PRECIO_PRO, "fr", { decimals: 0 })} sont des prix de lancement prévus. Essayez d’abord la démo ; l’accès anticipé privé n’est pas une précommande.`}
+        subtitleFr={`Core ${fmtMoney(PRECIO_CORE, "fr", { decimals: 0 })} et Pro ${fmtMoney(PRECIO_PRO, "fr", { decimals: 0 })} sont des prix de lancement prévus. Essayez d’abord la démo\u00a0; l’accès anticipé privé n’est pas une précommande.`}
         subtitleDe={`Core ${fmtMoney(PRECIO_CORE, "de", { decimals: 0 })} und Pro ${fmtMoney(PRECIO_PRO, "de", { decimals: 0 })} sind geplante Einführungspreise. Testen Sie zuerst die Demo; der private Vorabzugang ist kein Vorverkauf.`}
         subtitleIt={`Core ${fmtMoney(PRECIO_CORE, "it", { decimals: 0 })} e Pro ${fmtMoney(PRECIO_PRO, "it", { decimals: 0 })} sono prezzi di lancio previsti. Prova prima la demo; l’accesso anticipato privato non è un preordine.`}
         breadcrumbEs="Precios"

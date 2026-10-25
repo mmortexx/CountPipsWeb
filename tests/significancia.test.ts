@@ -49,7 +49,7 @@ describe("contrasteVentaja: ventaja frente al acierto de equilibrio", () => {
           for (const l of [0.25, 0.5, 1, 2, 3]) {
             const c = contrasteVentaja(n, wr, g, l);
             const necesaria = c.muestraPara(95);
-            if (necesaria !== null && n >= necesaria && c.pValor >= 0.05) contradicciones.push(`${n} ops ${wr} % ${g}:${l}`);
+            if (necesaria !== null && n >= necesaria && (c.pValor === null || c.pValor >= 0.05)) contradicciones.push(`${n} ops ${wr} % ${g}:${l}`);
           }
     expect(contradicciones).toEqual([]);
   });

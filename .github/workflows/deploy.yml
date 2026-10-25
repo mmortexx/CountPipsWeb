@@ -97,12 +97,12 @@ jobs:
 
       - name: Build
         # El script `build` del package.json hace:
-        #   next build && cp -R .next/static .next/standalone/.next/ && cp -R public .next/standalone/
+        #   next build && node scripts/postbuild.mjs
         # `next build` con output:"export" (en producción) genera el
         # sitio estático en ./out/, que es lo que Pages sirve.
-        # El paso `cp -R` solo es útil si ejecutas el server.js en
-        # standalone; para Pages lo descartamos (los assets ya están
-        # copiados a ./out/_next/ por el export).
+        # `postbuild.mjs` retoca ese `out/` (el `lang` de las páginas
+        # traducidas, los ficheros de precarga, las tarjetas sociales y la
+        # CSP de `_headers`) y rompe la compilación si algo no sale bien.
         run: bun run build
         env:
           # PREFIJO DE RUTAS — solo para GitHub Pages.
@@ -190,8 +190,8 @@ jobs:
 
       # Las pruebas que leen `out/`: en el paso «Pruebas» se saltan porque aún
       # no está compilado. Aquí, con `COMPROBAR_OUT=1`, sin `out/` fallan.
-      - name: Pruebas sobre el sitio compilado (idiomas nuevos y formulario)
-        run: COMPROBAR_OUT=1 bunx vitest run tests/idiomas-nuevos.test.ts tests/formulario-declarado.test.ts
+      - name: Pruebas sobre el sitio compilado (idiomas nuevos, formulario, acceso y tarjetas)
+        run: COMPROBAR_OUT=1 bunx vitest run tests/idiomas-nuevos.test.ts tests/formulario-declarado.test.ts tests/acceso-enlazado.test.ts tests/tarjeta-seccion.test.ts
 
       - name: Instalar navegador de pruebas
         run: bunx playwright install --with-deps chromium

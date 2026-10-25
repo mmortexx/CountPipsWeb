@@ -120,7 +120,10 @@ export function EdgeSignificanceChecker() {
   const equilibrioPct = c.equilibrio * 100;
   const equilibrioTxt = fmtPct(c.equilibrio, lang, Math.abs(equilibrioPct - Math.round(equilibrioPct)) < 0.05 ? 0 : 1);
   const ops = fmtOperaciones(trades, lang);
-  const pTxt = (dec: number) => (c.pValor < 0.0001 ? `p < ${fmtNum(0.0001, 4)}` : `p = ${fmtNum(c.pValor, dec)}`);
+  /* Vacío con la muestra insuficiente: sin contraste no hay p que citar. */
+  const pTxt = (dec: number) =>
+    c.pValor === null ? "" : c.pValor < 0.0001 ? `p < ${fmtNum(0.0001, 4)}` : `p = ${fmtNum(c.pValor, dec)}`;
+  const pCita = pTxt(4);
 
   const VEREDICTOS = {
     "sin-ventaja": {
@@ -167,8 +170,8 @@ export function EdgeSignificanceChecker() {
       <ResultadoAnunciado
         texto={
           es
-            ? `${verdict.label}: ${pTxt(4)}, expectancy ${fmtR(c.expectancyR, lang, 3)} en ${ops}, equilibrio en un ${equilibrioTxt}.`
-            : `${verdict.label}: ${pTxt(4)}, expectancy ${fmtR(c.expectancyR, lang, 3)} over ${ops}, breakeven at ${equilibrioTxt}.`
+            ? `${verdict.label}: ${pCita && `${pCita}, `}expectancy ${fmtR(c.expectancyR, lang, 3)} en ${ops}, equilibrio en un ${equilibrioTxt}.`
+            : `${verdict.label}: ${pCita && `${pCita}, `}expectancy ${fmtR(c.expectancyR, lang, 3)} over ${ops}, breakeven at ${equilibrioTxt}.`
         }
       />
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
@@ -256,7 +259,7 @@ export function EdgeSignificanceChecker() {
 
           <div className="tj-matriz grid-cols-2 mb-5">
             <Result label={es ? "Expectancy" : "Expectancy"} value={`${fmtR(c.expectancyR, lang, 3)}`} color={c.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
-            <Result label={es ? `p-valor (H₀: ${equilibrioTxt})` : `p-value (H₀: ${equilibrioTxt})`} value={c.pValor < 0.0001 ? `< ${fmtNum(0.0001, 4)}` : fmtNum(c.pValor, 4)} color={c.significant ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
+            <Result label={es ? `p-valor (H₀: ${equilibrioTxt})` : `p-value (H₀: ${equilibrioTxt})`} value={c.pValor === null ? "—" : c.pValor < 0.0001 ? `< ${fmtNum(0.0001, 4)}` : fmtNum(c.pValor, 4)} color={c.pValor === null ? "var(--ink-3)" : c.significant ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
             <Result label={es ? "Potencia (1 − β)" : "Statistical power (1 − β)"} value={`${fmtNum(c.potencia, 1)}${PCT}`} color={c.potencia >= 80 ? "rgb(var(--pnl-pos))" : "rgb(var(--accent-base))"} />
             <Result label={es ? `IC Wilson 95${PCT}` : "Wilson 95% CI"} value={`${fmtNum(c.wilsonLower, 1)}–${fmtNum(c.wilsonUpper, 1)}${PCT}`} color="var(--ink)" />
           </div>
@@ -332,7 +335,7 @@ export function EdgeSignificanceChecker() {
                       rotulo: es ? "Resultado" : "Result",
                       lineas: [
                         `${es ? "Veredicto" : "Verdict"}: ${verdict.label}`,
-                        `z: ${fmtNum(c.z, 2)} · ${pTxt(4)}`,
+                        `z: ${fmtNum(c.z, 2)}${pCita && ` · ${pCita}`}`,
                         `${es ? `IC Wilson 95${PCT}` : "Wilson 95% CI"}: ${fmtNum(c.wilsonLower, 1)}–${fmtNum(c.wilsonUpper, 1)}${PCT}`,
                         `${es ? `Muestra necesaria al 95${PCT}` : "Sample needed at 95%"}: ${c.minSample95 === null ? (es ? "sin ventaja que detectar" : "no edge to detect") : fmtOperaciones(c.minSample95, lang)}`,
                       ],

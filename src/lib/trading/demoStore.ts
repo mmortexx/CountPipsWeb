@@ -38,6 +38,9 @@ export interface CustomTrade {
   qty: number;
   netPnl: number;
   rMultiple: number;
+  /** Stop y objetivo tecleados en el composer. Opcionales: las operaciones guardadas antes de recogerlos no los traen. */
+  stop?: number;
+  target?: number;
   compliance: Compliance;
   /** Cadena ISO, apta para JSON; se convierte a Date al mostrarla. */
   closedAt: string;
@@ -51,17 +54,23 @@ function sessionForHour(hour: number): Session {
   return "Asia";
 }
 
+/** El stop u objetivo guardado si es un precio utilizable (positivo y distinto de la entrada); `null` si falta o no sirve. */
+function precioTecleado(precio: number | undefined, entrada: number): number | null {
+  return typeof precio === "number" && Number.isFinite(precio) && precio > 0 && precio !== entrada ? precio : null;
+}
+
 /** Convierte una operación guardada en un `Trade` completo, para que tablas,
- *  gráficos y métricas la consuman sin cambios. El composer solo recoge
- *  instrumento, setup, dirección, entrada, salida, cantidad, P&L, R,
- *  cumplimiento, cierre y nota; el resto se sintetiza:
+ *  gráficos y métricas la consuman sin cambios. El composer recoge
+ *  instrumento, setup, dirección, entrada, salida, cantidad, stop, objetivo,
+ *  P&L, R, cumplimiento, cierre y nota; el resto se sintetiza:
  *   - riskUsd = |netPnl / rMultiple| (0 si R es 0 o NaN).
  *   - fees = 3 % de |netPnl| y grossPnl = netPnl + fees, como en data.ts.
- *   - plannedRr: max(r + 0,5; 1,5) si gana, 1,5 si pierde.
  *   - mae y mfe derivados de R, con un valor plausible por operación.
- *   - initialStop y target desde la entrada, la dirección y un stop del 1 %.
  *   - durationMin entre 30 y 120 min, determinista por id, para no volcar
- *     todas las propias en el cubo «<15m». */
+ *     todas las propias en el cubo «<15m».
+ *  Stop y objetivo salen de lo tecleado; si faltan (operaciones anteriores, o
+ *  sin objetivo) se sintetizan: stop del 1 % de la entrada, y objetivo con
+ *  plannedRr = max(r + 0,5; 1,5) si gana, 1,5 si pierde. */
 export function customTradeToTrade(c: CustomTrade): Trade {
   const closedAt = new Date(c.closedAt);
   const isWin = c.netPnl > 0;
@@ -69,18 +78,23 @@ export function customTradeToTrade(c: CustomTrade): Trade {
   const riskUsd = r !== 0 ? Math.abs(c.netPnl / r) : 0;
   const fees = +(Math.abs(c.netPnl) * 0.03).toFixed(2);
   const grossPnl = +(c.netPnl + fees).toFixed(2);
-  const plannedRr = isWin ? Math.max(r + 0.5, 1.5) : 1.5;
   const mae = isWin ? -0.2 : Math.min(r - 0.3, -0.9);
   const mfe = isWin ? r + 0.3 : 0.2;
-  const stopDist = c.entry * 0.01;
+  const long = c.direction === "long";
+  const stopTecleado = precioTecleado(c.stop, c.entry);
+  const stopDist = stopTecleado !== null ? Math.abs(c.entry - stopTecleado) : c.entry * 0.01;
   const initialStop =
-    c.direction === "long"
-      ? +(c.entry - stopDist).toFixed(2)
-      : +(c.entry + stopDist).toFixed(2);
+    stopTecleado ?? +(long ? c.entry - stopDist : c.entry + stopDist).toFixed(2);
+  const objetivoTecleado = stopDist > 0 ? precioTecleado(c.target, c.entry) : null;
+  const plannedRr =
+    objetivoTecleado !== null
+      ? Math.abs(objetivoTecleado - c.entry) / stopDist
+      : isWin
+        ? Math.max(r + 0.5, 1.5)
+        : 1.5;
   const target =
-    c.direction === "long"
-      ? +(c.entry + stopDist * plannedRr).toFixed(2)
-      : +(c.entry - stopDist * plannedRr).toFixed(2);
+    objetivoTecleado ??
+    +(long ? c.entry + stopDist * plannedRr : c.entry - stopDist * plannedRr).toFixed(2);
   const durationMin = 30 + (Math.abs(c.id) % 91);
   return {
     id: c.id,
@@ -134,6 +148,7 @@ function isCustomTrade(v: unknown): v is CustomTrade {
       t.compliance === "partial" ||
       t.compliance === "no") &&
     typeof t.closedAt === "string" &&
+    !Number.isNaN(Date.parse(t.closedAt)) &&
     typeof t.note === "string"
   );
 }

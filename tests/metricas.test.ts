@@ -525,6 +525,21 @@ describe("Modelos Institucionales de Ruina, Rachas y Valor en Riesgo", () => {
     expect(computeRiskOfRuin(60, 1, 10, 50)).toBeCloseTo(100 * (0.4 / 0.6) ** 5, 1);
   });
 
+  it("computeRiskOfRuin no sube el riesgo en silencio: por debajo de 0,1 % cuenta el que se pide", async () => {
+    const { computeRiskOfRuin } = await import("@/lib/trading/data");
+    // p = 0,51, umbral 1 %: U = 1 / 0,05 = 20 unidades (con un suelo de 0,1 % serían 10).
+    expect(computeRiskOfRuin(51, 1, 0.05, 1)).toBeCloseTo(100 * (0.49 / 0.51) ** 20, 6);
+    expect(computeRiskOfRuin(51, 1, 0.05, 1)).toBeLessThan(computeRiskOfRuin(51, 1, 0.1, 1));
+  });
+
+  it("computeRiskOfRuin sin riesgo (0 o negativo): con ventaja no hay ruina, sin ella es segura; nunca NaN", async () => {
+    const { computeRiskOfRuin } = await import("@/lib/trading/data");
+    for (const riesgo of [0, -1]) {
+      expect(computeRiskOfRuin(55, 2, riesgo, 50)).toBe(0);
+      expect(computeRiskOfRuin(40, 1, riesgo, 50)).toBe(100);
+    }
+  });
+
   it("computeRiskOfRuin con un pago enorme no se arruina (50 pérdidas seguidas)", async () => {
     const { computeRiskOfRuin } = await import("@/lib/trading/data");
     expect(computeRiskOfRuin(50, 1500, 1, 50)).toBeLessThan(0.01);

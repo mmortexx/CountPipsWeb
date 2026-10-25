@@ -948,6 +948,7 @@ textarea:focus-visible,
     var(--tj-surco) var(--tj-corte) 100%
   );
 }
+/* Pista de Firefox */
 .tj-range::-moz-range-track {
   height: 4px;
   border-radius: 999px;
@@ -1043,12 +1044,6 @@ textarea:focus-visible,
   box-shadow:
     0 0 0 4px rgb(var(--accent-base) / 0.25),
     0 0 0 1px rgb(var(--accent-base) / 0.7);
-}
-/* Pista de Firefox */
-.tj-range::-moz-range-track {
-  height: 4px;
-  border-radius: 999px;
-  background: rgb(var(--divider) / 0.18);
 }
 /* En claro el surco necesita más cuerpo. Se cambia solo ese tramo, con la
    variable de la declaración base: escribir un `background` entero volvería

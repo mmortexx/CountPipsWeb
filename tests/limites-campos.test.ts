@@ -56,7 +56,7 @@ describe("LIMITES", () => {
 });
 
 describe("el registro de la demo tampoco admite cifras enormes", () => {
-  const bueno = { entrada: 21500, stop: 21400, salida: 21600, cantidad: 2 };
+  const bueno = { direccion: "long", entrada: 21500, stop: 21400, salida: 21600, cantidad: 2 } as const;
 
   it("el máximo exacto pasa y el siguiente no", () => {
     const { max } = LIMITES.precio;

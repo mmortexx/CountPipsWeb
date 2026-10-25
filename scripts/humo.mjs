@@ -311,11 +311,28 @@ async function mideContraste(pagina, cand) {
    El último trozo (`__next.…txt?_rsc=`) son los prefetch de segmento de Next:
    al exportar en Windows se escriben como carpeta y el cliente los pide en
    plano, así que dan 404 en todas las páginas; compilando en Linux (CI) sale
-   el fichero plano y no falla. Es un artefacto de la máquina que compila.
-   Para comprobarlo: `find out -name "__next.*.__PAGE__.txt" | wc -l` sobre la
-   exportación; cero significa que compiló Windows. */
-const RUIDO =
-  /favicon|ERR_CONNECTION|net::ERR_|Download the React DevTools|challenges\.cloudflare|\[Fast Refresh\]|webpack-hmr|Warning: Extra attributes from the server|__next\.[^"'\s]*\.txt(\?|$)/i;
+   el fichero plano y no falla. Es un artefacto de la máquina que compila, y
+   solo se tolera si la exportación servida no trae ningún fichero plano
+   (`__next.*.__PAGE__.txt`); si los trae, o no se sirve una exportación, un
+   404 de prefetch es un fallo como cualquier otro. */
+async function hayFicherosPlanos(carpeta) {
+  for (const e of await readdir(carpeta, { withFileTypes: true })) {
+    if (e.isDirectory()) {
+      if (e.name !== "_next" && (await hayFicherosPlanos(join(carpeta, e.name)))) return true;
+    } else if (/^__next\..+\.__PAGE__\.txt$/.test(e.name)) return true;
+  }
+  return false;
+}
+const PREFETCH_TOLERADO = Boolean(SERVIR) && !(await hayFicherosPlanos(SERVIR));
+if (PREFETCH_TOLERADO) {
+  console.log("[humo] la exportación no trae ficheros planos __next.*.__PAGE__.txt: se ignoran sus 404 de prefetch");
+}
+const RUIDO_BASE =
+  "favicon|ERR_CONNECTION|net::ERR_|Download the React DevTools|challenges\\.cloudflare|\\[Fast Refresh\\]|webpack-hmr|Warning: Extra attributes from the server";
+const RUIDO = new RegExp(
+  PREFETCH_TOLERADO ? `${RUIDO_BASE}|__next\\.[^"'\\s]*\\.txt(\\?|$)` : RUIDO_BASE,
+  "i"
+);
 
 const navegador = await chromium.launch();
 
@@ -1387,12 +1404,14 @@ for (const pantalla of PANTALLAS) {
 // falla, un visitante o un buscador que no ejecute la página ve contenido
 // ausente u oculto. Recorre todas las rutas de `RUTAS`, inglesas incluidas,
 // pero no el export entero: un defecto en un componente que solo aparece en
-// una plantilla no muestreada no se vería aquí.
-const sinJs = await navegador.newContext({
-  javaScriptEnabled: false,
-  viewport: { width: 1440, height: 900 },
-});
+// una plantilla no muestreada no se vería aquí. Cada ruta se mide en un
+// contexto nuevo: compartido entre rutas, el titular salía invisible aunque
+// una medición aislada lo diera visible.
 for (const { ruta } of RUTAS) {
+  const sinJs = await navegador.newContext({
+    javaScriptEnabled: false,
+    viewport: { width: 1440, height: 900 },
+  });
   const pagina = await sinJs.newPage();
   try {
     await pagina.goto(`${BASE}${ruta}`, { waitUntil: "load", timeout: 30000 });
@@ -1431,14 +1450,8 @@ for (const { ruta } of RUTAS) {
     if (!r.hay) fallos.push(`sin-JS ${ruta}: no hay h1 en el HTML`);
     else if (!r.texto) fallos.push(`sin-JS ${ruta}: el h1 no tiene texto`);
     else if (!r.visible) {
-      // Aviso y no fallo, a propósito: esta medición no es de fiar. Aquí el
-      // titular sale invisible, y con un script aparte (contexto nuevo por ruta)
-      // sale visible; sin cerrar cuál está mal, tumbar el build con una barrera
-      // que nadie entiende acaba desactivándola entera. Sospecha: el contexto
-      // sin JavaScript compartido entre rutas.
-      avisos.push(
-        `sin-JS ${ruta}: el h1 se mide como no visible — PENDIENTE de confirmar, una medición aislada dice lo contrario ` +
-          `(rects=${r.rects}, checkVisibility=${r.checkVis})`
+      fallos.push(
+        `sin-JS ${ruta}: el h1 se mide como no visible (rects=${r.rects}, checkVisibility=${r.checkVis})`
       );
     } else if (!r.enMain) {
       avisos.push(`sin-JS ${ruta}: el titular no aparece en el texto de <main>`);
@@ -1573,9 +1586,8 @@ for (const { ruta } of RUTAS) {
   } catch (e) {
     fallos.push(`sin-JS ${ruta}: ${String(e).split("\n")[0]}`);
   }
-  await pagina.close();
+  await sinJs.close();
 }
-await sinJs.close();
 
 // La 404 en los dos idiomas: GitHub Pages sirve un único `404.html`, compilado
 // en español, también bajo `/en/`. Si el idioma hidrata con el de la URL en

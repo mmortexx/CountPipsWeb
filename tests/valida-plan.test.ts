@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { LIMITES } from "../src/lib/trading/limites";
-import { excedeApalancamiento, TOPE_APALANCAMIENTO, validaPlan, validaRegistro } from "../src/lib/trading/validaPlan";
+import { excedeApalancamiento, rrPlanificado, TOPE_APALANCAMIENTO, validaPlan, validaRegistro } from "../src/lib/trading/validaPlan";
 
 /**
  * `validaPlan` exige, además de tres precios positivos y distintos, que el
@@ -54,6 +54,24 @@ describe("validaPlan", () => {
   });
 });
 
+describe("rrPlanificado", () => {
+  it("mide el objetivo en múltiplos del riesgo, en el sentido de la dirección", () => {
+    expect(rrPlanificado("long", 100, 98, 106)).toBe(3);
+    expect(rrPlanificado("short", 100, 102, 94)).toBe(3);
+  });
+
+  it("sale en negativo si el objetivo queda del lado contrario al favorable", () => {
+    expect(rrPlanificado("long", 100, 98, 96)).toBe(-2);
+    expect(rrPlanificado("short", 100, 102, 104)).toBe(-2);
+  });
+
+  it("sin objetivo o sin riesgo, 0", () => {
+    expect(rrPlanificado("long", 100, 98, 0)).toBe(0);
+    expect(rrPlanificado("long", 100, 98, Number.NaN)).toBe(0);
+    expect(rrPlanificado("long", 100, 100, 106)).toBe(0);
+  });
+});
+
 describe("excedeApalancamiento", () => {
   it("un stop a un céntimo en acciones (100×) avisa", () => {
     // 10.000 $ al 1 %: 100 $ / 0,01 $ = 10.000 acciones a 100 $ = 1.000.000 $.
@@ -81,10 +99,11 @@ describe("excedeApalancamiento", () => {
 });
 
 describe("validaRegistro (registro rápido de la demo)", () => {
-  const BUENO = { entrada: 1.1, stop: 1.09, salida: 1.12, cantidad: 2 };
+  const REGISTRO = { entrada: 1.1, stop: 1.09, salida: 1.12, cantidad: 2 };
+  const BUENO = { ...REGISTRO, direccion: "long" } as const;
 
   it("acepta un registro correcto tal cual", () => {
-    expect(validaRegistro(BUENO)).toEqual(BUENO);
+    expect(validaRegistro(BUENO)).toEqual(REGISTRO);
   });
 
   it("sin salida cierra en la entrada", () => {
@@ -108,9 +127,40 @@ describe("validaRegistro (registro rápido de la demo)", () => {
     expect(validaRegistro({ ...BUENO, ...cambio })).toBeNull();
   });
 
+  describe("el stop y el objetivo van del lado que marca la dirección", () => {
+    const CORTO = { ...BUENO, direccion: "short", stop: 1.11, salida: 1.08 } as const;
+
+    it("un corto con el stop por debajo de la entrada se rechaza; con el stop por encima, pasa", () => {
+      expect(validaRegistro({ ...BUENO, direccion: "short" })).toBeNull();
+      expect(validaRegistro(CORTO)).toEqual({ ...REGISTRO, stop: 1.11, salida: 1.08 });
+    });
+
+    it("un largo con el stop por encima de la entrada se rechaza", () => {
+      expect(validaRegistro({ ...BUENO, stop: 1.11 })).toBeNull();
+    });
+
+    it("con objetivo: debe quedar del lado favorable y se devuelve", () => {
+      expect(validaRegistro({ ...BUENO, objetivo: 1.13 })?.objetivo).toBe(1.13);
+      expect(validaRegistro({ ...BUENO, objetivo: 1.08 })).toBeNull();
+      expect(validaRegistro({ ...CORTO, objetivo: 1.07 })?.objetivo).toBe(1.07);
+      expect(validaRegistro({ ...CORTO, objetivo: 1.13 })).toBeNull();
+    });
+
+    it("un objetivo igual a la entrada, negativo o por encima del tope se rechaza", () => {
+      expect(validaRegistro({ ...BUENO, objetivo: BUENO.entrada })).toBeNull();
+      expect(validaRegistro({ ...BUENO, objetivo: -1 })).toBeNull();
+      expect(validaRegistro({ ...BUENO, objetivo: LIMITES.precio.max + 1 })).toBeNull();
+    });
+
+    it("sin objetivo (ausente o ilegible) no se exige ni se devuelve", () => {
+      expect(validaRegistro(BUENO)?.objetivo).toBeUndefined();
+      expect(validaRegistro({ ...BUENO, objetivo: Number.NaN })?.objetivo).toBeUndefined();
+    });
+  });
+
   describe("el resultado tampoco pasa del tope, aunque cada cifra esté dentro del suyo", () => {
     const max = LIMITES.precio.max;
-    const EURUSD = { entrada: 1.1, stop: 1.09, salida: max, cantidad: max, multiplicador: 100_000 };
+    const EURUSD = { direccion: "long", entrada: 1.1, stop: 1.09, salida: max, cantidad: max, multiplicador: 100_000 } as const;
 
     it("EURUSD con salida y cantidad en su máximo daría ≈1e19 de P&L: se rechaza", () => {
       expect(validaRegistro(EURUSD)).toBeNull();
@@ -122,7 +172,7 @@ describe("validaRegistro (registro rápido de la demo)", () => {
 
     it("la frontera: el P&L en el tope pasa y un céntimo de precio más no", () => {
       const tope = LIMITES.resultadoRegistro.max;
-      const base = { entrada: 100, stop: 99, cantidad: 1000, multiplicador: 1 };
+      const base = { direccion: "long", entrada: 100, stop: 99, cantidad: 1000, multiplicador: 1 } as const;
       const salidaEnElTope = 100 + tope / (base.cantidad * base.multiplicador);
       expect(validaRegistro({ ...base, salida: salidaEnElTope })).not.toBeNull();
       expect(validaRegistro({ ...base, salida: salidaEnElTope + 0.01 })).toBeNull();
@@ -133,8 +183,8 @@ describe("validaRegistro (registro rápido de la demo)", () => {
     });
 
     it("sin multiplicador cuenta 1 y un registro normal pasa", () => {
-      expect(validaRegistro(BUENO)).toEqual(BUENO);
-      expect(validaRegistro({ ...BUENO, multiplicador: 100_000 })).toEqual(BUENO);
+      expect(validaRegistro(BUENO)).toEqual(REGISTRO);
+      expect(validaRegistro({ ...BUENO, multiplicador: 100_000 })).toEqual(REGISTRO);
     });
   });
 });

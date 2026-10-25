@@ -479,7 +479,7 @@ export function Navbar() {
   }, [mobileOpen]);
 
   // Bloqueo de scroll con el cajón abierto. `data-drawer-open` en <body> oculta
-  // el banner de cookies y BackToTop.
+  // BackToTop.
   //
   // `overflow: hidden` no basta: Safari en iPhone lo ignora para el gesto
   // táctil. Se saca el body del flujo con `position: fixed` y se compensa con

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type CSSProperties } from "react";
+import { useId, useMemo, useState, type CSSProperties } from "react";
 import { useAlVer } from "@/hooks/use-al-ver";
 import { Viajero } from "../Viajero";
 import { useLang } from "@/lib/i18n";
@@ -678,15 +678,18 @@ function PlanToggle({
   onToggle: () => void;
 }) {
   const { lang } = useLang();
+  const uid = useId();
   return (
     <div className="space-y-2.5">
-      <span className="block text-[11px] uppercase tracking-[0.15em] text-tertiary">
+      <span id={`${uid}-etiqueta`} className="block text-[11px] uppercase tracking-[0.15em] text-tertiary">
         {lang === "es" ? "Plan del día" : "Today’s plan"}
       </span>
       <button
         type="button"
         role="switch"
         aria-checked={on}
+        aria-labelledby={`${uid}-etiqueta`}
+        aria-describedby={`${uid}-estado`}
         onClick={onToggle}
         className="inline-flex items-center gap-2.5 group"
       >
@@ -706,6 +709,7 @@ function PlanToggle({
           />
         </span>
         <span
+          id={`${uid}-estado`}
           className={`text-xs tnum font-medium ${
             on ? "text-primary" : "text-pnl-warn"
           }`}

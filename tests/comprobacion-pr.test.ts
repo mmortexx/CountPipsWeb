@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -25,6 +25,26 @@ describe("la comprobación de PR corre lo mismo que el despliegue", () => {
     const deDespliegue = comandos(despliegue).filter((c) => !SOLO_DESPLIEGUE.includes(c));
     expect(deDespliegue.length).toBeGreaterThanOrEqual(7);
     expect(deDespliegue.filter((c) => !comandos(pr).includes(c))).toEqual([]);
+  });
+
+  // El paso «Pruebas» va antes de compilar y salta las pruebas que leen `out/`:
+  // solo cuentan las que un paso posterior corre con `COMPROBAR_OUT=1`.
+  const leenOut = readdirSync(join(RAIZ, "tests"), { recursive: true, encoding: "utf8" })
+    .map((f) => f.replace(/\\/g, "/"))
+    .filter((f) => f.endsWith(".test.ts") && f !== "comprobacion-pr.test.ts")
+    .filter((f) => readFileSync(join(RAIZ, "tests", f), "utf8").includes("COMPROBAR_OUT"))
+    .map((f) => `tests/${f}`);
+  const sobreOut = (yml: string) =>
+    comandos(yml)
+      .filter((c) => c.includes("COMPROBAR_OUT=1"))
+      .flatMap((c) => c.match(/tests\/\S+\.test\.ts/g) ?? []);
+
+  it.each([
+    ["deploy.yml", despliegue],
+    ["comprobar.yml", pr],
+  ])("%s corre con COMPROBAR_OUT=1 cada prueba que lee out/", (_nombre, yml) => {
+    expect(leenOut).toContain("tests/dominio-propio.test.ts");
+    expect(leenOut.filter((t) => !sobreOut(yml).includes(t))).toEqual([]);
   });
 
   it.each(["bun-version", "NEXT_PUBLIC_BASE_PATH", "NEXT_PUBLIC_SITE_URL"])(

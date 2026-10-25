@@ -217,6 +217,7 @@ export function SessionClock() {
                     width: `${pct(b - a)}%`,
                     background: `color-mix(in oklab, var(--ink) ${open ? 55 : p.tintaCerrada}%, transparent)`,
                   }}
+                  role={k === principal ? "img" : undefined}
                   aria-label={k === principal ? `${nombre(p)} ${franja(p.desdeUtc, p.hastaUtc)}` : undefined}
                   aria-hidden={k !== principal || undefined}
                 >

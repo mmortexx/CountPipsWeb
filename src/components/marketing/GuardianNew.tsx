@@ -113,7 +113,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                 es: "El Guardián no te dice qué hacer: mide cada operación contra las reglas que tú fijaste y, si lo activas, te frena cuando las rompes.",
                 en: "The Guardian doesn’t tell you what to do: it measures every trade against the rules you set and, if you turn it on, stops you when you break them.",
                 pt: "O Guardião não diz o que fazer: mede cada operação contra as regras que você definiu e, se ativado, freia quando você as quebra.",
-                fr: "Le Gardien ne vous dicte pas quoi faire : il compare chaque trade aux règles que vous avez fixées et, si activé, vous freine lorsque vous les enfreignez.",
+                fr: "Le Gardien ne vous dicte pas quoi faire\u00a0: il compare chaque trade aux règles que vous avez fixées et, si activé, vous freine lorsque vous les enfreignez.",
                 de: "Der Disziplin-Wächter schreibt Ihnen nichts vor: Er misst jeden Trade an Ihren festgelegten Regeln und bremst Sie bei Verstößen, wenn Sie ihn aktivieren.",
                 it: "Il Guardiano non ti dice cosa fare: misura ogni operazione rispetto alle regole che hai impostato e, se lo attivi, ti ferma quando le infrangi.",
               })}
@@ -286,7 +286,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                       es: "El semáforo avisa, no bloquea: la operación se guarda. Lo que bloquea es el freno duro, si lo activas, al tocar tu pérdida diaria, una racha o tu caída máxima.",
                       en: "The light warns, it doesn’t block: the trade is saved. What blocks is the hard brake, if you turn it on, when you hit your daily loss, a losing streak or your max drawdown.",
                       pt: "O semáforo avisa, não bloqueia: a operação é salva. O que bloqueia é o freio rígido, se você ativar, ao bater sua perda diária, sequência ou drawdown máximo.",
-                      fr: "Le feu avertit sans bloquer : le trade est enregistré. Ce qui bloque est le frein strict, si vous l’activez, dès la perte quotidienne, la série ou le drawdown max atteint.",
+                      fr: "Le feu avertit sans bloquer\u00a0: le trade est enregistré. Ce qui bloque est le frein strict, si vous l’activez, dès la perte quotidienne, la série ou le drawdown max atteint.",
                       de: "Die Ampel warnt, blockiert aber nicht: Der Trade wird gespeichert. Was blockiert, ist die harte Bremse (sofern aktiviert) bei Tagesverlust, Verlustserie oder maximalem Drawdown.",
                       it: "Il semaforo avvisa, non blocca: l’operazione viene salvata. Ciò che blocca è il freno rigido, se attivato, al raggiungimento della perdita giornaliera, di una serie negativa o del drawdown massimo.",
                     })
@@ -303,7 +303,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                         es: `Esta operación arriesga ${pct(riesgo)} de tu cuenta; tu límite por operación es ${pct(LIMITE_RIESGO)}.`,
                         en: `This trade risks ${pct(riesgo)} of your account; your per-trade limit is ${pct(LIMITE_RIESGO)}.`,
                         pt: `Esta operação arrisca ${pct(riesgo)} da sua conta; seu limite por operação é ${pct(LIMITE_RIESGO)}.`,
-                        fr: `Ce trade risque ${pct(riesgo)} de votre compte ; votre limite par opération est ${pct(LIMITE_RIESGO)}.`,
+                        fr: `Ce trade risque ${pct(riesgo)} de votre compte\u00a0; votre limite par opération est ${pct(LIMITE_RIESGO)}.`,
                         de: `Dieser Trade riskiert ${pct(riesgo)} Ihres Kontos; Ihr Limit pro Trade beträgt ${pct(LIMITE_RIESGO)}.`,
                         it: `Questa operazione rischia il ${pct(riesgo)} del tuo conto; il tuo limite per operazione è ${pct(LIMITE_RIESGO)}.`,
                       });

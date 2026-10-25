@@ -237,7 +237,7 @@ function Curva({ g, lang, enfoque }: { g: Grafico; lang: Lang; enfoque: Enfoque 
             es: `Curva de rendimiento y balance de ${N - 1} operaciones de muestra: de ${fmtMoney(INICIAL, lang, { compact: true })} a ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, drawdown máximo −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Usa las flechas para recorrerla.`,
             en: `Performance and balance curve of ${N - 1} sample trades: from ${fmtMoney(INICIAL, lang, { compact: true })} to ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, max drawdown −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Use the arrow keys to explore.`,
             pt: `Curva de desempenho e saldo de ${N - 1} operações de amostra: de ${fmtMoney(INICIAL, lang, { compact: true })} a ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, drawdown máximo −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Use as setas para navegar.`,
-            fr: `Courbe de performance et solde de ${N - 1} opérations d’exemple : de ${fmtMoney(INICIAL, lang, { compact: true })} à ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, drawdown maximal −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Utilisez les flèches pour naviguer.`,
+            fr: `Courbe de performance et solde de ${N - 1} opérations d’exemple\u00a0: de ${fmtMoney(INICIAL, lang, { compact: true })} à ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, drawdown maximal −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Utilisez les flèches pour naviguer.`,
             de: `Performance- und Saldenkurve von ${N - 1} Beispiel-Trades: von ${fmtMoney(INICIAL, lang, { compact: true })} bis ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, maximaler Drawdown −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Nutzen Sie die Pfeiltasten zum Erkunden.`,
             it: `Curva di rendimento e saldo di ${N - 1} operazioni di esempio: da ${fmtMoney(INICIAL, lang, { compact: true })} a ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, drawdown massimo −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Usa i tasti freccia per esplorarla.`,
           })}
@@ -327,7 +327,7 @@ function Distribucion({ g, lang, enfoque }: { g: Grafico; lang: Lang; enfoque: E
             es: `Distribución de R-múltiplo de ${fmtOperaciones(TOTAL_BINS, lang)} de muestra: `,
             en: `R-multiple distribution of ${TOTAL_BINS} sample trades: `,
             pt: `Distribuição de R-múltiplo de ${fmtOperaciones(TOTAL_BINS, lang)} de amostra: `,
-            fr: `Distribution des multiples de R pour ${fmtOperaciones(TOTAL_BINS, lang)} d’exemple : `,
+            fr: `Distribution des multiples de R pour ${fmtOperaciones(TOTAL_BINS, lang)} d’exemple\u00a0: `,
             de: `R-Multiple-Verteilung von ${fmtOperaciones(TOTAL_BINS, lang)} der Stichprobe: `,
             it: `Distribuzione dei multipli di R per ${fmtOperaciones(TOTAL_BINS, lang)} di esempio: `,
           }) +
