@@ -6,10 +6,6 @@ import { join, relative } from "node:path";
    span) sin rol: el lector no los anuncia y axe los marca. Si un bloque debe
    llevar nombre, lleva también role (group, region, switch…). */
 const RAIZ = join(__dirname, "..", "src", "components");
-const EXCEPCIONES: string[] = [
-  "marketing/SessionClock.tsx",
-];
-
 function ficheros(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
     const ruta = join(dir, e.name);
@@ -55,7 +51,7 @@ describe("ningún div ni span lleva nombre accesible sin rol", () => {
     const malos = ficheros(RAIZ).flatMap((f) =>
       sinRol(readFileSync(f, "utf8")).map((x) => `${relative(RAIZ, f).replace(/\\/g, "/")}:${x.linea} ${x.etiqueta}`),
     );
-    expect(malos.filter((m) => !EXCEPCIONES.some((e) => m.startsWith(e)))).toEqual([]);
+    expect(malos).toEqual([]);
   });
 
   it("la guarda reconoce la etiqueta multilínea y respeta el rol", () => {
