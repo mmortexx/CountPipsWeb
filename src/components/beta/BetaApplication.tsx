@@ -390,6 +390,7 @@ export function BetaApplication() {
             <div
               ref={turnstileRef}
               className="min-h-[65px]"
+              role="group"
               aria-label={es ? "Verificación anti-bot" : "Anti-bot verification"}
             />
           )}
