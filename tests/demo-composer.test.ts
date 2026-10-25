@@ -8,7 +8,7 @@ vi.mock("next/navigation", () => ({ usePathname: () => "/", useRouter: () => ({ 
 import { LanguageProvider } from "@/lib/i18n";
 import { DemoProvider } from "@/components/demo/DemoContext";
 import { DashboardPage } from "@/components/demo/pages/DashboardPage";
-import { useToast } from "@/hooks/use-toast";
+import { toast, useToast } from "@/hooks/use-toast";
 import { customTradeToTrade, getCustomTrades, resetToSample } from "@/lib/trading/demoStore";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -49,6 +49,10 @@ function registra() {
 beforeEach(() => {
   vi.stubGlobal("matchMedia", () => ({ matches: false, addEventListener() {}, removeEventListener() {} }));
   resetToSample();
+  // El almacén de avisos es global: uno en blanco desplaza el de la prueba anterior.
+  act(() => {
+    toast({ title: "" });
+  });
   cont = document.createElement("div");
   document.body.appendChild(cont);
   raiz = createRoot(cont);
@@ -117,5 +121,79 @@ describe("el registro rápido guarda el plan que el visitante tecleó", () => {
     expect(antigua.initialStop).toBe(4950);
     expect(antigua.plannedRr).toBe(2.5);
     expect(antigua.target).toBe(5125);
+  });
+});
+
+const TITULO_ERROR = "Faltan campos obligatorios";
+const TITULO_OK = "Operación registrada";
+
+const avisos = () => cont.querySelector("#avisos")!.textContent;
+
+function eligeDireccion(indice: number) {
+  act(() => {
+    cont.querySelectorAll<HTMLElement>('[role="radio"]')[indice].click();
+  });
+}
+
+/** El R:R planificado que enseña el composer («3,00 R», con espacio duro). */
+function rrMostrado() {
+  const celda = [...cont.querySelectorAll("span")].find((s) => /^[−-]?\d[\d.,]* R$/.test(s.textContent ?? ""));
+  return celda?.textContent?.replace(" ", " ");
+}
+
+describe("el registro rápido valida el plan según la dirección", () => {
+  it("un corto con los valores por defecto (stop por debajo, objetivo por encima) no se registra y avisa", () => {
+    monta();
+    eligeDireccion(1);
+    registra();
+    expect(getCustomTrades()).toHaveLength(0);
+    expect(avisos()).toBe(TITULO_ERROR);
+  });
+
+  it("un corto bien planteado se registra y su R:R sale en positivo", () => {
+    monta();
+    eligeDireccion(1);
+    // Entrada 65000: stop 520 por encima y objetivo 1560 por debajo, 1560 / 520 = 3.
+    escribe("d-stop", "65520,0");
+    escribe("d-target", "63440,0");
+    expect(rrMostrado()).toBe("3,00 R");
+    registra();
+    expect(getCustomTrades()).toHaveLength(1);
+    expect(avisos()).toBe(TITULO_OK);
+  });
+
+  it("un largo con el objetivo por debajo de la entrada no se registra y su R:R sale en negativo", () => {
+    monta();
+    // Stop por defecto a 520 de la entrada; objetivo 1000 por debajo: −1000 / 520.
+    escribe("d-target", "64000,0");
+    expect(rrMostrado()).toBe("−1,92 R");
+    registra();
+    expect(getCustomTrades()).toHaveLength(0);
+    expect(avisos()).toBe(TITULO_ERROR);
+  });
+
+  it("un largo con el stop por encima de la entrada no se registra", () => {
+    monta();
+    escribe("d-stop", "65520,0");
+    registra();
+    expect(getCustomTrades()).toHaveLength(0);
+    expect(avisos()).toBe(TITULO_ERROR);
+  });
+
+  it("los valores por defecto de un largo se registran", () => {
+    monta();
+    registra();
+    expect(getCustomTrades()).toHaveLength(1);
+    expect(avisos()).toBe(TITULO_OK);
+  });
+
+  it("el objetivo es opcional: vacío, el largo se registra sin él", () => {
+    monta();
+    escribe("d-target", "");
+    registra();
+    const guardada = getCustomTrades();
+    expect(guardada).toHaveLength(1);
+    expect(guardada[0].target).toBeUndefined();
+    expect(avisos()).toBe(TITULO_OK);
   });
 });

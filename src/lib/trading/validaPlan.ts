@@ -1,3 +1,4 @@
+import type { Direction } from "@/lib/trading/data";
 import { LIMITES } from "@/lib/trading/limites";
 
 /** Por qué un plan de entrada/stop/objetivo no es válido. */
@@ -52,11 +53,24 @@ export function excedeApalancamiento(mercado: MercadoPlan, apalancamiento: numbe
   return Number.isFinite(apalancamiento) && apalancamiento > TOPE_APALANCAMIENTO[mercado];
 }
 
+/**
+ * R:R planificado con signo: lo que el objetivo gana (o pierde, si queda del
+ * lado contrario al favorable de la dirección) por cada unidad de riesgo hasta
+ * el stop. 0 sin objetivo positivo o sin distancia al stop.
+ */
+export function rrPlanificado(direccion: Direction, entrada: number, stop: number, objetivo: number): number {
+  const riesgo = Math.abs(entrada - stop);
+  if (!(riesgo > 0) || !(objetivo > 0)) return 0;
+  return (direccion === "long" ? objetivo - entrada : entrada - objetivo) / riesgo;
+}
+
 export interface Registro {
   entrada: number;
   stop: number;
   salida: number;
   cantidad: number;
+  /** Opcional: vacío o ilegible (`NaN`) es «sin objetivo». */
+  objetivo?: number;
 }
 
 /**
@@ -65,15 +79,28 @@ export interface Registro {
  * sin pasar de `LIMITES`: nada se corrige en silencio. Con el `multiplicador`
  * del instrumento, tampoco el resultado ni el riesgo en dólares pueden pasar de
  * `LIMITES.resultadoRegistro`: cada cifra suelta cabe en su tope y el producto
- * no. Devuelve `null` si hay que avisar.
+ * no. El stop va del lado de la dirección que pierde (debajo en largo, encima
+ * en corto) y el objetivo, si lo hay, del contrario (`validaPlan`). Devuelve
+ * `null` si hay que avisar.
  */
-export function validaRegistro({ entrada, stop, salida, cantidad, multiplicador = 1 }: Registro & { multiplicador?: number }): Registro | null {
+export function validaRegistro({
+  direccion,
+  entrada,
+  stop,
+  salida,
+  cantidad,
+  objetivo,
+  multiplicador = 1,
+}: Registro & { direccion: Direction; multiplicador?: number }): Registro | null {
   const precioOk = (p: number) => p > 0 && p <= LIMITES.precio.max;
   if (!Number.isFinite(entrada) || !precioOk(entrada) || !Number.isFinite(stop) || !precioOk(stop) || entrada === stop) return null;
+  if (direccion === "long" ? stop > entrada : stop < entrada) return null;
+  const hayObjetivo = typeof objetivo === "number" && Number.isFinite(objetivo);
+  if (hayObjetivo && (!precioOk(objetivo) || !validaPlan(entrada, stop, objetivo).valido)) return null;
   if (Number.isFinite(salida) && !precioOk(salida)) return null;
   if (!Number.isFinite(cantidad) || cantidad <= 0 || cantidad > LIMITES.cantidad.max) return null;
   const cierre = Number.isFinite(salida) ? salida : entrada;
   const recorrido = Math.max(Math.abs(cierre - entrada), Math.abs(entrada - stop));
   if (!(recorrido * cantidad * multiplicador <= LIMITES.resultadoRegistro.max)) return null;
-  return { entrada, stop, salida: cierre, cantidad };
+  return { entrada, stop, salida: cierre, cantidad, objetivo: hayObjetivo ? objetivo : undefined };
 }

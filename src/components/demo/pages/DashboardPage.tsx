@@ -32,7 +32,7 @@ import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
 import { moverConFlechas } from "@/lib/flechas";
 import { tamanoParaRiesgo } from "@/lib/trading/plan";
-import { validaRegistro } from "@/lib/trading/validaPlan";
+import { rrPlanificado, validaRegistro } from "@/lib/trading/validaPlan";
 
 // Ventanas de la curva de capital: últimos N días. La muestra cubre ~180, así que «6M» equivale a todo.
 type Timeframe = "1M" | "3M" | "6M";
@@ -139,8 +139,7 @@ export function DashboardPage() {
   const qtyNum = num(quantity, decLecturaCantidad) || 0;
 
   const stopDist = Math.abs(entryNum - stopNum);
-  // R:R planificado = |objetivo − entrada| / |entrada − stop|.
-  const plannedRr = stopDist > 0 ? Math.abs(targetNum - entryNum) / stopDist : 0;
+  const plannedRr = rrPlanificado(direction, entryNum, stopNum, targetNum);
 
   // Riesgo en $: distancia al stop × cantidad × multiplicador; sin stop o
   // cantidad válidos, el riesgo por defecto sobre el saldo inicial.
@@ -157,8 +156,10 @@ export function DashboardPage() {
   function handleRegister() {
     // Sin salida se usa la entrada: queda una operación en tablas (P&L = 0, R = 0), no NaN.
     const registro = validaRegistro({
+      direccion: direction,
       entrada: num(entry, inst.decimals),
       stop: num(stop, inst.decimals),
+      objetivo: num(target, inst.decimals),
       salida: num(exitPrice, inst.decimals),
       cantidad: num(quantity, decLecturaCantidad),
       multiplicador: getInstrumentMultiplier(instrumentSymbol, inst.assetClass),
@@ -172,7 +173,7 @@ export function DashboardPage() {
       });
       return;
     }
-    const { entrada: entryN, stop: stopN, salida: exitN, cantidad: qtyN } = registro;
+    const { entrada: entryN, stop: stopN, objetivo: targetN, salida: exitN, cantidad: qtyN } = registro;
 
     // priceDiff lleva signo: positivo si el movimiento gana.
     const stopDistLocal = Math.abs(entryN - stopN);
@@ -192,8 +193,7 @@ export function DashboardPage() {
       exit: +exitN.toFixed(inst.decimals),
       qty: +qtyN.toFixed(decCantidad),
       stop: +stopN.toFixed(inst.decimals),
-      // El objetivo es opcional: vacío o ilegible no se guarda.
-      target: targetNum > 0 ? +targetNum.toFixed(inst.decimals) : undefined,
+      target: targetN === undefined ? undefined : +targetN.toFixed(inst.decimals),
       netPnl,
       rMultiple,
       // Con stop definido se da por seguido el plan.
