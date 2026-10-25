@@ -95,6 +95,16 @@ describe("demo: si el almacenamiento falla, lo registrado no se pierde (queda en
     expect(JSON.parse(v.window.localStorage.getItem("tj-demo-trades")!)).toHaveLength(2);
   });
 
+  it("una entrada guardada con la fecha de cierre ilegible se descarta y las demás se conservan", () => {
+    const buena = addTrade(operacion("buena"));
+    const guardadas = JSON.parse(v.window.localStorage.getItem("tj-demo-trades")!);
+    v.window.localStorage.setItem(
+      "tj-demo-trades",
+      JSON.stringify([...guardadas, { ...buena, id: buena.id + 1, closedAt: "no-es-una-fecha" }, { ...buena, id: buena.id + 2, closedAt: "" }])
+    );
+    expect(getCustomTrades().map((t) => t.id)).toEqual([buena.id]);
+  });
+
   it("con el almacenamiento sano todo sigue igual: se guarda y se lee de ahí", () => {
     const t = addTrade(operacion("normal"));
     expect(JSON.parse(v.window.localStorage.getItem("tj-demo-trades")!)).toEqual([t]);

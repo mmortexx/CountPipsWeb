@@ -148,6 +148,7 @@ function isCustomTrade(v: unknown): v is CustomTrade {
       t.compliance === "partial" ||
       t.compliance === "no") &&
     typeof t.closedAt === "string" &&
+    !Number.isNaN(Date.parse(t.closedAt)) &&
     typeof t.note === "string"
   );
 }
