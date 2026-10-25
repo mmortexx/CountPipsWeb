@@ -220,8 +220,8 @@ export function DashboardPage() {
     setTarget(precio(next.basePrice * 1.024, next.decimals));
   }
 
-  // Operaciones registradas en esta sesión (las que no son de la muestra).
-  const sessionCount = allTrades.length - TRADES.length;
+  // Operaciones registradas por el visitante (las que no son de la muestra), también las de visitas anteriores.
+  const registradas = allTrades.length - TRADES.length;
 
   return (
     <div className="p-5 md:p-6 space-y-8 relative">
@@ -663,10 +663,10 @@ export function DashboardPage() {
               <div className="mt-6 pt-4 border-t border-[rgb(var(--divider)/0.1)] flex flex-wrap items-center gap-3 justify-between">
                 <div className="flex items-center gap-2 text-xs">
                   <span className="text-sm font-semibold tnum text-primary">
-                    {fmtInt(sessionCount, lang)}
+                    {fmtInt(registradas, lang)}
                   </span>
                   <span className="text-tertiary uppercase tracking-[0.1em]">
-                    {es ? "en la sesión" : "this session"}
+                    {es ? "registradas" : "logged"}
                   </span>
                 </div>
 

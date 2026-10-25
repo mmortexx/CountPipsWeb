@@ -3,13 +3,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 
-vi.mock("next/navigation", () => ({ usePathname: () => "/", useRouter: () => ({ push() {}, replace() {} }) }));
+let ruta = "/demo";
+vi.mock("next/navigation", () => ({ usePathname: () => ruta, useRouter: () => ({ push() {}, replace() {} }) }));
 
 import { LanguageProvider } from "@/lib/i18n";
 import { DemoProvider } from "@/components/demo/DemoContext";
 import { DashboardPage } from "@/components/demo/pages/DashboardPage";
 import { toast, useToast } from "@/hooks/use-toast";
-import { customTradeToTrade, getCustomTrades, resetToSample } from "@/lib/trading/demoStore";
+import { addTrade, customTradeToTrade, getCustomTrades, resetToSample } from "@/lib/trading/demoStore";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -63,6 +64,7 @@ afterEach(() => {
   cont.remove();
   resetToSample();
   vi.unstubAllGlobals();
+  ruta = "/demo";
 });
 
 describe("el registro rápido guarda el plan que el visitante tecleó", () => {
@@ -140,6 +142,30 @@ function rrMostrado() {
   const celda = [...cont.querySelectorAll("span")].find((s) => /^[−-]?\d[\d.,]* R$/.test(s.textContent ?? ""));
   return celda?.textContent?.replace(" ", " ");
 }
+
+/** El contador del pie del composer, con su rótulo («2registradas»: sin espacio, son dos elementos). */
+function contador() {
+  const cifra = [...cont.querySelectorAll("span.tnum")].find((s) => s.nextElementSibling?.classList.contains("uppercase"));
+  return cifra?.parentElement?.textContent;
+}
+
+describe("el contador del pie no promete lo que no sabe", () => {
+  const previa = {
+    instrument: "ES", setup: "Breakout", direction: "long", entry: 5800, exit: 5810, qty: 1, netPnl: 125,
+    rMultiple: 1, compliance: "yes", closedAt: "2026-07-01T10:00:00.000Z", note: "",
+  } as const;
+
+  it.each([
+    ["/demo", "2registradas"],
+    ["/en/demo", "2logged"],
+  ])("con dos operaciones de una visita anterior (%s) no dice que sean «de la sesión»", (url, esperado) => {
+    ruta = url;
+    addTrade(previa);
+    addTrade({ ...previa, closedAt: "2026-07-02T10:00:00.000Z" });
+    monta();
+    expect(contador()).toBe(esperado);
+  });
+});
 
 describe("el registro rápido valida el plan según la dirección", () => {
   it("un corto con los valores por defecto (stop por debajo, objetivo por encima) no se registra y avisa", () => {
