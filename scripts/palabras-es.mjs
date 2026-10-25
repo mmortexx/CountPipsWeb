@@ -15,4 +15,20 @@ export const PALABRAS_ES = [
 ];
 
 /* Sin `\b`: solo cuenta como letra la ASCII y «así» (acaba en «í») nunca casaría. */
-export const RE_ES = new RegExp("(?<!\\p{L})(?:" + PALABRAS_ES.join("|") + ")(?!\\p{L})", "giu");
+const deLista = (lista) => new RegExp("(?<!\\p{L})(?:" + lista.join("|") + ")(?!\\p{L})", "giu");
+export const RE_ES = deLista(PALABRAS_ES);
+
+/**
+ * Las que no deben salir en una página /en (`cifras.mjs`). Lista corta a
+ * propósito: si una da un falso positivo, se quita de aquí antes que relajar
+ * la regla. «sólo» y no «solo», que también es inglés.
+ */
+export const PALABRAS_ES_PAGINA = [
+  "del", "las", "los", "una", "unas", "unos", "por", "para", "pero", "porque",
+  "cuando", "donde", "según", "también", "además", "aunque", "mientras", "hacia",
+  "desde", "hasta", "entre", "sobre", "cada", "todo", "todos", "toda", "todas",
+  "otro", "otra", "esto", "esta", "este", "estos", "estas", "más", "muy", "así",
+  "sólo", "siempre", "nunca", "año", "años", "mes", "meses", "día", "días",
+  "operaciones", "ganancia", "pérdida", "riesgo", "cuenta", "cuentas", "inicial",
+];
+export const RE_ES_PAGINA = deLista(PALABRAS_ES_PAGINA);

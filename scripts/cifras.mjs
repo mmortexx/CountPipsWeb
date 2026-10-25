@@ -18,6 +18,7 @@ import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 import { TABLA_IDIOMAS } from "../src/lib/locale.ts";
+import { RE_ES_PAGINA } from "./palabras-es.mjs";
 
 // Otras guardas se invocan `--serve out`; esta lee ficheros. Acepta las dos formas.
 const RAIZ = process.argv.slice(2).find((a) => !a.startsWith("-")) || "out";
@@ -54,17 +55,8 @@ function soloTexto(html) {
 }
 
 /* Palabras que no existen en inglés: en /en solo pueden venir de un literal sin
-   bifurcar. Lista corta a propósito; si una da un falso positivo, se quita de
-   aquí antes que relajar la regla. */
-const PALABRAS_ES = [
-  "del", "las", "los", "una", "unas", "unos", "por", "para", "pero", "porque",
-  "cuando", "donde", "según", "también", "además", "aunque", "mientras", "hacia",
-  "desde", "hasta", "entre", "sobre", "cada", "todo", "todos", "toda", "todas",
-  "otro", "otra", "esto", "esta", "este", "estos", "estas", "más", "muy", "así",
-  "sólo", "siempre", "nunca", "año", "años", "mes", "meses", "día", "días",
-  "operaciones", "ganancia", "pérdida", "riesgo", "cuenta", "cuentas", "inicial",
-];
-const RE_ES = new RegExp("\\b(?:" + PALABRAS_ES.join("|") + ")\\b", "gi");
+   bifurcar. */
+const RE_ES = RE_ES_PAGINA;
 
 const fallos = [];
 let paginas = 0;
