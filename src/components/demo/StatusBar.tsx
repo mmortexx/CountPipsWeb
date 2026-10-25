@@ -29,7 +29,6 @@ export function StatusBar() {
       <span
         className="flex items-center gap-2 min-w-0"
         title={`${t("discipline")}: ${complianceLabel}`}
-        aria-label={`${t("discipline")}: ${complianceLabel}`}
       >
         <DisciplineLED healthy={isHealthy} />
         <span className="truncate">

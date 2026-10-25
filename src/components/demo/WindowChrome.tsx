@@ -248,7 +248,6 @@ function LocalFirstLED() {
     <div
       className="hidden sm:flex items-center gap-2 px-3 h-full"
       title={t("titleLocalFirstLed")}
-      aria-label={t("titleLocalFirstLed")}
     >
       <span className="w-2 h-2 rounded-[1px] bg-pnl-pos" aria-hidden="true" />
       <span className="text-[11px] text-tertiary truncate">{t("localFirst")}</span>

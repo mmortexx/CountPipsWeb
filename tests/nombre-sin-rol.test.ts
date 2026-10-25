@@ -7,8 +7,6 @@ import { join, relative } from "node:path";
    llevar nombre, lleva también role (group, region, switch…). */
 const RAIZ = join(__dirname, "..", "src", "components");
 const EXCEPCIONES: string[] = [
-  "demo/StatusBar.tsx",
-  "demo/WindowChrome.tsx",
   "marketing/SessionClock.tsx",
 ];
 
