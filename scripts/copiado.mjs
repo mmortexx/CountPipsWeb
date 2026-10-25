@@ -15,6 +15,7 @@ import { chromium } from "playwright";
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { join, extname } from "node:path";
+import { RE_ES } from "./palabras-es.mjs";
 
 const args = process.argv.slice(2);
 const dir = args.includes("--serve") ? args[args.indexOf("--serve") + 1] : "out";
@@ -89,18 +90,6 @@ async function responderTest(pag) {
     await pag.waitForTimeout(150);
   }
 }
-
-const PALABRAS_ES = [
-  "del", "las", "los", "una", "unas", "unos", "por", "para", "pero", "porque",
-  "cuando", "donde", "según", "también", "además", "aunque", "mientras", "hacia",
-  "desde", "hasta", "entre", "sobre", "cada", "todo", "todos", "toda", "todas",
-  "otro", "otra", "esto", "esta", "este", "estos", "estas", "más", "muy", "así",
-  "solo", "siempre", "nunca", "año", "años", "mes", "meses", "día", "días",
-  "operación", "operaciones", "ganancia", "pérdida", "riesgo", "cuenta", "cuentas",
-  "inicial", "neta", "neto", "beneficio", "fuga", "brecha", "desglose", "resumen",
-  "perfil", "ventaja", "puntuación", "objetivo", "tamaño", "entrada", "dirección",
-];
-const RE_ES = new RegExp("\\b(?:" + PALABRAS_ES.join("|") + ")\\b", "gi");
 
 // El texto se mide tal cual llegó al portapapeles.
 function revisar(completo, en) {
