@@ -71,8 +71,12 @@
  *    pisarse la fila ni repartir el mismo puesto a dos personas.
  *
  *  SEGURIDAD
- *  · Honeypot, deduplicación, bloqueo transaccional, origen permitido y
- *    límite por email. Turnstile se valida si configuras su secreto.
+ *  · Honeypot, deduplicación, bloqueo transaccional y límite por email.
+ *  · Turnstile es la protección contra bots; se valida si configuras su
+ *    secreto.
+ *  · La lista de orígenes es solo un filtro de cortesía: el origen lo
+ *    declara el propio cuerpo de la petición y el control se salta si
+ *    falta, así que no protege de nadie que falsee la petición.
  *
  *  Sobre CORS, que es lo que suele romper esto: la web envía el cuerpo
  *  como `text/plain` a propósito. Con `application/json` el navegador
@@ -125,6 +129,7 @@ function doPost(e) {
       return responder(e, { ok: true, duplicate: false });
     }
 
+    // Filtro de cortesía: el cuerpo declara el origen y, si falta, no se comprueba.
     if (datos.origin && ORIGENES_PERMITIDOS.indexOf(String(datos.origin)) === -1) {
       return responder(e, { ok: false, error: "origen_no_autorizado" });
     }
