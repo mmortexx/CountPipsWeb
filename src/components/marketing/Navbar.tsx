@@ -436,6 +436,8 @@ export function Navbar() {
     raf = requestAnimationFrame(() => entrar(5));
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
+        // Con el selector de idioma desplegado, Escape es suyo: cierra solo esa capa.
+        if (drawerRef.current?.querySelector("[data-panel-idiomas]")) return;
         e.preventDefault();
         setMobileOpen(false);
         return;
@@ -508,6 +510,18 @@ export function Navbar() {
       delete body.dataset.drawerOpen;
       window.scrollTo({ top: y, behavior: "instant" });
     };
+  }, [mobileOpen]);
+
+  // Desde 1120 px el cajón se oculta por CSS: abierto, dejaría la página sin
+  // scroll y el foco atrapado en nada.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const escritorio = matchMedia("(min-width: 1120px)");
+    const alCambiar = (e: { matches: boolean }) => {
+      if (e.matches) setMobileOpen(false);
+    };
+    escritorio.addEventListener("change", alCambiar);
+    return () => escritorio.removeEventListener("change", alCambiar);
   }, [mobileOpen]);
 
   // Cierra cajón y megamenú al cambiar de ruta; `hovered` también se limpia
@@ -845,7 +859,7 @@ export function Navbar() {
               }
               aria-expanded={mobileOpen}
               aria-haspopup="dialog"
-              aria-controls="mobile-nav-drawer"
+              aria-controls={cajonMontado ? "mobile-nav-drawer" : undefined}
             >
               {mobileOpen ? (
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
@@ -973,7 +987,10 @@ export function Navbar() {
                   {tx(lang, { es: "Preferencias", en: "Preferences", pt: "Preferências", fr: "Préférences", de: "Einstellungen", it: "Preferenze" })}
                 </span>
                 <div className="flex items-center gap-2 px-3 pb-1">
-                  <LanguagePicker size="md" />
+                  {/* Se cierra antes de navegar, como con los enlaces: si no,
+                      al cerrarse tras la navegación devolvería la página nueva
+                      a la altura de la anterior. */}
+                  <LanguagePicker size="md" alElegir={() => setMobileOpen(false)} />
                   <button
                     type="button"
                     onClick={toggleTheme}
@@ -1059,7 +1076,7 @@ function IconButton({
  * idioma activo. No es un `listbox` porque no tiene navegación con flechas.
  * Escape o clic fuera cierran.
  */
-function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
+function LanguagePicker({ size = "sm", alElegir }: { size?: "sm" | "md"; alElegir?: () => void }) {
   const { lang, setLang } = useLang();
   const pathname = usePathname();
   const disponibles = useMemo(() => idiomasDeRuta(pathname), [pathname]);
@@ -1146,6 +1163,7 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
                     // Con modificador o clic central, el navegador abre la pestaña.
                     if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
                     e.preventDefault();
+                    alElegir?.();
                     setLang(l.codigo);
                     setOpen(false);
                     btnRef.current?.focus();
