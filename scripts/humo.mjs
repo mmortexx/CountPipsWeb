@@ -2145,13 +2145,44 @@ let espaciadosMedidos = 0;
 // recorrido no llega a una cifra de cuatro caracteres, no ha medido el caso
 // difícil y eso también es un fallo.
 const cifrasPercentil = [];
+const desalineadas = new Set();
+let rotulosMedidos = 0;
 {
   const ctx = await navegador.newContext({ viewport: { width: ANCHO_ESTRECHO, height: 640 }, reducedMotion: "reduce" });
   const pagina = await ctx.newPage();
   for (const ruta of ["/features/disciplina/", "/en/features/disciplina/"]) {
+    desalineadas.clear();
     try {
       await pagina.goto(`${BASE}${ruta}`, { waitUntil: "load", timeout: 30000 });
       await pagina.addStyleTag({ content: ".cv-auto{content-visibility:visible!important}" });
+      // Con el espaciado normal, ningún rótulo de casilla se parte dentro de
+      // una palabra («Media-na») en los anchos de móvil.
+      for (const ancho of [ANCHO_ESTRECHO, 360, 390]) {
+        await pagina.setViewportSize({ width: ancho, height: 640 });
+        const rotos = await pagina.evaluate(async () => {
+          await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok)));
+          const rotos = [];
+          for (const celda of document.querySelectorAll("main .tj-matriz > .caja-cifra")) {
+            for (const rotulo of [...celda.children].slice(0, -1)) {
+              const t = rotulo.firstChild;
+              if (rotulo.childNodes.length !== 1 || t?.nodeType !== Node.TEXT_NODE) continue;
+              let antes = null;
+              for (let i = 0; i < t.length; i++) {
+                const rango = document.createRange();
+                rango.setStart(t, i);
+                rango.setEnd(t, i + 1);
+                const arriba = Math.round(rango.getClientRects()[0]?.top ?? NaN);
+                if (antes !== null && arriba !== antes && /\p{L}/u.test(t.textContent[i]) && /\p{L}/u.test(t.textContent[i - 1])) rotos.push(t.textContent);
+                antes = arriba;
+              }
+            }
+          }
+          return rotos;
+        });
+        for (const t of new Set(rotos)) fallos.push(`percentiles ${ruta}: a ${ancho} px el rótulo «${t}» se parte dentro de una palabra`);
+        rotulosMedidos++;
+      }
+      await pagina.setViewportSize({ width: ANCHO_ESTRECHO, height: 640 });
       await pagina.addStyleTag({
         content: "*{line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important}p{margin-bottom:2em!important}",
       });
@@ -2187,22 +2218,31 @@ const cifrasPercentil = [];
             for (let i = 1; i < letras.length; i++) {
               if (letras[i].arriba !== letras[i - 1].arriba && numero.test(letras[i].c) && numero.test(letras[i - 1].c)) parte = true;
             }
-            return { texto: (cifra.textContent || "").trim(), parte };
+            const caja = celda.getBoundingClientRect();
+            return { texto: (cifra.textContent || "").trim(), parte, fila: `${[...document.querySelectorAll("main .tj-matriz")].indexOf(celda.parentElement)}:${Math.round(caja.top)}`, abajo: Math.round(cifra.getBoundingClientRect().bottom) };
           });
         });
+        const filas = new Map();
         for (const c of celdas) {
           cifrasPercentil.push(c.texto);
           if (c.parte) partidas.add(c.texto);
+          filas.set(c.fila, [...(filas.get(c.fila) ?? []), c]);
+        }
+        for (const fila of filas.values()) {
+          const bajos = fila.map((c) => c.abajo);
+          if (Math.max(...bajos) - Math.min(...bajos) > 1) desalineadas.add(fila.map((c) => c.texto).join(" | "));
         }
         await pagina.keyboard.press("ArrowRight");
       }
       for (const t of partidas) fallos.push(`percentiles ${ruta}: a ${ANCHO_ESTRECHO} px con el texto espaciado «${t}» se parte entre dígitos`);
+      for (const t of desalineadas) fallos.push(`percentiles ${ruta}: a ${ANCHO_ESTRECHO} px con el texto espaciado las cifras de una fila no caen a la misma altura (${t})`);
     } catch (e) {
       fallos.push(`percentiles ${ruta}: ${String(e).split("\n")[0]}`);
     }
   }
   await ctx.close();
   if (!cifrasPercentil.some((t) => /\d[\d.,]{3}/.test(t))) fallos.push("percentiles: el recorrido no llegó a ninguna cifra de cuatro caracteres");
+  if (rotulosMedidos < 6) fallos.push(`percentiles: rótulos medidos en ${rotulosMedidos} pasadas (ruta × ancho), mínimo 6`);
 }
 
 await navegador.close();

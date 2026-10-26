@@ -332,7 +332,10 @@ export function RMultipleSimulator() {
               es su contenedor de medida (`caja-cifra`) y el importe va
               abreviado. El rojo significa «acaba perdiendo» contando lo
               retirado (`terminaPerdiendo`), no «peor percentil»: con ventaja
-              sana el P5 también gana. */}
+              sana el P5 también gana. Como en la tira de ruina, `grid-rows`
+              deja las cifras a la misma altura aunque un rótulo ocupe dos
+              líneas («Bottom 5%»); a 320 px la columna mide 48 px y el rótulo
+              baja a 11 px para que «Mediana» no se parta. */}
           <div className="tj-matriz grid-cols-5 text-center tnum">
             {[
               { k: "P5", n: es ? "Cola 5\u00a0%" : "Bottom 5%", v: c.finalP5, col: "var(--ink-2)", ref: false },
@@ -344,7 +347,7 @@ export function RMultipleSimulator() {
               <div
                 key={p.k}
                 title={enVoz(p.v)}
-                className="caja-cifra relative min-w-0 px-1 py-2.5"
+                className="caja-cifra relative grid min-w-0 grid-rows-[auto_auto_1fr] px-0.5 py-2.5 min-[360px]:px-1"
               >
                 {p.ref && (
                   <span
@@ -359,9 +362,9 @@ export function RMultipleSimulator() {
                 >
                   {p.k}
                 </span>
-                <span className="mt-0.5 block text-[12px] leading-[1.2] text-tertiary">{p.n}</span>
+                <span className="mt-0.5 block text-[11px] leading-[1.2] text-tertiary min-[360px]:text-[12px]">{p.n}</span>
                 {/* Cada trozo entero; si no cabe, parte entre la cifra y la unidad. */}
-                <span className="tnum cifra-sm mt-1.5 block font-semibold" style={{ color: p.col }}>
+                <span className="tnum cifra-sm mt-1.5 block self-end font-semibold" style={{ color: p.col }}>
                   {(({ trozos, junta }) =>
                     trozos.map((t, i) => (
                       <Fragment key={i}>
