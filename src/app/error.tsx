@@ -71,11 +71,11 @@ export default function Error({
             <button
               type="button"
               onClick={reset}
-              /* `group` para el giro del icono y `min-h-[44px]` de objetivo táctil. */
-              className="group inline-flex min-h-[44px] items-center bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] px-6 rounded-[4px] text-sm font-semibold hover:bg-[rgb(var(--accent-hover))] transition-colors"
+              /* `min-h-[44px]` de objetivo táctil. */
+              className="inline-flex min-h-[44px] items-center bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] px-6 rounded-[4px] text-sm font-semibold hover:bg-[rgb(var(--accent-hover))] transition-colors"
             >
               <svg
-                className="mr-2 transition-transform group-hover:-rotate-45"
+                className="mr-2"
                 width="16"
                 height="16"
                 viewBox="0 0 16 16"

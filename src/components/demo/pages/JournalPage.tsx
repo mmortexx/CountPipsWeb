@@ -176,7 +176,7 @@ function DayScoreDots({
             onClick={() => onChange(n)}
             onKeyDown={(e) => moverConFlechas(e, n, onChange)}
             style={{ "--dm-pulsa": 0.8 } as CSSProperties}
-            className="tj-dm-crece tj-dm-pulsa relative w-5 h-5"
+            className="tj-dm-casilla tj-dm-pulsa relative w-5 h-5"
           >
             <span
               className="absolute inset-0 rounded-[2px] bg-[rgb(var(--divider)/0.10)]"
@@ -450,10 +450,10 @@ function PnlBarChart({ data }: { data: { label: string; pnl: number }[] }) {
               <div className="absolute left-0 right-0 top-1/2 h-px bg-[rgb(var(--divider)/0.1)] -translate-y-1/2" />
               <div
                 style={{ height: `${pct / 2}%`, "--dm-origen": isPos ? "50% 100%" : "50% 0", "--dm-retardo": `calc(var(--escalon) * ${Math.min(i, 8)})` } as CSSProperties}
-                className={`tj-dm-alto absolute left-1/2 -translate-x-1/2 w-2/3 rounded-[2px] group-hover:scale-x-120 transition-[scale] ${
+                className={`tj-dm-alto absolute left-1/2 -translate-x-1/2 w-2/3 rounded-[2px] ${
                   isPos
-                    ? "bottom-1/2 bg-pnl-pos/80"
-                    : "top-1/2 bg-pnl-neg/80"
+                    ? "bottom-1/2 bg-pnl-pos/80 group-hover:bg-pnl-pos"
+                    : "top-1/2 bg-pnl-neg/80 group-hover:bg-pnl-neg"
                 }`}
               />
               <div
@@ -1443,7 +1443,7 @@ export function JournalPage() {
                   key={entry.key}
                   ref={alVer}
                   style={{ "--dm-x": "-10px", "--dm-retardo": `calc(var(--escalon) * ${Math.min(i, 8)})` } as CSSProperties}
-                  className={`tj-dm-entra tj-dm-alza demo-card border-l-2 ${borderColor} p-4`}
+                  className={`tj-dm-entra tj-dm-realce demo-card border-l-2 ${borderColor} p-4`}
                 >
                   <div className="flex items-start justify-between gap-3 flex-wrap">
                     <div className="flex items-start gap-3 min-w-0 flex-1">

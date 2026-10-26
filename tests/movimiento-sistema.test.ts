@@ -387,3 +387,42 @@ describe("nada compite con la cifra: sin rebotes ni cuentas", () => {
     expect(CODIGO.flatMap(([f, t]) => [...t.matchAll(/(?<![\w-])animate-(bounce|ping)\b/g)].map((m) => `${f}: ${m[0]}`))).toEqual([]);
   });
 });
+
+/* Pasar por encima solo cambia el tono (fondo, filete, color, sombra): nada
+   sube, crece, gira ni se corre. Pulsar sí puede hundir (`:active`). */
+const MUEVE = /^(transform|translate|scale|rotate)$/;
+
+function hoverQueMueve(css: string): string[] {
+  return reglas(css)
+    .filter((r) => /:hover\b/.test(r.padres.at(-1)!))
+    .flatMap((r) =>
+      declaraciones(r.cuerpo)
+        .filter(([p, v]) => MUEVE.test(p) && v !== "none")
+        .map(([p, v]) => `${r.padres.at(-1)!.replace(/\s+/g, " ")}: ${p} ${v}`),
+    );
+}
+
+const HOVER_TSX = /(?<![\w-])(?:(?:group|peer)-)?hover:-?(?:translate|scale|rotate)[\w\-[\].%/]*|\[&:hover\]:-?(?:translate|scale|rotate)[\w\-[\].%/]*/g;
+
+describe("pasar por encima solo cambia el tono", () => {
+  it("el detector caza lo que sube, crece o gira al pasar", () => {
+    const hoja = `
+      .a:hover { transform: translateY(-2px); }
+      .b:hover > svg, .b:focus-visible > svg { transform: scale(1.1); }
+      .c:hover, .c:active { transform: none; }
+      .d:active { transform: scale(0.98); }
+      .e:hover { background-color: red; }
+    `;
+    expect(hoverQueMueve(hoja)).toEqual([".a:hover: transform translateY(-2px)", ".b:hover > svg, .b:focus-visible > svg: transform scale(1.1)"]);
+    const tsx = `className="group-hover:-rotate-45 hover:translate-x-0.5 group-hover:scale-x-120 [&:hover]:scale-105 hover:bg-x active:scale-95"`;
+    expect(tsx.match(HOVER_TSX)).toEqual(["group-hover:-rotate-45", "hover:translate-x-0.5", "group-hover:scale-x-120", "[&:hover]:scale-105"]);
+  });
+
+  it("en globals.css nada se mueve al pasar por encima", () => {
+    expect(hoverQueMueve(CSS)).toEqual([]);
+  });
+
+  it("ningún componente se mueve al pasar por encima", () => {
+    expect(CODIGO.flatMap(([f, t]) => (t.match(HOVER_TSX) ?? []).map((m) => `${f}: ${m}`))).toEqual([]);
+  });
+});

@@ -1002,8 +1002,7 @@ textarea:focus-visible,
               filter var(--dur-estado) var(--ease-suave);
 }
 .tj-range::-webkit-slider-thumb:hover {
-  /* Crece la caja de 44 px: el disco pasa de 18 a 20 px. */
-  transform: scale(1.12);
+  /* Al pasar solo se marca la sombra; el disco no crece. */
   filter: drop-shadow(0 2px 3px rgb(19 29 38 / 0.36));
 }
 .tj-range:active::-webkit-slider-thumb {
@@ -1040,7 +1039,6 @@ textarea:focus-visible,
               filter var(--dur-estado) var(--ease-suave);
 }
 .tj-range::-moz-range-thumb:hover {
-  transform: scale(1.12);
   filter: drop-shadow(0 2px 3px rgb(19 29 38 / 0.36));
 }
 .tj-range:focus-visible::-moz-range-thumb {
@@ -1439,32 +1437,9 @@ textarea:focus-visible,
 }
 
 /* ============================================================
-   ICON-BTN — botón solo de icono: el SVG interior crece 1.1× al pasar el
-   ratón, sin el coste de un envoltorio por instancia. Se aplica a <button>
-   o <a> cuyo único contenido es un icono; cubre tanto SVG directos como el
-   envoltorio de lucide-react.
+   ICON-BTN — botón solo de icono. Al pasar cambia de tono (sus clases de
+   color y fondo); el icono no crece, así que no lleva reglas propias.
    ============================================================ */
-.icon-btn > svg,
-.icon-btn svg,
-a.icon-btn > svg,
-button.icon-btn > svg {
-  transition: transform var(--dur-estado) var(--ease-suave);
-  transform-origin: 50% 50%;
-}
-.icon-btn:hover > svg,
-.icon-btn:hover svg,
-a.icon-btn:hover > svg,
-button.icon-btn:hover > svg,
-.icon-btn:focus-visible > svg,
-.icon-btn:focus-visible svg {
-  transform: scale(1.1);
-}
-@media (prefers-reduced-motion: reduce) {
-  .icon-btn > svg,
-  .icon-btn svg,
-  a.icon-btn > svg,
-  button.icon-btn > svg { transition: none; transform: none; }
-}
 
 /* ============================================================
    HOJA DE IMPRESIÓN
@@ -3391,11 +3366,10 @@ select.tj-campo:invalid {
 }
 .tj-metricas-pie > span {
   grid-area: 1 / 1;
-  transition: opacity var(--dur-estado) var(--ease-suave), transform var(--dur-estado) var(--ease-suave);
+  transition: opacity var(--dur-estado) var(--ease-suave);
 }
 .tj-metricas-formula {
   opacity: 0;
-  transform: translateY(4px);
   color: var(--ink-2);
   pointer-events: none;
 }
@@ -3403,12 +3377,10 @@ select.tj-campo:invalid {
   .tj-metricas-ratio:hover .tj-metricas-pie > span:first-child,
   .tj-metricas-ratio:focus-visible .tj-metricas-pie > span:first-child {
     opacity: 0;
-    transform: translateY(-4px);
   }
   .tj-metricas-ratio:hover .tj-metricas-formula,
   .tj-metricas-ratio:focus-visible .tj-metricas-formula {
     opacity: 1;
-    transform: none;
   }
 }
 @keyframes tj-metricas-trazo {
@@ -3983,17 +3955,18 @@ svg [data-entra="sello"] {
   }
 }
 
-/* Realce al pasar por encima de un botón flotante. */
+/* Al pasar por encima, el botón flotante se oscurece un punto (una capa
+   interior, para no pisar el tinte del cristal); no sube. */
 .tj-subir:hover {
-  transform: translateY(-2px);
+  box-shadow: inset 0 0 0 100px rgb(var(--divider) / 0.06), 0 0 0 1px var(--cristal-canto), var(--cristal-sombra-flota);
 }
 .tj-subir:active {
   transform: scale(0.95);
 }
 
 /* ── La misma idea, para las tarjetas y los botones ───────────────────
-   Los dos gestos del sitio (subir al pasar, hundirse al pulsar), con la
-   misma curva que el resto. `will-change` no se declara: son elementos
+   Los dos gestos del sitio (cambiar de tono al pasar, hundirse al pulsar),
+   con la misma curva que el resto. `will-change` no se declara: son elementos
    grandes y promover cada uno a su capa cuesta memoria de vídeo.
 
    La lista larga y no `transition: transform 0.3s`: `transition` es una
@@ -4177,20 +4150,16 @@ svg [data-entra="sello"] {
   }
 }
 
-/* El realce de un botón o enlace destacado: sube dos píxeles al pasar por
-   encima y se hunde al pulsar. */
+/* El realce de un botón o enlace destacado: al pasar cambia de tono (sus
+   clases de fondo) y al pulsar se hunde. */
 .tj-realza {
-  transition: transform var(--dur-estado) var(--ease-suave);
-}
-.tj-realza:hover {
-  transform: translateY(-2px);
+  transition: transform var(--dur-pulsa) var(--ease-suave);
 }
 .tj-realza:active {
-  transform: translateY(0) scale(0.98);
+  transform: scale(0.98);
 }
 @media (prefers-reduced-motion: reduce) {
   .tj-realza,
-  .tj-realza:hover,
   .tj-realza:active {
     transition: none;
     transform: none;
@@ -4686,7 +4655,9 @@ html.tj-mov #main-content .tj-cristal:not(#top *) {
   .tj-dm-alto {
     transform-origin: var(--dm-origen, 50% 100%);
     animation: tj-dm-alto var(--dur-entra) var(--ease-suave) var(--dm-retardo, 0s) backwards;
-    transition: height var(--dur-entra) var(--ease-suave);
+    transition:
+      height var(--dur-entra) var(--ease-suave),
+      background-color var(--dur-estado) var(--ease-suave);
   }
   .tj-dm-crece-x {
     transform-origin: 0 50%;
@@ -4706,9 +4677,9 @@ html.tj-mov #main-content .tj-cristal:not(#top *) {
   }
   /* Estas piezas llevan además `transition-colors` de Tailwind, que esta
      regla (fuera de capa) pisaría: los colores van en la misma lista. */
-  .tj-dm-alza,
+  .tj-dm-realce,
   .tj-dm-pulsa,
-  .tj-dm-crece {
+  .tj-dm-casilla {
     transition:
       transform var(--dur-estado) var(--ease-suave),
       color var(--dur-estado) var(--ease-suave),
@@ -4717,22 +4688,25 @@ html.tj-mov #main-content .tj-cristal:not(#top *) {
       box-shadow var(--dur-estado) var(--ease-suave),
       opacity var(--dur-estado) var(--ease-suave);
   }
-  @media (hover: hover) {
-    .tj-dm-alza:hover {
-      transform: translateY(-2px);
-    }
-    .tj-dm-crece:hover {
-      transform: scale(1.18);
-    }
+  .tj-dm-casilla > span:first-child {
+    transition: background-color var(--dur-estado) var(--ease-suave);
   }
   .tj-dm-pulsa:active {
     transform: scale(var(--dm-pulsa, 0.97));
     transition-duration: var(--dur-pulsa);
   }
-  @media (hover: hover) {
-    .tj-dm-alza.tj-dm-pulsa:active {
-      transform: translateY(-2px) scale(var(--dm-pulsa, 0.97));
-    }
+}
+/* Al pasar por encima, la tarjeta y la casilla de nota cambian de tono; no
+   suben ni crecen. Los botones con `tj-dm-realce` ya llevan su fondo. */
+@media (hover: hover) {
+  .demo-card.tj-dm-realce:hover {
+    background-color: rgb(var(--divider) / 0.045);
+  }
+  :root[data-theme="light"] .demo-card.tj-dm-realce:hover {
+    background-color: rgb(255 255 255 / 0.8);
+  }
+  .tj-dm-casilla:hover > span:first-child {
+    background-color: rgb(var(--divider) / 0.2);
   }
 }
 /* El globo de atajos de la demo sube desde la barra de estado y vuelve a

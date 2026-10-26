@@ -66,6 +66,8 @@ Windows (WinUI 3, en otro repositorio).
     crece por encima de su tamaño y ningún fotograma intermedio se pasa para volver
     (rebote). Lo vigilan `tests/movimiento-sistema.test.ts` en la hoja y
     `movimiento.mjs` en el navegador.
+  - Pasar por encima solo cambia el tono (fondo, filete, color, sombra): nada sube,
+    crece, gira ni se corre. Pulsar sí hunde (`:active`, `--dur-pulsa`).
   - Desde JavaScript, `curva()` y `duracion()` de `src/lib/motion.ts` leen los mismos
     tokens; `usePresencia` espera `--dur-estado`, lo que dura toda salida.
 - **Afirmaciones técnicas**: sólo lo comprobado en el código del programa. Las cifras y

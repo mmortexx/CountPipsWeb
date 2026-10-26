@@ -687,7 +687,7 @@ export function TradeDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-[5fr_4fr] gap-5">
         <div className="flex flex-col gap-5 min-w-0">
           <div
-            className="tj-dm-entra tj-dm-alza demo-card p-5"
+            className="tj-dm-entra tj-dm-realce demo-card p-5"
             style={{ "--dm-y": "16px", "--dm-retardo": "calc(var(--escalon) * 3)" } as CSSProperties}
           >
             <Eyebrow className="mb-4">{t("execution")}</Eyebrow>
@@ -721,7 +721,7 @@ export function TradeDetailPage() {
           </div>
 
           <div
-            className="tj-dm-entra tj-dm-alza demo-card p-5"
+            className="tj-dm-entra tj-dm-realce demo-card p-5"
             style={{ "--dm-y": "16px", "--dm-retardo": "calc(var(--escalon) * 3)" } as CSSProperties}
           >
             <div className="flex items-center gap-3 mb-4">
@@ -785,7 +785,7 @@ export function TradeDetailPage() {
           </div>
 
           <div
-            className="tj-dm-entra tj-dm-alza demo-card p-5"
+            className="tj-dm-entra tj-dm-realce demo-card p-5"
             style={{ "--dm-y": "16px", "--dm-retardo": "calc(var(--escalon) * 4)" } as CSSProperties}
           >
             <Eyebrow className="mb-4">
@@ -835,7 +835,7 @@ export function TradeDetailPage() {
 
           <div className="grid sm:grid-cols-2 gap-5">
             <div
-              className="tj-dm-entra tj-dm-alza demo-card p-5"
+              className="tj-dm-entra tj-dm-realce demo-card p-5"
               style={{ "--dm-y": "16px", "--dm-retardo": "calc(var(--escalon) * 4)" } as CSSProperties}
             >
               <Eyebrow className="mb-4">{t("plan")}</Eyebrow>
@@ -864,7 +864,7 @@ export function TradeDetailPage() {
             </div>
 
             <div
-              className="tj-dm-entra tj-dm-alza demo-card p-5"
+              className="tj-dm-entra tj-dm-realce demo-card p-5"
               style={{ "--dm-y": "16px", "--dm-retardo": "calc(var(--escalon) * 5)" } as CSSProperties}
             >
               <Eyebrow className="mb-4">{t("context")}</Eyebrow>
@@ -917,7 +917,7 @@ export function TradeDetailPage() {
 
         <div className="flex flex-col gap-5 min-w-0">
           <div
-            className="tj-dm-entra tj-dm-alza demo-card p-5"
+            className="tj-dm-entra tj-dm-realce demo-card p-5"
             style={{ "--dm-y": "16px", "--dm-retardo": "calc(var(--escalon) * 3)" } as CSSProperties}
           >
             <Eyebrow className="mb-4">{t("screenshots")}</Eyebrow>
@@ -949,7 +949,7 @@ export function TradeDetailPage() {
           </div>
 
           <div
-            className="tj-dm-entra tj-dm-alza demo-card p-5"
+            className="tj-dm-entra tj-dm-realce demo-card p-5"
             style={{ "--dm-y": "16px", "--dm-retardo": "calc(var(--escalon) * 4)" } as CSSProperties}
           >
             <Eyebrow className="mb-4">
@@ -1000,7 +1000,7 @@ export function TradeDetailPage() {
           </div>
 
           <div
-            className="tj-dm-entra tj-dm-alza demo-card p-5"
+            className="tj-dm-entra tj-dm-realce demo-card p-5"
             style={{ "--dm-y": "16px", "--dm-retardo": "calc(var(--escalon) * 4)" } as CSSProperties}
           >
             <Eyebrow className="mb-4">{t("review")}</Eyebrow>

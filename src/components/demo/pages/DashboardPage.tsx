@@ -692,7 +692,7 @@ export function DashboardPage() {
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
-                    className="tj-dm-alza tj-dm-pulsa h-11 px-4 rounded-[2px] bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] text-secondary font-medium text-sm flex items-center gap-2 hover:bg-[rgb(var(--divider)/0.08)] hover:text-primary transition-colors"
+                    className="tj-dm-realce tj-dm-pulsa h-11 px-4 rounded-[2px] bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] text-secondary font-medium text-sm flex items-center gap-2 hover:bg-[rgb(var(--divider)/0.08)] hover:text-primary transition-colors"
                   >
                     <svg
                       width="14"
@@ -713,7 +713,7 @@ export function DashboardPage() {
                   <button
                     type="submit"
                     title={`${mando}+Enter`}
-                    className="tj-dm-alza tj-dm-pulsa group h-11 min-w-[200px] px-4 rounded-[2px] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[rgb(var(--accent-hover))] transition-colors shadow-[0_2px_8px_rgb(var(--sombra)/0.18)]"
+                    className="tj-dm-realce tj-dm-pulsa group h-11 min-w-[200px] px-4 rounded-[2px] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[rgb(var(--accent-hover))] transition-colors shadow-[0_2px_8px_rgb(var(--sombra)/0.18)]"
                   >
                     <svg
                       width="14"
@@ -1012,7 +1012,7 @@ export function DashboardPage() {
                       />
                     </div>
                     <svg
-                      className="hidden md:block text-tertiary opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-[opacity,transform] shrink-0"
+                      className="hidden md:block text-tertiary opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                       width="12"
                       height="12"
                       viewBox="0 0 16 16"
