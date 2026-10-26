@@ -896,8 +896,10 @@ for (const pantalla of PANTALLAS) {
           let el = pieza.parentElement;
           while (el && el !== document.body) {
             if (!(el instanceof SVGElement)) {
-              const o = getComputedStyle(el).overflow;
-              const recorta = o !== "visible" && o !== "clip";
+              // Por eje: `overflow-x: clip` con `y` visible se lee «clip visible»
+              // y no crea contenedor.
+              const s = getComputedStyle(el);
+              const recorta = [s.overflowX, s.overflowY].some((o) => o !== "visible" && o !== "clip");
               const seDesplaza =
                 el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1;
               if (recorta && !seDesplaza) return el;
@@ -906,7 +908,12 @@ for (const pantalla of PANTALLAS) {
           }
           return null;
         };
+        // Solo cuenta la entrada atada al scroll: con JavaScript la retira
+        // `html.tj-mov` (entra el bloque, por tiempo, con Aparecer.tsx) y la
+        // de la demo va por tiempo, así que una jaula no les quita nada.
+        const alScroll = (p) => /view|scroll|--/.test(getComputedStyle(p).animationTimeline) && getComputedStyle(p).animationName !== "none";
         const presas = [...document.querySelectorAll("[data-entra]")]
+          .filter(alScroll)
           .map((p) => [p, jaulaDe(p)])
           .filter(([, jaula]) => jaula);
         const nombre = ([p, jaula]) =>

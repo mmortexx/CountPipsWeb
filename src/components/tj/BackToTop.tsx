@@ -37,6 +37,7 @@ export function BackToTop() {
 
   useEffect(() => {
     let ticking = false;
+    let fotograma = 0;
     let ultimoY = window.scrollY;
     let subiendo = false;
     const update = () => {
@@ -61,25 +62,21 @@ export function BackToTop() {
       setPieLift(pieTop < window.innerHeight ? Math.max(0, Math.round(baseBoton - (pieTop - HUECO_PIE_PX))) : 0);
       ticking = false;
     };
-    const onScroll = () => {
+    // También al redimensionar: el pie cambia de sitio al reflujo (giro, barra
+    // del navegador en móvil).
+    const pide = () => {
       if (!ticking) {
-        requestAnimationFrame(update);
+        fotograma = requestAnimationFrame(update);
         ticking = true;
       }
     };
-    // El pie cambia de sitio al reflujo (giro, barra del navegador en móvil).
-    const onResize = () => {
-      if (!ticking) {
-        requestAnimationFrame(update);
-        ticking = true;
-      }
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onResize, { passive: true });
+    window.addEventListener("scroll", pide, { passive: true });
+    window.addEventListener("resize", pide, { passive: true });
     update();
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onResize);
+      window.removeEventListener("scroll", pide);
+      window.removeEventListener("resize", pide);
+      cancelAnimationFrame(fotograma);
     };
   }, []);
 

@@ -122,9 +122,11 @@ export function GlobalShortcuts() {
     };
 
     window.addEventListener("keydown", onKey);
+    // El efecto se rehace al cambiar de idioma: cancelar solo el plazo dejaría
+    // el prefijo armado y la pista en pantalla (`tests/limpieza-escuchas.test.ts`).
     return () => {
       window.removeEventListener("keydown", onKey);
-      if (gPrefixTimer.current) window.clearTimeout(gPrefixTimer.current);
+      disarmPrefix();
     };
   }, [toggleTheme, toggleLang, router, lang]);
 
