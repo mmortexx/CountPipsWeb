@@ -104,6 +104,18 @@ async function postJson(
   }
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * Forma de correo que aceptan los formularios y el Worker, hasta 254
+ * caracteres. Uno más largo no se recorta: recortado podría seguir pareciendo
+ * válido y la respuesta iría a otra dirección.
+ */
+export function emailValido(valor: string): boolean {
+  const email = valor.trim();
+  return email.length <= 254 && EMAIL_RE.test(email);
+}
+
 /** Caracteres que admite el mensaje de contacto; el campo no deja escribir más. */
 export const LIMITE_MENSAJE = 3000;
 
@@ -119,13 +131,13 @@ export async function submitForm(fields: FormFields): Promise<SubmitResult> {
   }
 
   // Límites de longitud y saneamiento previo
-  const email = (fields.email ?? "").trim().slice(0, 254);
+  const email = (fields.email ?? "").trim();
   const subject = (fields.subject ?? "").trim().slice(0, 160);
   const name = fields.name ? fields.name.trim().slice(0, 100) : undefined;
   const message = fields.message ? fields.message.trim().slice(0, LIMITE_MENSAJE) : undefined;
   const botcheck = (fields.botcheck ?? "").slice(0, 100);
 
-  if (!email || !email.includes("@")) {
+  if (!emailValido(email)) {
     return { ok: false, reason: "rejected" };
   }
 
@@ -163,9 +175,16 @@ export type BetaApplicationData = {
   lang?: string;
 };
 
+export type BetaFailure =
+  | SubmitFailure
+  /** El Worker frenó la IP (429): toca esperar, no corregir nada. */
+  | "limited"
+  /** El Worker no aceptó la verificación anti-bot (caducada o de un solo uso): se repite. */
+  | "botcheck";
+
 export type BetaApplicationResult =
   | { ok: true; duplicate: boolean }
-  | { ok: false; reason: SubmitFailure };
+  | { ok: false; reason: BetaFailure };
 
 /** De qué página y campaña llega la solicitud. */
 function procedencia() {
@@ -212,6 +231,7 @@ async function solicitudPorCorreo(application: BetaApplicationData): Promise<Bet
 export async function joinBetaApplication(
   application: BetaApplicationData,
 ): Promise<BetaApplicationResult> {
+  if (!emailValido(application.email)) return { ok: false, reason: "rejected" };
   if (!BETA_API_URL) return solicitudPorCorreo(application);
 
   const { botcheck = "", ...rest } = application;
@@ -222,8 +242,12 @@ export async function joinBetaApplication(
   );
 
   if (!res) return { ok: false, reason: "network" };
-  if (!res.ok) return { ok: false, reason: "rejected" };
-  const data = res.data as { ok?: boolean; duplicate?: boolean } | null;
+  const data = res.data as { ok?: boolean; duplicate?: boolean; error?: string } | null;
+  if (!res.ok) {
+    if (res.status === 429) return { ok: false, reason: "limited" };
+    if (data?.error === "bot_check_failed") return { ok: false, reason: "botcheck" };
+    return { ok: false, reason: "rejected" };
+  }
   if (!data?.ok) return { ok: false, reason: "rejected" };
   return { ok: true, duplicate: data.duplicate === true };
 }

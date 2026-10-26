@@ -5,7 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { Link } from "@/components/tj/LocaleLink";
 import { useHydrated } from "@/hooks/use-hydrated";
-import { joinBetaApplication, SUPPORT_EMAIL, type BetaApplicationData, type SubmitFailure } from "@/lib/forms";
+import { emailValido, joinBetaApplication, SUPPORT_EMAIL, type BetaApplicationData, type BetaFailure } from "@/lib/forms";
 import { DIARIOS, EXPERIENCIAS, OBJETIVOS, PERFILES } from "@/lib/beta-opciones";
 
 type Profile = (typeof PERFILES)[number]["value"];
@@ -24,8 +24,6 @@ declare global {
     };
   }
 }
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // `text-base sm:text-sm`: Safari de iOS hace zoom al enfocar un campo con
 // letra menor de 16 px. Desde 640 px vuelve a 14 px.
@@ -55,11 +53,21 @@ function FieldError({ id, show, message }: { id: string; show: boolean; message:
   );
 }
 
-function failureCopy(reason: SubmitFailure, es: boolean) {
+export function failureCopy(reason: BetaFailure, es: boolean) {
   if (reason === "network") {
     return es
       ? "No hemos podido conectar. Revisa tu conexión e inténtalo de nuevo."
       : "We couldn’t connect. Check your connection and try again.";
+  }
+  if (reason === "limited") {
+    return es
+      ? "Hemos recibido varios envíos seguidos desde tu conexión. Espera un rato y vuelve a intentarlo."
+      : "We received several submissions in a row from your connection. Wait a while and try again.";
+  }
+  if (reason === "botcheck") {
+    return es
+      ? "La verificación anti-bot ha caducado. Complétala de nuevo y vuelve a enviar."
+      : "The anti-bot check expired. Complete it again and resend.";
   }
   return es
     ? `La solicitud no se ha podido guardar. ${SUPPORT_EMAIL ? `Escríbenos a ${SUPPORT_EMAIL}.` : "Inténtalo de nuevo en unos minutos."}`
@@ -119,7 +127,7 @@ export function BetaApplication() {
   });
 
   const profileInvalid = submitted && !profile;
-  const emailInvalid = submitted && !EMAIL_RE.test(email.trim());
+  const emailInvalid = submitted && !emailValido(email);
   const experienceInvalid = submitted && !experience;
   const marketsInvalid = submitted && !markets.trim();
   const workflowInvalid = submitted && !workflow;
@@ -162,7 +170,7 @@ export function BetaApplication() {
 
     const faltanCampos =
       !profile ||
-      !EMAIL_RE.test(email.trim()) ||
+      !emailValido(email) ||
       !experience ||
       !markets.trim() ||
       !workflow ||
@@ -187,7 +195,7 @@ export function BetaApplication() {
       setStatus("error");
       const firstInvalidRef = !profile
         ? profileRef
-        : !EMAIL_RE.test(email.trim())
+        : !emailValido(email)
           ? emailRef
           : !experience
             ? experienceRef
