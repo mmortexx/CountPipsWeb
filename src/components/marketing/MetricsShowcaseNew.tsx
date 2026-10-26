@@ -309,7 +309,7 @@ function Distribucion({ g, lang, enfoque }: { g: Grafico; lang: Lang; enfoque: E
     : {
         rotulo: tx(lang, { es: "Expectancy por operación", en: "Expectancy per trade", pt: "Expectancy por operação", fr: "Expectancy par opération", de: "Expectancy pro Trade", it: "Expectancy per operazione" }),
         cifra: fmtR(METRICS.expectancyR, lang, 2),
-        detalle: `${tx(lang, { es: "Moda de", en: "Mode", pt: "Moda de", fr: "Mode", de: "Modalwert", it: "Moda" })} ${MODA >= 0 ? rango(BINS[MODA]) : "—"} · ${ops(TOTAL_BINS)}`,
+        detalle: `${tx(lang, { es: "Moda de", en: "Mode", pt: "Moda de", fr: "Mode", de: "Modus", it: "Moda" })} ${MODA >= 0 ? rango(BINS[MODA]) : "—"} · ${ops(TOTAL_BINS)}`,
         tono: undefined,
       };
 

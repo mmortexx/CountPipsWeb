@@ -29,7 +29,7 @@ export const SALTOS_TECLADO: readonly SaltoTeclado[] = [
   { tecla: "t", ruta: "/test", es: "Test de disciplina", en: "Discipline test", pt: "Teste de disciplina", fr: "Test de discipline", de: "Disziplintest", it: "Test di disciplina" },
   { tecla: "c", ruta: "/herramientas", es: "Herramientas", en: "Tools", pt: "Ferramentas", fr: "Outils", de: "Tools", it: "Strumenti" },
   { tecla: "o", ruta: "/glosario", es: "Glosario", en: "Glossary", pt: "Glossário", fr: "Glossaire", de: "Glossar", it: "Glossario" },
-  { tecla: "b", ruta: "/beta", es: "Acceso anticipado (Beta)", en: "Early access (Beta)", pt: "Acesso antecipado (Beta)", fr: "Accès anticipé (bêta)", de: "Früher Zugang (Beta)", it: "Accesso anticipato (Beta)" },
+  { tecla: "b", ruta: "/beta", es: "Acceso anticipado (Beta)", en: "Early access (Beta)", pt: "Acesso antecipado (Beta)", fr: "Accès anticipé (bêta)", de: "Vorabzugang (Beta)", it: "Accesso anticipato (Beta)" },
   { tecla: "u", ruta: "/traders/manual", es: "Operativa manual", en: "Manual trading", pt: "Trading manual", fr: "Trading manuel", de: "Manuelles Trading", it: "Trading manuale" },
   { tecla: "r", ruta: "/traders/prop-firms", es: "Prop firms", en: "Prop firms", pt: "Prop firms", fr: "Prop firms", de: "Prop-Firms", it: "Prop firms" },
 ];
