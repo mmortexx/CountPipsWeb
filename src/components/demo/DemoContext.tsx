@@ -2,12 +2,15 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
 import type { FiltrosDemo } from "@/lib/trading/filtros";
+import { cargaPagina, estaLista } from "./cargaPaginas";
 
 /**
  * Páginas que expone la demo: las cuatro primeras del NavigationView de la app
@@ -52,21 +55,42 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const [filters, setFiltersState] = useState<DemoFilters>(DEFAULT_FILTERS);
   const [fullscreen, setFullscreen] = useState(false);
 
+  /* Una página que aún no ha llegado se pide y se cambia al tenerla; la de antes
+     sigue a la vista mientras. Cada petición invalida las anteriores: dos clics
+     seguidos acaban en el último aunque el primero llegue después. */
+  const peticion = useRef(0);
+  const cuandoEste = useCallback((pagina: DemoPage, cambia: () => void) => {
+    const esta = ++peticion.current;
+    if (estaLista(pagina)) {
+      cambia();
+      return;
+    }
+    cargaPagina(pagina).then(
+      () => {
+        if (esta === peticion.current) cambia();
+      },
+      (error: unknown) => console.error(`La página «${pagina}» de la demo no se pudo cargar`, error),
+    );
+  }, []);
+
   const value = useMemo<DemoCtx>(
     () => ({
       page,
-      setPage: (p) => {
-        setPageState(p);
-        if (p !== "detail") setSelectedTradeId(null);
-      },
-      goDetail: (tradeId) => {
-        setSelectedTradeId(tradeId);
-        setPageState("detail");
-      },
-      goBack: () => {
-        setPageState("trades");
-        setSelectedTradeId(null);
-      },
+      setPage: (p) =>
+        cuandoEste(p, () => {
+          setPageState(p);
+          if (p !== "detail") setSelectedTradeId(null);
+        }),
+      goDetail: (tradeId) =>
+        cuandoEste("detail", () => {
+          setSelectedTradeId(tradeId);
+          setPageState("detail");
+        }),
+      goBack: () =>
+        cuandoEste("trades", () => {
+          setPageState("trades");
+          setSelectedTradeId(null);
+        }),
       selectedTradeId,
       filters,
       setFilters: (f) => setFiltersState((prev) => ({ ...prev, ...f })),
@@ -74,7 +98,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       fullscreen,
       setFullscreen,
     }),
-    [page, selectedTradeId, filters, fullscreen]
+    [page, selectedTradeId, filters, fullscreen, cuandoEste]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

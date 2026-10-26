@@ -9,6 +9,7 @@ import { pideAyuda } from "@/lib/atajos";
 import { LanguageProvider } from "@/lib/i18n";
 import { ThemeProvider } from "@/lib/theme";
 import { AppDemo } from "@/components/demo/AppDemo";
+import { precargaPaginas } from "@/components/demo/cargaPaginas";
 import { resetToSample } from "@/lib/trading/demoStore";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -40,13 +41,19 @@ function pulsa(key: string, en: HTMLElement = panel(), shiftKey = false) {
 }
 const ayuda = () => cont.querySelector("[role='dialog'][aria-label='Atajos de teclado']")?.textContent ?? "";
 
-beforeEach(() => {
+beforeEach(async () => {
   vi.stubGlobal("matchMedia", () => ({ matches: false, addEventListener() {}, removeEventListener() {} }));
   resetToSample();
   cont = document.createElement("div");
   document.body.appendChild(cont);
   raiz = createRoot(cont);
   act(() => raiz.render(createElement(ThemeProvider, null, createElement(LanguageProvider, null, createElement(AppDemo)))));
+  // Las páginas que no son el Resumen llegan aparte (cargaPaginas.ts); aquí se
+  // esperan para que cada tecla cambie de página al momento, como en el navegador
+  // en cuanto llegan.
+  await act(async () => {
+    await precargaPaginas();
+  });
 });
 
 afterEach(() => {

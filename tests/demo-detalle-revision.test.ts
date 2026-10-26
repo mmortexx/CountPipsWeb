@@ -7,6 +7,7 @@ vi.mock("next/navigation", () => ({ usePathname: () => "/demo", useRouter: () =>
 
 import { LanguageProvider } from "@/lib/i18n";
 import { DemoProvider, useDemo } from "@/components/demo/DemoContext";
+import { precargaPaginas } from "@/components/demo/cargaPaginas";
 import { TradeDetailPage } from "@/components/demo/pages/TradeDetailPage";
 import { TRADES } from "@/lib/trading/data";
 import { mergeTrades, resetToSample } from "@/lib/trading/demoStore";
@@ -37,8 +38,10 @@ const revisionMarcada = () =>
     .find((t) => t === "Sí" || t === "Parcial" || t === "No");
 const etiquetas = () => cont.querySelectorAll("[aria-label^='Quitar etiqueta']").length;
 
-beforeEach(() => {
+beforeEach(async () => {
   vi.stubGlobal("matchMedia", () => ({ matches: false, addEventListener() {}, removeEventListener() {} }));
+  // El contexto solo abre el detalle cuando su página ha llegado (cargaPaginas.ts).
+  await precargaPaginas();
   resetToSample();
   cont = document.createElement("div");
   document.body.appendChild(cont);

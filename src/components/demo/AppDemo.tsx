@@ -13,10 +13,7 @@ import { DemoCommandPalette } from "./DemoCommandPalette";
 import { DemoShortcutsHint } from "./DemoShortcutsHint";
 import { PESTANAS_DEMO } from "./pestanas";
 import { DashboardPage } from "./pages/DashboardPage";
-import { TradesPage } from "./pages/TradesPage";
-import { TradeDetailPage } from "./pages/TradeDetailPage";
-import { AnalyticsPage } from "./pages/AnalyticsPage";
-import { JournalPage } from "./pages/JournalPage";
+import { paginaCargada, precargaPaginas } from "./cargaPaginas";
 
 /**
  * La demo: recreación interactiva de la app nativa dentro de una ventana.
@@ -31,6 +28,13 @@ export function AppDemo({ hideHeader = false }: { hideHeader?: boolean } = {}) {
       <AppDemoInner hideHeader={hideHeader} />
     </DemoProvider>
   );
+}
+
+/** `DemoContext` solo pasa a una página diferida cuando ya ha llegado. */
+function PaginaDiferida({ pagina }: { pagina: Exclude<DemoPage, "dashboard"> }) {
+  const Pagina = paginaCargada(pagina);
+  // eslint-disable-next-line react-hooks/static-components -- no se crea aquí: es el componente del módulo ya cargado, el mismo en cada render, y su estado no se reinicia.
+  return Pagina ? <Pagina /> : null;
 }
 
 function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
@@ -63,6 +67,17 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
           | "pageTrades"
           | "pageAnalytics"
           | "pageJournal");
+
+  // Las otras cuatro páginas se piden cuando el Resumen ya está pintado y el
+  // navegador queda libre (ver cargaPaginas.ts); Safari no tiene requestIdleCallback.
+  useEffect(() => {
+    if (typeof requestIdleCallback === "function") {
+      const id = requestIdleCallback(() => void precargaPaginas(), { timeout: 3000 });
+      return () => cancelIdleCallback(id);
+    }
+    const id = window.setTimeout(() => void precargaPaginas(), 1500);
+    return () => window.clearTimeout(id);
+  }, []);
 
   // Escape sale de pantalla completa. El setState va en el manejador, no en el
   // cuerpo del efecto (regla set-state-in-effect).
@@ -307,11 +322,7 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
                   deceleración de WinUI y abrir una operación es un «drill-in».
                   Sin salida animada, la página nueva empieza a entrar al pulsar. */}
               <div key={page} className={`min-h-full ${!haCambiado ? "" : page === "detail" ? "tj-demo-fondo" : "tj-demo-entra"}`}>
-                {page === "dashboard" && <DashboardPage />}
-                {page === "trades" && <TradesPage />}
-                {page === "detail" && <TradeDetailPage />}
-                {page === "analytics" && <AnalyticsPage />}
-                {page === "journal" && <JournalPage />}
+                {page === "dashboard" ? <DashboardPage /> : <PaginaDiferida pagina={page} />}
               </div>
             </div>
             <div
