@@ -74,14 +74,14 @@ export function Footer() {
                       <button
                         type="button"
                         onClick={(e) => openGlossary(e.currentTarget)}
-                        className="link-underline-host inline-flex items-center min-h-[44px] [@media(pointer:fine)]:min-h-[34px] w-full text-left text-sm text-secondary hover:text-primary transition-colors duration-200"
+                        className="link-underline-host inline-flex items-center min-h-[44px] [@media(pointer:fine)]:min-h-[34px] w-full text-left text-sm text-secondary hover:text-primary transition-colors"
                       >
                         <span className="link-underline link-underline--al-pasar">{l.label}</span>
                       </button>
                     ) : (
                       <Link
                         href={l.href}
-                        className="inline-flex items-center min-h-[44px] [@media(pointer:fine)]:min-h-[34px] w-full text-sm text-secondary hover:text-primary transition-colors duration-200"
+                        className="inline-flex items-center min-h-[44px] [@media(pointer:fine)]:min-h-[34px] w-full text-sm text-secondary hover:text-primary transition-colors"
                       >
                         <span className="link-underline link-underline--al-pasar">{l.label}</span>
                       </Link>

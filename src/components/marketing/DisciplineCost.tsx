@@ -448,7 +448,7 @@ export function DisciplineCost() {
                     </div>
                     <div className="relative mt-1.5 h-[3px] overflow-hidden bg-[rgb(var(--divider)/0.10)]">
                       <div
-                        className="h-full bg-[var(--ink-3)] transition-[width] duration-300 ease-[var(--ease-suave)]"
+                        className="h-full bg-[var(--ink-3)] transition-[width] duration-(--dur-abre)"
                         style={{ width: `${(row.pct / maxPct) * 100}%` }}
                       />
                     </div>

@@ -103,25 +103,23 @@
   --radius: 3px;
 
   /* ══════════════════════════════════════════════════════════════
-     CURVAS DE MOVIMIENTO
+     MOVIMIENTO: CUATRO DURACIONES Y DOS CURVAS
      ══════════════════════════════════════════════════════════════
-     `--ease-suave` es la curva del sitio y la que se usa por defecto; las
-     demás son excepciones deliberadas, cada una en un único sitio. */
-  --ease-suave: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-salida: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-entrada-salida: cubic-bezier(0.76, 0, 0.24, 1);
-  --ease-menu-in: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-menu-out: cubic-bezier(0.2, 0, 0, 1);
-  --ease-drawer: cubic-bezier(0.16, 1, 0.3, 1);
+     Las reglas están en PROJECT.md («Movimiento») y las vigila
+     `tests/movimiento-sistema.test.ts`: ninguna animación escribe su
+     tiempo ni su curva a mano. */
+  --dur-pulsa: 100ms;   /* el control se hunde al pulsar */
+  --dur-estado: 150ms;  /* pasar por encima, foco, elegido: cambios de tono */
+  --dur-abre: 220ms;    /* lo que se abre a petición: menús, ventanas, pliegues */
+  --dur-entra: 320ms;   /* lo que entra o recorre la pantalla; el tope */
+  --escalon: 40ms;      /* paso de una cascada; el retardo no pasa de 320 ms */
+  --ease-suave: cubic-bezier(0.22, 1, 0.36, 1);   /* llega: frena al final */
+  --ease-acelera: cubic-bezier(0.4, 0, 1, 1);     /* se va: acelera hacia fuera */
 
-  /* ══════════════════════════════════════════════════════════════
-     CURVA POR DEFECTO
-     ══════════════════════════════════════════════════════════════
-     El defecto de Tailwind (`cubic-bezier(0.4, 0, 0.2, 1)`) sacaba a casi
-     todos los `duration-200` / `duration-300` con otra curva, y la regla
-     base `a, button { transition-timing-function }` pierde contra las
-     utilidades. Cambiar el defecto deja `--ease-suave` en todo el sitio. */
+  /* Las utilidades de Tailwind (`transition-colors` y compañía) salen con
+     la duración y la curva de la casa, no con las suyas. */
   --default-transition-timing-function: var(--ease-suave);
+  --default-transition-duration: var(--dur-estado);
 
   /* Acento: azul acero, el color de marca. No devolverlo al dorado ni a
      ningún tierra (champagne y arcilla caían en el sector de tono de otra
@@ -332,7 +330,6 @@
     font-feature-settings: "tnum" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: background-color 0.4s ease, color 0.4s ease;
     text-rendering: optimizeLegibility;
     /* Evita que un desbordamiento incidental (adornos, tablas anchas,
        cadenas largas) cree barra horizontal en móvil. */
@@ -446,7 +443,7 @@
   @media (hover: none) {
     a:active, button:active, [role="button"]:active {
       transform: scale(0.97);
-      transition: transform 120ms var(--ease-suave);
+      transition: transform var(--dur-pulsa) var(--ease-suave);
     }
   }
 
@@ -529,7 +526,7 @@
   button {
     transition-property: color, background-color, border-color, box-shadow,
       opacity, transform, filter, text-decoration-color, outline-color;
-    transition-duration: 0.2s;
+    transition-duration: var(--dur-estado);
     transition-timing-function: var(--ease-suave);
   }
 
@@ -548,7 +545,7 @@
     background-color: color-mix(in srgb, var(--ink) 4.5%, transparent);
     border: 1px solid transparent;
     border-radius: 4px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    transition: border-color var(--dur-estado) var(--ease-suave), box-shadow var(--dur-estado) var(--ease-suave), background-color var(--dur-estado) var(--ease-suave);
   }
   input:focus,
   textarea:focus,
@@ -783,7 +780,7 @@ html {
      0.01ms y no `animation: none`, para que los cambios de estado (menús que
      abren y cierran) lleguen al estado final en vez de congelarse. El delay
      se anula para aplicar el final de inmediato, y `iteration-count: 1`
-     detiene los bucles infinitos (cinta de cotizaciones). */
+     detendría cualquier bucle (el sitio no tiene ninguno). */
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-delay: 0.01ms !important;
@@ -1001,12 +998,11 @@ textarea:focus-visible,
      de 44 px (el área táctil) y dibujaría un halo alrededor de un disco de
      18; `drop-shadow` sigue lo que está pintado. */
   filter: drop-shadow(0 1px 1.5px rgb(19 29 38 / 0.3));
-  transition: transform 0.18s var(--ease-suave),
-              filter 0.18s var(--ease-suave);
+  transition: transform var(--dur-estado) var(--ease-suave),
+              filter var(--dur-estado) var(--ease-suave);
 }
 .tj-range::-webkit-slider-thumb:hover {
-  /* Crece la caja de 44 px: el disco pasa de 18 a 20 px. */
-  transform: scale(1.12);
+  /* Al pasar solo se marca la sombra; el disco no crece. */
   filter: drop-shadow(0 2px 3px rgb(19 29 38 / 0.36));
 }
 .tj-range:active::-webkit-slider-thumb {
@@ -1039,11 +1035,10 @@ textarea:focus-visible,
     transparent 9px 100%
   );
   filter: drop-shadow(0 1px 1.5px rgb(19 29 38 / 0.3));
-  transition: transform 0.18s var(--ease-suave),
-              filter 0.18s var(--ease-suave);
+  transition: transform var(--dur-estado) var(--ease-suave),
+              filter var(--dur-estado) var(--ease-suave);
 }
 .tj-range::-moz-range-thumb:hover {
-  transform: scale(1.12);
   filter: drop-shadow(0 2px 3px rgb(19 29 38 / 0.36));
 }
 .tj-range:focus-visible::-moz-range-thumb {
@@ -1213,8 +1208,8 @@ textarea:focus-visible,
   cursor: pointer;
   text-align: center;
   box-shadow: var(--seg-filos);
-  transition: background-color 0.16s var(--ease-suave),
-              color 0.16s var(--ease-suave);
+  transition: background-color var(--dur-estado) var(--ease-suave),
+              color var(--dur-estado) var(--ease-suave);
 }
 
 /* A 390 px seis opciones dejan ~50 px por celda: con el relleno de
@@ -1321,9 +1316,9 @@ textarea:focus-visible,
   line-height: 1.15;
   color: var(--ink-3);
   cursor: pointer;
-  transition: background-color 0.16s var(--ease-suave),
-              border-color 0.16s var(--ease-suave),
-              color 0.16s var(--ease-suave);
+  transition: background-color var(--dur-estado) var(--ease-suave),
+              border-color var(--dur-estado) var(--ease-suave),
+              color var(--dur-estado) var(--ease-suave);
 }
 .tj-filtro:hover:not([aria-pressed="true"]) {
   color: var(--ink);
@@ -1358,7 +1353,7 @@ textarea:focus-visible,
    cabecera). */
 @supports not (view-transition-name: none) {
   .page-enter {
-    animation: page-enter 0.4s var(--ease-suave);
+    animation: page-enter var(--dur-entra) var(--ease-suave);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1384,7 +1379,7 @@ textarea:focus-visible,
   bottom: -2px;
   height: 1px;
   background-color: color-mix(in srgb, currentColor 32%, transparent);
-  transition: background-color 0.2s var(--ease-suave);
+  transition: background-color var(--dur-estado) var(--ease-suave);
 }
 /* En listas de enlaces (pie, índice legal) el filete solo sale al pasar:
    subrayar cada renglón de una lista que ya es de enlaces es ruido. */
@@ -1442,32 +1437,9 @@ textarea:focus-visible,
 }
 
 /* ============================================================
-   ICON-BTN — botón solo de icono: el SVG interior crece 1.1× al pasar el
-   ratón, sin el coste de un envoltorio por instancia. Se aplica a <button>
-   o <a> cuyo único contenido es un icono; cubre tanto SVG directos como el
-   envoltorio de lucide-react.
+   ICON-BTN — botón solo de icono. Al pasar cambia de tono (sus clases de
+   color y fondo); el icono no crece, así que no lleva reglas propias.
    ============================================================ */
-.icon-btn > svg,
-.icon-btn svg,
-a.icon-btn > svg,
-button.icon-btn > svg {
-  transition: transform 0.2s var(--ease-suave);
-  transform-origin: 50% 50%;
-}
-.icon-btn:hover > svg,
-.icon-btn:hover svg,
-a.icon-btn:hover > svg,
-button.icon-btn:hover > svg,
-.icon-btn:focus-visible > svg,
-.icon-btn:focus-visible svg {
-  transform: scale(1.1);
-}
-@media (prefers-reduced-motion: reduce) {
-  .icon-btn > svg,
-  .icon-btn svg,
-  a.icon-btn > svg,
-  button.icon-btn > svg { transition: none; transform: none; }
-}
 
 /* ============================================================
    HOJA DE IMPRESIÓN
@@ -2122,7 +2094,7 @@ button.icon-btn:hover > svg,
   letter-spacing: -0.005em;
   text-align: center;
   outline: none;
-  transition: background-color 160ms var(--ease-suave), border-color 160ms var(--ease-suave), color 160ms var(--ease-suave);
+  transition: background-color var(--dur-estado) var(--ease-suave), border-color var(--dur-estado) var(--ease-suave), color var(--dur-estado) var(--ease-suave);
 }
 .cta:focus-visible {
   box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px rgb(var(--accent-base) / 0.6);
@@ -2146,7 +2118,7 @@ button.icon-btn:hover > svg,
   text-decoration-thickness: 1px;
   text-underline-offset: 0.3em;
   text-decoration-color: color-mix(in srgb, currentColor 32%, transparent);
-  transition: text-decoration-color 0.2s var(--ease-suave);
+  transition: text-decoration-color var(--dur-estado) var(--ease-suave);
 }
 .cta--secundario:hover {
   text-decoration-color: currentColor;
@@ -2173,7 +2145,7 @@ button.icon-btn:hover > svg,
   font-weight: 500;
   color: var(--ink-2);
   white-space: nowrap;
-  transition: background-color 160ms var(--ease-suave), color 160ms var(--ease-suave);
+  transition: background-color var(--dur-estado) var(--ease-suave), color var(--dur-estado) var(--ease-suave);
 }
 .tj-pestanas > [role="tab"]:hover {
   color: var(--ink);
@@ -2453,7 +2425,7 @@ button.icon-btn:hover > svg,
   border-radius: 4px;
   color: var(--ink);
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--dur-estado) var(--ease-suave);
 }
 .tj-lamina-ampliable:hover .tj-lamina-lupa,
 .tj-lamina-ampliable:focus-visible .tj-lamina-lupa {
@@ -2484,11 +2456,11 @@ button.icon-btn:hover > svg,
    punto más pequeña. Solo al abrir; al cerrar desaparece sin esperar. */
 @media (prefers-reduced-motion: no-preference) {
   .tj-visor[open]::backdrop {
-    transition: opacity 0.24s var(--ease-suave);
+    transition: opacity var(--dur-abre) var(--ease-suave);
     @starting-style { opacity: 0; }
   }
   .tj-visor[open] .tj-visor-lienzo img {
-    transition: opacity 0.28s var(--ease-suave), transform 0.36s var(--ease-suave);
+    transition: opacity var(--dur-abre) var(--ease-suave), transform var(--dur-abre) var(--ease-suave);
     @starting-style { opacity: 0; transform: scale(0.975); }
   }
 }
@@ -2674,7 +2646,7 @@ html:has(.tj-visor[open]) {
   background-color: transparent;
   border: 1px solid var(--ficha-filo);
   border-radius: 4px;
-  transition: border-color 0.16s var(--ease-suave), box-shadow 0.16s var(--ease-suave);
+  transition: border-color var(--dur-estado) var(--ease-suave), box-shadow var(--dur-estado) var(--ease-suave);
 }
 .tj-campo:hover {
   border-color: var(--line-2);
@@ -2950,7 +2922,7 @@ select.tj-campo:invalid {
   inset: 0;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s var(--ease-suave);
+  transition: opacity var(--dur-estado) var(--ease-suave);
   box-shadow: inset 0 -1px 0 var(--line);
 }
 .tj-barra[data-cristal="true"]::before {
@@ -2969,7 +2941,7 @@ select.tj-campo:invalid {
 }
 .tj-metricas-lectura {
   min-height: 4rem;
-  animation: tj-metricas-aparece 0.5s var(--ease-suave) both;
+  animation: tj-metricas-aparece var(--dur-entra) var(--ease-suave) both;
 }
 .tj-metricas-lienzo {
   position: relative;
@@ -2987,7 +2959,7 @@ select.tj-campo:invalid {
   inset: 0;
   width: 100%;
   height: 100%;
-  animation: tj-metricas-trazo 1.6s var(--ease-suave) both;
+  animation: tj-metricas-trazo var(--dur-entra) var(--ease-suave) both;
   /* Capa propia: sin ella el recorte repinta el SVG entero en cada fotograma
      y el primer desplazamiento da un tirón. */
   will-change: transform, clip-path;
@@ -3003,7 +2975,7 @@ select.tj-campo:invalid {
 .tj-metricas-agua {
   fill: rgb(var(--pnl-neg));
   opacity: 0.16;
-  transition: opacity 0.35s var(--ease-suave);
+  transition: opacity var(--dur-estado) var(--ease-suave);
 }
 .tj-metricas-agua[data-visible] {
   opacity: 0.3;
@@ -3015,7 +2987,7 @@ select.tj-campo:invalid {
   background: linear-gradient(to bottom, rgb(var(--pnl-neg) / 0.02), rgb(var(--pnl-neg) / 0.1));
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.35s var(--ease-suave);
+  transition: opacity var(--dur-estado) var(--ease-suave);
 }
 .tj-metricas-banda[data-visible] {
   opacity: 1;
@@ -3029,6 +3001,9 @@ select.tj-campo:invalid {
   white-space: nowrap;
   color: rgb(var(--pnl-neg));
 }
+/* La guía y los puntos siguen al puntero con `left`/`top`, no con transform:
+   trasladados quedaban a medio píxel y la línea de 1 px salía borrosa. Son
+   piezas sueltas de pocos píxeles; moverlas no recoloca nada más. */
 .tj-metricas-guia {
   position: absolute;
   inset-block: 0;
@@ -3037,7 +3012,7 @@ select.tj-campo:invalid {
   background: linear-gradient(to bottom, transparent, rgb(var(--divider) / 0.42) 14%, rgb(var(--divider) / 0.42) 86%, transparent);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s, left 0.08s linear;
+  transition: opacity var(--dur-estado) var(--ease-suave), left var(--dur-pulsa) linear;
 }
 .tj-metricas-guia[data-visible] {
   opacity: 1;
@@ -3054,8 +3029,8 @@ select.tj-campo:invalid {
     0 0 0 4.5px rgb(var(--divider) / 0.16),
     0 0 22px 6px color-mix(in srgb, var(--ink) 16%, transparent);
   pointer-events: none;
-  transition: left 0.08s linear, top 0.08s linear;
-  animation: tj-metricas-aparece 0.6s 1.2s var(--ease-suave) both;
+  transition: left var(--dur-pulsa) linear, top var(--dur-pulsa) linear;
+  animation: tj-metricas-aparece var(--dur-entra) var(--dur-entra) var(--ease-suave) both;
 }
 /* La curva del Resumen de la app: ejes en «L», rejilla solo horizontal,
    rendimiento con halo y balance discontinuo. */
@@ -3166,7 +3141,7 @@ select.tj-campo:invalid {
 .tj-curva-leyenda label {
   position: relative;
   color: var(--ink);
-  transition: color 0.2s;
+  transition: color var(--dur-estado) var(--ease-suave);
 }
 .tj-curva-leyenda label:has(input:not(:checked)) {
   color: var(--ink-3);
@@ -3190,7 +3165,7 @@ select.tj-campo:invalid {
   height: 2px;
   border-radius: 1px;
   background: var(--ink);
-  transition: opacity 0.2s;
+  transition: opacity var(--dur-estado) var(--ease-suave);
 }
 /* El mismo trazo 5/4 que la serie: con `border dashed` y el radio de la
    muestra, 16 px daban una raya continua. */
@@ -3209,7 +3184,7 @@ select.tj-campo:invalid {
   color: var(--ink-3);
 }
 .tj-metricas-eje > span {
-  transition: color 0.2s;
+  transition: color var(--dur-estado) var(--ease-suave);
 }
 .tj-metricas-eje > [data-activa] {
   color: var(--ink);
@@ -3251,9 +3226,9 @@ select.tj-campo:invalid {
   width: 100%;
   border-radius: 6px 6px 2px 2px;
   transform-origin: bottom;
-  animation: tj-metricas-crece 0.9s var(--ease-suave) both;
-  animation-delay: calc(var(--j) * 45ms);
-  transition: opacity 0.3s var(--ease-suave), filter 0.3s var(--ease-suave);
+  animation: tj-metricas-crece var(--dur-entra) var(--ease-suave) both;
+  animation-delay: calc(min(var(--j), 8) * var(--escalon));
+  transition: opacity var(--dur-estado) var(--ease-suave), filter var(--dur-estado) var(--ease-suave);
 }
 .tj-metricas-barra[data-signo="pos"] {
   background: linear-gradient(to top, rgb(var(--pnl-pos) / 0.5), rgb(var(--pnl-pos) / 0.85));
@@ -3269,7 +3244,7 @@ select.tj-campo:invalid {
   border-radius: inherit;
   background: rgb(255 255 255 / 0.55);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity var(--dur-estado) var(--ease-suave);
 }
 .tj-metricas-barra[data-activa] {
   filter: saturate(1.25) brightness(1.06);
@@ -3289,7 +3264,7 @@ select.tj-campo:invalid {
   color: var(--ink-2);
   opacity: 0;
   transform: translate(-50%, 4px);
-  transition: opacity 0.2s, transform 0.35s var(--ease-suave);
+  transition: opacity var(--dur-estado) var(--ease-suave), transform var(--dur-estado) var(--ease-suave);
 }
 .tj-metricas-cuenta[data-visible] {
   opacity: 1;
@@ -3309,7 +3284,7 @@ select.tj-campo:invalid {
   border-left: 1px dashed color-mix(in srgb, var(--ink) 45%, transparent);
   opacity: 0.25;
   pointer-events: none;
-  transition: opacity 0.3s var(--ease-suave), border-color 0.3s;
+  transition: opacity var(--dur-estado) var(--ease-suave), border-color var(--dur-estado) var(--ease-suave);
 }
 .tj-metricas-esperanza[data-visible] {
   opacity: 1;
@@ -3368,7 +3343,7 @@ select.tj-campo:invalid {
 }
 .tj-metricas-ratio {
   padding: clamp(1rem, 1.8vw, 1.375rem) var(--ficha-pad);
-  transition: background-color 0.3s var(--ease-suave);
+  transition: background-color var(--dur-estado) var(--ease-suave);
   outline: none;
 }
 .tj-metricas-ratio:hover,
@@ -3391,11 +3366,10 @@ select.tj-campo:invalid {
 }
 .tj-metricas-pie > span {
   grid-area: 1 / 1;
-  transition: opacity 0.25s, transform 0.45s var(--ease-suave);
+  transition: opacity var(--dur-estado) var(--ease-suave);
 }
 .tj-metricas-formula {
   opacity: 0;
-  transform: translateY(4px);
   color: var(--ink-2);
   pointer-events: none;
 }
@@ -3403,12 +3377,10 @@ select.tj-campo:invalid {
   .tj-metricas-ratio:hover .tj-metricas-pie > span:first-child,
   .tj-metricas-ratio:focus-visible .tj-metricas-pie > span:first-child {
     opacity: 0;
-    transform: translateY(-4px);
   }
   .tj-metricas-ratio:hover .tj-metricas-formula,
   .tj-metricas-ratio:focus-visible .tj-metricas-formula {
     opacity: 1;
-    transform: none;
   }
 }
 @keyframes tj-metricas-trazo {
@@ -3527,21 +3499,6 @@ select.tj-campo:invalid {
   font-variant-numeric: tabular-nums;
 }
 
-/* ============================================================
-   TJ-PING — pulso "live" de los indicadores en tiempo real (SessionClock):
-   un ping sutil que se expande y se desvanece. Se desactiva con
-   prefers-reduced-motion.
-   ============================================================ */
-@keyframes tj-ping {
-  0% { transform: scale(1); opacity: 0.6; }
-  75%, 100% { transform: scale(2.6); opacity: 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  @keyframes tj-ping {
-    0%, 100% { transform: scale(1); opacity: 0.6; }
-  }
-}
-
 /* Con el cajón móvil abierto (`data-drawer-open` en <body>, lo marca el
    Navbar) se oculta el botón de subir: tras el velo translúcido seguía
    viéndose y competía con el menú. */
@@ -3549,7 +3506,7 @@ body[data-drawer-open="true"] [aria-label="Volver arriba"],
 body[data-drawer-open="true"] [aria-label="Back to top"] {
   opacity: 0 !important;
   pointer-events: none !important;
-  transition: opacity 0.18s ease;
+  transition: opacity var(--dur-estado) var(--ease-suave);
 }
 
 /* ============================================================
@@ -3563,8 +3520,10 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
    está en pantalla en el primer fotograma nace en su estado final, y lo
    hace el compositor.
    `:not(section section)` deja fuera las secciones anidadas (la demo
-   interactiva tiene las suyas) y `#top` conserva la entrada del hero. El
-   respaldo para quien no lo soporte está en `SectionReveal.tsx`. */
+   interactiva tiene las suyas) y `#top` conserva la entrada del hero. Sin
+   `view()` no hay respaldo por secciones: con JavaScript entra la página
+   por bloques (Aparecer.tsx), y una sección que sube con sus bloques
+   subiendo dentro se leía doble. */
 @supports (animation-timeline: view()) {
   /* Las secciones con panel no entran con opacidad: el panel ya se asienta
      con `tj-asienta` y dos a la vez se leían como un tirón. */
@@ -3655,7 +3614,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
     animation-fill-mode: both;
     animation-timeline: view(block);
     animation-range: entry 0% entry 24%;
-    animation-timing-function: ease-out;
+    animation-timing-function: linear;
   }
 }
 @keyframes tj-estampa-tinta {
@@ -3682,11 +3641,11 @@ svg [data-entra="sello"] {
    `transform` es una sola propiedad y un `scale` animado sustituiría al
    centrado. */
 .tj-pulso {
-  animation: tj-pulso-viaja 0.5s var(--ease-suave, ease) both;
+  animation: tj-pulso-viaja var(--dur-entra) var(--ease-suave) both;
 }
 @keyframes tj-pulso-viaja {
   0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
-  30% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+  30% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   70% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   100% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
 }
@@ -3705,20 +3664,20 @@ svg [data-entra="sello"] {
    después que el fondo. Las clases de salida invierten los fotogramas en vez
    de usar `animation-direction: reverse`, que invertiría también la curva. */
 .tj-velo-entra {
-  animation: tj-velo-in 0.18s var(--ease-menu-in, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  animation: tj-velo-in var(--dur-abre) var(--ease-suave) both;
   will-change: opacity;
 }
 .tj-velo-sale {
-  animation: tj-velo-out 0.16s var(--ease-menu-out, cubic-bezier(0.2, 0, 0, 1)) both;
+  animation: tj-velo-out var(--dur-estado) var(--ease-acelera) both;
   will-change: opacity;
 }
 .tj-panel-entra {
-  animation: tj-panel-in 0.18s var(--ease-menu-in, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  animation: tj-panel-in var(--dur-abre) var(--ease-suave) both;
   will-change: transform, opacity;
   backface-visibility: hidden;
 }
 .tj-panel-sale {
-  animation: tj-panel-out 0.14s var(--ease-menu-out, cubic-bezier(0.2, 0, 0, 1)) both;
+  animation: tj-panel-out var(--dur-estado) var(--ease-acelera) both;
   will-change: transform, opacity;
   backface-visibility: hidden;
 }
@@ -3760,7 +3719,7 @@ svg [data-entra="sello"] {
    confirmación de un formulario) nace con su rango de `view()` ya consumido
    y se vería de golpe: esta se dispara al montarse el elemento. */
 .tj-sube-ya {
-  animation: tj-entra-pieza 0.4s var(--ease-suave, ease) both;
+  animation: tj-entra-pieza var(--dur-entra) var(--ease-suave) both;
 }
 @media (prefers-reduced-motion: reduce) {
   .tj-sube-ya {
@@ -3774,7 +3733,7 @@ svg [data-entra="sello"] {
    Va por reloj y no por scroll: al cambiar de pestaña la galería ya está en
    pantalla y una línea de tiempo de scroll nacería consumida. */
 .tj-lamina-cambia {
-  animation: tj-lamina-revela 0.35s var(--ease-suave) both;
+  animation: tj-lamina-revela var(--dur-abre) var(--ease-suave) both;
 }
 @keyframes tj-lamina-revela {
   from {
@@ -3782,7 +3741,6 @@ svg [data-entra="sello"] {
   }
   to {
     opacity: 1;
-    transform: none;
   }
 }
 
@@ -3857,11 +3815,11 @@ svg [data-entra="sello"] {
 }
 ::view-transition-old(pagina) {
   animation:
-    tj-vt-sale 170ms cubic-bezier(0.4, 0, 1, 1) both;
+    tj-vt-sale var(--dur-estado) var(--ease-acelera) both;
 }
 ::view-transition-new(pagina) {
   animation:
-    tj-vt-entra 200ms var(--ease-suave) 150ms both;
+    tj-vt-entra var(--dur-abre) var(--ease-suave) var(--dur-estado) both;
 }
 @keyframes tj-vt-sale {
   to {
@@ -3905,7 +3863,7 @@ svg [data-entra="sello"] {
   view-transition-name: none !important;
 }
 :root.tj-tema-cambia::view-transition-old(root) {
-  animation: tj-vt-tema 320ms var(--ease-suave) both;
+  animation: tj-vt-tema var(--dur-entra) var(--ease-suave) both;
   mix-blend-mode: normal;
 }
 :root.tj-tema-cambia::view-transition-new(root) {
@@ -3977,40 +3935,38 @@ svg [data-entra="sello"] {
   visibility: hidden;
   transform: translateY(8px);
   transition:
-    opacity 0.18s var(--ease-suave, ease),
-    transform 0.18s var(--ease-suave, ease),
-    visibility 0s linear 0.18s;
+    opacity var(--dur-estado) var(--ease-acelera),
+    transform var(--dur-estado) var(--ease-acelera),
+    visibility 0s linear var(--dur-estado);
 }
 .tj-emerge[data-visible="true"] {
   opacity: 1;
   visibility: visible;
   transform: none;
   transition:
-    opacity 0.22s var(--ease-suave, ease),
-    transform 0.22s var(--ease-suave, ease),
+    opacity var(--dur-abre) var(--ease-suave),
+    transform var(--dur-abre) var(--ease-suave),
     visibility 0s;
 }
 @media (prefers-reduced-motion: reduce) {
   .tj-emerge,
   .tj-emerge[data-visible="true"] {
-    transition:
-      opacity 0.12s linear,
-      visibility 0s;
     transform: none;
   }
 }
 
-/* Realce al pasar por encima de un botón flotante. */
+/* Al pasar por encima, el botón flotante se oscurece un punto (una capa
+   interior, para no pisar el tinte del cristal); no sube. */
 .tj-subir:hover {
-  transform: translateY(-2px);
+  box-shadow: inset 0 0 0 100px rgb(var(--divider) / 0.06), 0 0 0 1px var(--cristal-canto), var(--cristal-sombra-flota);
 }
 .tj-subir:active {
   transform: scale(0.95);
 }
 
 /* ── La misma idea, para las tarjetas y los botones ───────────────────
-   Los dos gestos del sitio (subir al pasar, hundirse al pulsar), con la
-   misma curva que el resto. `will-change` no se declara: son elementos
+   Los dos gestos del sitio (cambiar de tono al pasar, hundirse al pulsar),
+   con la misma curva que el resto. `will-change` no se declara: son elementos
    grandes y promover cada uno a su capa cuesta memoria de vídeo.
 
    La lista larga y no `transition: transform 0.3s`: `transition` es una
@@ -4022,20 +3978,25 @@ svg [data-entra="sello"] {
   transition-property:
     transform, box-shadow, color, background-color, border-color,
     text-decoration-color, fill, stroke, opacity;
-  transition-duration: 0.3s;
-  transition-timing-function: var(--ease-suave, ease);
+  transition-duration: var(--dur-estado);
+  transition-timing-function: var(--ease-suave);
 }
 @media (prefers-reduced-motion: reduce) {
   .tj-pulsa:active {
     transform: none;
   }
 }
+/* El contenedor de «volver arriba» ya se desplaza con el pie: el botón,
+   dentro, solo funde. */
+.tj-emerge.tj-subir:not([data-visible="true"]) {
+  transform: none;
+}
 .tj-emerge.tj-subir {
   transition:
-    opacity 0.18s var(--ease-suave, ease),
-    transform 0.18s var(--ease-suave, ease),
-    box-shadow 0.2s var(--ease-suave, ease),
-    visibility 0s linear 0.18s;
+    opacity var(--dur-estado) var(--ease-acelera),
+    transform var(--dur-estado) var(--ease-acelera),
+    box-shadow var(--dur-estado) var(--ease-suave),
+    visibility 0s linear var(--dur-estado);
 }
 @media (prefers-reduced-motion: reduce) {
   .tj-subir:hover,
@@ -4048,7 +4009,7 @@ svg [data-entra="sello"] {
    React reemplaza el nodo y el nuevo entra con esto. En 120 ms no hace falta
    coreografiar la salida. */
 .tj-cruza {
-  animation: tj-aparece 0.12s linear both;
+  animation: tj-aparece var(--dur-estado) var(--ease-suave) both;
 }
 @keyframes tj-aparece {
   from {
@@ -4067,7 +4028,7 @@ svg [data-entra="sello"] {
 /* Entrada de un desplegable anclado a su disparador: micro-elevación y
    desvanecimiento. */
 .tj-cae {
-  animation: tj-menu-dropdown-in 0.22s var(--ease-menu-in, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  animation: tj-menu-dropdown-in var(--dur-abre) var(--ease-suave) both;
   will-change: transform, opacity;
   transform-origin: top center;
   backface-visibility: hidden;
@@ -4095,21 +4056,21 @@ svg [data-entra="sello"] {
 .tj-pliegue {
   display: grid;
   grid-template-rows: 1fr;
-  transition: grid-template-rows 0.3s var(--ease-suave), visibility 0s;
+  transition: grid-template-rows var(--dur-abre) var(--ease-suave), visibility 0s;
 }
 .tj-pliegue > div {
   min-height: 0;
   overflow: hidden;
-  transition: opacity 0.3s var(--ease-suave);
+  transition: opacity var(--dur-abre) var(--ease-suave);
 }
 [data-state="closed"] > .tj-pliegue {
   grid-template-rows: 0fr;
   visibility: hidden;
-  transition: grid-template-rows 0.22s var(--ease-suave), visibility 0s 0.22s;
+  transition: grid-template-rows var(--dur-estado) var(--ease-acelera), visibility 0s var(--dur-estado);
 }
 [data-state="closed"] > .tj-pliegue > div {
   opacity: 0;
-  transition-duration: 0.16s;
+  transition-duration: var(--dur-pulsa);
 }
 
 /* ── El cajón móvil y su velo ─────────────────────────────────────────
@@ -4125,14 +4086,14 @@ svg [data-entra="sello"] {
   backface-visibility: hidden;
   contain: layout paint;
   transition:
-    transform 0.28s var(--ease-drawer, cubic-bezier(0.16, 1, 0.3, 1)),
-    visibility 0s linear 0.28s;
+    transform var(--dur-abre) var(--ease-acelera),
+    visibility 0s linear var(--dur-abre);
 }
 .tj-cajon[data-visible="true"] {
   transform: translate3d(0, 0, 0);
   visibility: visible;
   transition:
-    transform 0.28s var(--ease-drawer, cubic-bezier(0.16, 1, 0.3, 1)),
+    transform var(--dur-entra) var(--ease-suave),
     visibility 0s;
 }
 .tj-velo {
@@ -4140,14 +4101,14 @@ svg [data-entra="sello"] {
   visibility: hidden;
   will-change: opacity;
   transition:
-    opacity 0.22s var(--ease-menu-in, cubic-bezier(0.16, 1, 0.3, 1)),
-    visibility 0s linear 0.22s;
+    opacity var(--dur-abre) var(--ease-acelera),
+    visibility 0s linear var(--dur-abre);
 }
 .tj-velo[data-visible="true"] {
   opacity: 1;
   visibility: visible;
   transition:
-    opacity 0.22s var(--ease-menu-in, cubic-bezier(0.16, 1, 0.3, 1)),
+    opacity var(--dur-entra) var(--ease-suave),
     visibility 0s;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -4155,9 +4116,6 @@ svg [data-entra="sello"] {
   .tj-cajon[data-visible="true"],
   .tj-velo,
   .tj-velo[data-visible="true"] {
-    transition:
-      opacity 0.1s linear,
-      visibility 0s;
     transform: none;
   }
 }
@@ -4166,7 +4124,7 @@ svg [data-entra="sello"] {
    Para pantallas que se montan de una vez y no dependen del scroll (error y
    404). El escalonado es un `animation-delay` en línea. */
 .tj-alza {
-  animation: tj-alza-entrada 0.6s var(--ease-suave, ease) both;
+  animation: tj-alza-entrada var(--dur-entra) var(--ease-suave) both;
 }
 @keyframes tj-alza-entrada {
   from {
@@ -4181,7 +4139,7 @@ svg [data-entra="sello"] {
 /* El hundido al pulsar. */
 .tj-pulsa:active {
   transform: scale(0.97);
-  transition: transform 0.1s var(--ease-suave, ease);
+  transition: transform var(--dur-pulsa) var(--ease-suave);
 }
 @media (prefers-reduced-motion: reduce) {
   .tj-alza {
@@ -4192,20 +4150,16 @@ svg [data-entra="sello"] {
   }
 }
 
-/* El realce de un botón o enlace destacado: sube dos píxeles al pasar por
-   encima y se hunde al pulsar. */
+/* El realce de un botón o enlace destacado: al pasar cambia de tono (sus
+   clases de fondo) y al pulsar se hunde. */
 .tj-realza {
-  transition: transform 0.2s var(--ease-suave, ease);
-}
-.tj-realza:hover {
-  transform: translateY(-2px);
+  transition: transform var(--dur-pulsa) var(--ease-suave);
 }
 .tj-realza:active {
-  transform: translateY(0) scale(0.98);
+  transform: scale(0.98);
 }
 @media (prefers-reduced-motion: reduce) {
   .tj-realza,
-  .tj-realza:hover,
   .tj-realza:active {
     transition: none;
     transform: none;
@@ -4330,47 +4284,6 @@ svg [data-entra="sello"] {
   }
 }
 
-/* ── LAS CIFRAS QUE CUENTAN ───────────────────────────────────────────
-   La franja de datos cuenta de 0 a su valor mientras entra. El número real
-   sigue en el documento (lectores de pantalla, sin soporte, movimiento
-   reducido); la cuenta es un contador generado con texto alternativo
-   vacío para que no se lea dos veces. */
-@property --cuenta {
-  syntax: "<integer>";
-  inherits: false;
-  initial-value: 0;
-}
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .tj-cifra-cuenta {
-      --cuenta: var(--hasta);
-      counter-reset: cifra var(--cuenta);
-      animation: tj-cuenta cubic-bezier(0.22, 1, 0.36, 1) both;
-      animation-timeline: view(block);
-      animation-range: cover 4% cover 34%;
-    }
-    .tj-cifra-cuenta::before {
-      content: counter(cifra) var(--sufijo) / "";
-    }
-    .tj-cifra-cuenta > .tj-cifra-real {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip-path: inset(50%);
-      white-space: nowrap;
-    }
-  }
-}
-@keyframes tj-cuenta {
-  from {
-    --cuenta: 0;
-  }
-  to {
-    --cuenta: var(--hasta);
-  }
-}
-
 /* ── LA PRIMERA PANTALLA SE COMPONE AL ABRIR ──────────────────────────
    Lo que está a la vista al cargar no tiene scroll que lo anime: con
    `view()` nace ya colocado. Aquí entra por tiempo, en cascada: etiqueta,
@@ -4378,7 +4291,7 @@ svg [data-entra="sello"] {
    desplaza (una opacidad en un ancestro le quitaría el esmerilado). */
 @media (prefers-reduced-motion: no-preference) {
   .tj-hero > .tj-container:first-child > * {
-    animation: tj-carga 1.05s var(--ease-salida) both;
+    animation: tj-carga var(--dur-entra) var(--ease-suave) both;
     animation-timeline: auto;
     animation-range: normal;
   }
@@ -4386,7 +4299,7 @@ svg [data-entra="sello"] {
      desde opacidad 0, Chrome no la daba por pintada hasta acabar la entrada y
      el LCP de precios, FAQ, glosario y legales pasaba de 5 s en móvil. */
   .tj-cabecera .tj-container > * {
-    animation: tj-carga-tenue 1.05s var(--ease-salida) both;
+    animation: tj-carga-tenue var(--dur-entra) var(--ease-suave) both;
     animation-timeline: auto;
     animation-range: normal;
   }
@@ -4398,39 +4311,41 @@ svg [data-entra="sello"] {
   }
   /* Lo que la página enseña justo debajo de su cabecera sale en la primera
      pantalla, sin scroll que lo anime: llega detrás de la entradilla. Orden de
-     lectura: titular, entradilla, contenido. */
+     lectura: titular, entradilla, contenido. Solo funde: lo de dentro
+     (barras, la demo) ya tiene su propio gesto. */
   #main-content .tj-cabecera + section:not(#top):not(section section) {
-    animation: tj-carga-tenue 0.9s var(--ease-salida) 0.55s both;
+    animation: tj-funde-tenue var(--dur-entra) var(--ease-suave) calc(var(--escalon) * 7) both;
     animation-timeline: auto;
     animation-range: normal;
   }
-  .tj-cabecera .tj-container > :nth-child(2) { animation-delay: 0.06s; }
+  .tj-cabecera .tj-container > :nth-child(2) { animation-delay: var(--escalon); }
   /* Por su sitio tras el titular y no por índice: sin ceja, la entradilla
      es la tercera hija y salía antes que el titular. */
   .tj-hero > .tj-container:first-child > :nth-child(3),
-  .tj-cabecera .tj-container > h1 ~ * { animation-delay: 0.42s; }
-  .tj-hero > .tj-container:first-child > :nth-child(4) { animation-delay: 0.52s; }
-  .tj-hero > .tj-container:first-child > :nth-child(n + 5) { animation-delay: 0.62s; }
+  .tj-cabecera .tj-container > h1 ~ * { animation-delay: calc(var(--escalon) * 5); }
+  .tj-hero > .tj-container:first-child > :nth-child(4) { animation-delay: calc(var(--escalon) * 6); }
+  .tj-hero > .tj-container:first-child > :nth-child(n + 5) { animation-delay: calc(var(--escalon) * 7); }
   /* El panel llega después del titular: visible desde el primer fotograma
      se leía antes que la promesa. */
   .tj-hero > .tj-container:nth-child(2) {
-    animation: tj-carga 0.9s var(--ease-salida) 0.62s both;
+    animation: tj-carga var(--dur-entra) var(--ease-suave) calc(var(--escalon) * 6) both;
   }
 
-  /* Los enlaces del desplegable llegan uno detrás de otro. */
+  /* Los enlaces del desplegable llegan uno detrás de otro. Solo funden: el
+     desplegable y el cajón ya se desplazan. */
   .tj-cae [role="menuitem"] {
-    animation: tj-cae-fila 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: tj-aparece var(--dur-abre) var(--ease-suave) both;
   }
-  .tj-cae [role="menuitem"]:nth-child(3) { animation-delay: 0.03s; }
-  .tj-cae [role="menuitem"]:nth-child(4) { animation-delay: 0.06s; }
-  .tj-cae [role="menuitem"]:nth-child(n + 5) { animation-delay: 0.09s; }
+  .tj-cae [role="menuitem"]:nth-child(3) { animation-delay: var(--escalon); }
+  .tj-cae [role="menuitem"]:nth-child(4) { animation-delay: calc(var(--escalon) * 2); }
+  .tj-cae [role="menuitem"]:nth-child(n + 5) { animation-delay: calc(var(--escalon) * 3); }
 
   /* El cajón móvil: los grupos entran detrás del cajón. */
   .tj-cajon[data-visible="true"] .tj-cajon-lista > * {
-    animation: tj-cae-fila 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
+    animation: tj-aparece var(--dur-entra) var(--ease-suave) calc(var(--escalon) * 2) both;
   }
-  .tj-cajon[data-visible="true"] .tj-cajon-lista > :nth-child(2) { animation-delay: 0.14s; }
-  .tj-cajon[data-visible="true"] .tj-cajon-lista > :nth-child(n + 3) { animation-delay: 0.2s; }
+  .tj-cajon[data-visible="true"] .tj-cajon-lista > :nth-child(2) { animation-delay: calc(var(--escalon) * 3); }
+  .tj-cajon[data-visible="true"] .tj-cajon-lista > :nth-child(n + 3) { animation-delay: calc(var(--escalon) * 4); }
 
 }
 @keyframes tj-carga {
@@ -4453,14 +4368,12 @@ svg [data-entra="sello"] {
     transform: none;
   }
 }
-@keyframes tj-cae-fila {
+@keyframes tj-funde-tenue {
   from {
-    opacity: 0;
-    transform: translate3d(0, 8px, 0);
+    opacity: 0.2;
   }
   to {
     opacity: 1;
-    transform: none;
   }
 }
 
@@ -4475,13 +4388,14 @@ html.tj-mov #main-content h2.t-h2,
 html.tj-mov #main-content .tj-cristal:not(#top *) {
   animation: none !important;
 }
-/* Los ratios del panel de la portada llegan tras el panel, por tiempo. */
+/* Los ratios del panel de la portada llegan tras el panel, por tiempo, y
+   solo funden: el panel aún se está desplazando. */
 @media (prefers-reduced-motion: no-preference) {
   html.tj-mov-pronto #main-content .tj-hero .tj-metricas-ratios > * {
-    animation-name: tj-carga !important;
-    animation-duration: 0.9s !important;
-    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
-    animation-delay: calc(0.9s + var(--i, 0) * 60ms) !important;
+    animation-name: tj-aparece !important;
+    animation-duration: var(--dur-entra) !important;
+    animation-timing-function: var(--ease-suave) !important;
+    animation-delay: calc(var(--escalon) * (8 + var(--i, 0))) !important;
     animation-fill-mode: both !important;
     animation-timeline: auto !important;
     animation-range: normal !important;
@@ -4499,8 +4413,8 @@ html.tj-mov #main-content .tj-cristal:not(#top *) {
 [data-tj-ap="0"],
 [data-tj-ap="1"] {
   transition:
-    opacity 0.6s var(--ease-suave) var(--tj-retardo, 0s),
-    transform 0.9s var(--ease-salida) var(--tj-retardo, 0s);
+    opacity var(--dur-entra) var(--ease-suave) var(--tj-retardo, 0s),
+    transform var(--dur-entra) var(--ease-suave) var(--tj-retardo, 0s);
 }
 [data-tj-ap="0"] {
   opacity: 0;
@@ -4514,9 +4428,9 @@ html.tj-mov #main-content .tj-cristal:not(#top *) {
    recorrido. El recorte final sobresale para no comerse el filete. */
 [data-tj-ap][data-tj-tipo="lamina"] {
   transition:
-    opacity 0.7s var(--ease-suave) var(--tj-retardo, 0s),
-    transform 1.1s var(--ease-salida) var(--tj-retardo, 0s),
-    clip-path 1.1s var(--ease-salida) var(--tj-retardo, 0s);
+    opacity var(--dur-entra) var(--ease-suave) var(--tj-retardo, 0s),
+    transform var(--dur-entra) var(--ease-suave) var(--tj-retardo, 0s),
+    clip-path var(--dur-entra) var(--ease-suave) var(--tj-retardo, 0s);
   clip-path: inset(-6px round 14px);
 }
 [data-tj-ap="0"][data-tj-tipo="lamina"] {
@@ -4524,33 +4438,18 @@ html.tj-mov #main-content .tj-cristal:not(#top *) {
   transform: translate3d(0, 16px, 0);
   clip-path: inset(3% 2.5% 3% 2.5% round 12px);
 }
-[data-tj-paso="1"] { --tj-retardo: 0.07s; }
-[data-tj-paso="2"] { --tj-retardo: 0.14s; }
-[data-tj-paso="3"] { --tj-retardo: 0.21s; }
-[data-tj-paso="4"] { --tj-retardo: 0.28s; }
-[data-tj-paso="5"] { --tj-retardo: 0.35s; }
-[data-tj-paso="6"] { --tj-retardo: 0.42s; }
-[data-tj-paso="7"] { --tj-retardo: 0.49s; }
-[data-tj-paso="8"] { --tj-retardo: 0.56s; }
-/* Animación nueva, no la de scroll reutilizada: Chrome deja el reloj en
-   negativo al pasar una animación de `view()` a tiempo y no llega a contar. */
-html.tj-mov .tj-cifra-cuenta {
-  animation: none;
+/* Un bloque cuyas piezas entran por su cuenta, o que guarda un gráfico que
+   se dibuja, solo funde: subirlo a la vez que lo de dentro sube o crece se
+   lee como dos gestos. */
+[data-tj-ap="0"][data-tj-funde] {
+  transform: none;
 }
-html.tj-mov [data-tj-ap="0"] .tj-cifra-cuenta {
-  --cuenta: 0;
-}
-html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
-  animation: tj-cuenta-tiempo 1.8s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
-}
-@keyframes tj-cuenta-tiempo {
-  from {
-    --cuenta: 0;
-  }
-  to {
-    --cuenta: var(--hasta);
-  }
-}
+[data-tj-paso="1"] { --tj-retardo: var(--escalon); }
+[data-tj-paso="2"] { --tj-retardo: calc(var(--escalon) * 2); }
+[data-tj-paso="3"] { --tj-retardo: calc(var(--escalon) * 3); }
+[data-tj-paso="4"] { --tj-retardo: calc(var(--escalon) * 4); }
+[data-tj-paso="5"] { --tj-retardo: calc(var(--escalon) * 5); }
+[data-tj-paso="6"] { --tj-retardo: calc(var(--escalon) * 6); }
 @media (prefers-reduced-motion: reduce) {
   [data-tj-ap] {
     opacity: 1 !important;
@@ -4586,10 +4485,10 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
 }
 @media (prefers-reduced-motion: no-preference) {
   .tj-pal > span {
-    animation: tj-pal-sube 1.15s var(--ease-salida) calc(var(--pal-inicio, 0.1s) + var(--p, 0) * 60ms) both;
+    animation: tj-pal-sube var(--dur-entra) var(--ease-suave) calc(var(--pal-inicio, var(--escalon)) + min(var(--p, 0), 4) * var(--escalon)) both;
   }
   .tj-cabecera .tj-pal > span {
-    --pal-inicio: 0.14s;
+    --pal-inicio: calc(var(--escalon) * 2);
   }
 }
 @keyframes tj-pal-sube {
@@ -4611,30 +4510,30 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
 @media (prefers-reduced-motion: no-preference) {
   .tj-d-sube,
   .tj-d-baja {
-    animation: tj-d-crece-v 0.9s var(--ease-salida) calc(0.1s + var(--i, 0) * 26ms) both;
+    animation: tj-d-crece-v var(--dur-entra) var(--ease-suave) calc(min(var(--i, 0), 8) * var(--escalon)) both;
   }
   .tj-d-sube {
     transform-origin: 50% 100%;
   }
   .tj-d-baja {
     transform-origin: 50% 0;
-    animation-delay: calc(0.25s + var(--i, 0) * 26ms);
+    animation-delay: calc(min(var(--i, 0), 8) * var(--escalon));
   }
   .tj-d-llena {
     transform-origin: 0 50%;
-    animation: tj-d-crece-h 1.2s var(--ease-salida) calc(0.15s + var(--i, 0) * 80ms) both;
+    animation: tj-d-crece-h var(--dur-entra) var(--ease-suave) calc(min(var(--i, 0), 8) * var(--escalon)) both;
   }
   .tj-d-celda {
-    animation: tj-d-celda 0.7s var(--ease-salida) calc(var(--i, 0) * 34ms) both;
+    animation: tj-d-celda var(--dur-entra) var(--ease-suave) calc(min(var(--i, 0), 8) * var(--escalon)) both;
   }
   /* El guardián evalúa: cada regla recibe su estado («Cumple», «Excede») una
      detrás de otra y el veredicto llega al final. Fundido, sin escala. */
   .tj-d-marca {
     display: inline-block;
-    animation: tj-d-marca 0.55s var(--ease-salida) calc(0.35s + var(--i, 0) * 240ms) both;
+    animation: tj-d-marca var(--dur-entra) var(--ease-suave) calc(min(var(--i, 0), 7) * var(--escalon)) both;
   }
   .tj-d-veredicto {
-    animation: tj-d-veredicto 0.9s var(--ease-salida) 1.15s both;
+    animation: tj-d-veredicto var(--dur-entra) var(--ease-suave) var(--dur-entra) both;
   }
   [data-tj-dib="0"],
   [data-tj-dib="0"] * {
@@ -4674,12 +4573,12 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
 @media (prefers-reduced-motion: no-preference) {
   .cta--primario {
     transition:
-      background-color 160ms var(--ease-suave),
-      transform 0.35s var(--ease-salida);
+      background-color var(--dur-estado) var(--ease-suave),
+      transform var(--dur-pulsa) var(--ease-suave);
   }
   .cta:active {
     transform: translateY(0) scale(0.98);
-    transition-duration: 0.1s;
+    transition-duration: var(--dur-pulsa);
   }
 }
 
@@ -4700,14 +4599,14 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
   opacity: 0;
   pointer-events: none;
   transition:
-    transform 0.5s var(--ease-salida),
-    opacity 0.2s var(--ease-suave);
+    transform var(--dur-abre) var(--ease-suave),
+    opacity var(--dur-estado) var(--ease-suave);
 }
 .tj-nav-foco[data-visible="true"] {
   opacity: 1;
 }
 .tj-nav-foco[data-quieto="true"] {
-  transition: opacity 0.2s var(--ease-suave);
+  transition: opacity var(--dur-estado) var(--ease-suave);
 }
 
 /* ── CAMBIO DE PÁGINA DENTRO DE LA DEMO (AppDemo.tsx) ─────────────────
@@ -4715,10 +4614,10 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
    ventana se imita a la aplicación, fuera se habla con la voz de la web. */
 @media (prefers-reduced-motion: no-preference) {
   .tj-demo-entra {
-    animation: tj-demo-entra 0.5s cubic-bezier(0.1, 0.9, 0.2, 1) both;
+    animation: tj-demo-entra var(--dur-entra) var(--ease-suave) both;
   }
   .tj-demo-fondo {
-    animation: tj-demo-fondo 0.45s cubic-bezier(0.1, 0.9, 0.2, 1) both;
+    animation: tj-demo-fondo var(--dur-entra) var(--ease-suave) both;
   }
 }
 @keyframes tj-demo-entra {
@@ -4736,81 +4635,88 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
 
 /* ── El movimiento de las páginas de la demo ──────────────────────────
    Cada pieza lleva su clase y, donde cambia algo, variables en línea:
-   `--dm-retardo`, `--dm-dur` y el punto de partida de la entrada (`--dm-x`,
-   `--dm-y`, `--dm-s`, `--dm-o`). Las animaciones rellenan solo hacia atrás
+   `--dm-retardo`, `--dm-dur`, el punto de partida de la entrada (`--dm-x`,
+   `--dm-y`, `--dm-s`, `--dm-o`) y, en las barras, el lado desde el que
+   crecen (`--dm-origen`). Las animaciones rellenan solo hacia atrás
    (`backwards`): al acabar manda el estilo de la pieza, y las barras que
    cambian de valor después lo hacen con su transición. Con movimiento
    reducido nada se mueve. */
 @media (prefers-reduced-motion: no-preference) {
   .tj-dm-entra {
-    animation: tj-dm-entra var(--dm-dur, 0.6s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1)) var(--dm-retardo, 0s) backwards;
+    animation: tj-dm-entra var(--dm-dur, var(--dur-entra)) var(--ease-suave) var(--dm-retardo, 0s) backwards;
   }
+  /* Las barras entran escalando; si luego cambian de valor, cambian de ancho
+     (o de alto) dentro de su pista: escalarlas deformaría el radio en reposo. */
   .tj-dm-ancho {
-    animation: tj-dm-ancho var(--dm-dur, 0.9s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1)) var(--dm-retardo, 0s) backwards;
-    transition: width var(--dm-dur, 0.9s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1));
+    transform-origin: var(--dm-origen, 0 50%);
+    animation: tj-dm-ancho var(--dur-entra) var(--ease-suave) var(--dm-retardo, 0s) backwards;
+    transition: width var(--dur-entra) var(--ease-suave);
   }
   .tj-dm-alto {
-    animation: tj-dm-alto var(--dm-dur, 0.7s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1)) var(--dm-retardo, 0s) backwards;
-    transition: height var(--dm-dur, 0.7s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1));
+    transform-origin: var(--dm-origen, 50% 100%);
+    animation: tj-dm-alto var(--dur-entra) var(--ease-suave) var(--dm-retardo, 0s) backwards;
+    transition:
+      height var(--dur-entra) var(--ease-suave),
+      background-color var(--dur-estado) var(--ease-suave);
   }
   .tj-dm-crece-x {
     transform-origin: 0 50%;
-    animation: tj-d-crece-h var(--dm-dur, 0.9s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1)) var(--dm-retardo, 0s) backwards;
+    animation: tj-d-crece-h var(--dur-entra) var(--ease-suave) var(--dm-retardo, 0s) backwards;
   }
   /* Sin origen propio: cada barra lo pone en línea (las del histograma
      crecen desde la línea del cero, hacia arriba o hacia abajo). */
   .tj-dm-crece-y {
-    animation: tj-d-crece-v var(--dm-dur, 0.9s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1)) var(--dm-retardo, 0s) backwards;
+    animation: tj-d-crece-v var(--dur-entra) var(--ease-suave) var(--dm-retardo, 0s) backwards;
   }
   .tj-dm-anillo {
-    animation: tj-dm-anillo var(--dm-dur, 1.3s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1)) var(--dm-retardo, 0s) backwards;
-    transition: stroke-dashoffset var(--dm-dur, 1.3s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1));
-  }
-  .tj-dm-anillo-rebasa {
-    animation: tj-dm-anillo-rebasa 1.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s backwards;
+    animation: tj-dm-anillo var(--dur-entra) var(--ease-suave) var(--dm-retardo, 0s) backwards;
+    transition: stroke-dashoffset var(--dur-entra) var(--ease-suave);
   }
   .tj-dm-traza {
-    animation: tj-dm-traza var(--dm-dur, 0.32s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1)) var(--dm-retardo, 0s) backwards;
+    animation: tj-dm-traza var(--dur-entra) var(--ease-suave) var(--dm-retardo, 0s) backwards;
   }
   /* Estas piezas llevan además `transition-colors` de Tailwind, que esta
      regla (fuera de capa) pisaría: los colores van en la misma lista. */
-  .tj-dm-alza,
+  .tj-dm-realce,
   .tj-dm-pulsa,
-  .tj-dm-crece {
+  .tj-dm-casilla {
     transition:
-      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-      color 0.15s ease,
-      background-color 0.15s ease,
-      border-color 0.15s ease,
-      box-shadow 0.15s ease,
-      opacity 0.15s ease;
+      transform var(--dur-estado) var(--ease-suave),
+      color var(--dur-estado) var(--ease-suave),
+      background-color var(--dur-estado) var(--ease-suave),
+      border-color var(--dur-estado) var(--ease-suave),
+      box-shadow var(--dur-estado) var(--ease-suave),
+      opacity var(--dur-estado) var(--ease-suave);
   }
-  @media (hover: hover) {
-    .tj-dm-alza:hover {
-      transform: translateY(-2px);
-    }
-    .tj-dm-crece:hover {
-      transform: scale(1.18);
-    }
+  .tj-dm-casilla > span:first-child {
+    transition: background-color var(--dur-estado) var(--ease-suave);
   }
   .tj-dm-pulsa:active {
     transform: scale(var(--dm-pulsa, 0.97));
-    transition-duration: 0.1s;
+    transition-duration: var(--dur-pulsa);
   }
-  @media (hover: hover) {
-    .tj-dm-alza.tj-dm-pulsa:active {
-      transform: translateY(-2px) scale(var(--dm-pulsa, 0.97));
-    }
+}
+/* Al pasar por encima, la tarjeta y la casilla de nota cambian de tono; no
+   suben ni crecen. Los botones con `tj-dm-realce` ya llevan su fondo. */
+@media (hover: hover) {
+  .demo-card.tj-dm-realce:hover {
+    background-color: rgb(var(--divider) / 0.045);
+  }
+  :root[data-theme="light"] .demo-card.tj-dm-realce:hover {
+    background-color: rgb(255 255 255 / 0.8);
+  }
+  .tj-dm-casilla:hover > span:first-child {
+    background-color: rgb(var(--divider) / 0.2);
   }
 }
 /* El globo de atajos de la demo sube desde la barra de estado y vuelve a
-   ella al cerrarse (180 ms, los de `usePresencia`). */
+   ella al cerrarse (lo que tarde la salida, que `usePresencia` espera). */
 @media (prefers-reduced-motion: no-preference) {
   .tj-dm-globo-entra {
-    animation: tj-dm-globo 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: tj-dm-globo var(--dur-abre) var(--ease-suave) both;
   }
   .tj-dm-globo-sale {
-    animation: tj-dm-globo-sale 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: tj-dm-globo-sale var(--dur-estado) var(--ease-acelera) both;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -4843,15 +4749,15 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
 }
 @media (prefers-reduced-motion: no-preference) {
   .tj-dm-destello {
-    animation: tj-dm-destello 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+    animation: tj-dm-destello var(--dur-entra) var(--ease-suave);
   }
   /* La barra de acciones de la selección se despliega desde arriba y se
-     pliega al vaciarse (240 ms, los de `usePresencia`). */
+     pliega al vaciarse (lo que tarde la salida, que `usePresencia` espera). */
   .tj-dm-despliega {
-    animation: tj-dm-despliega 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: tj-dm-despliega var(--dur-abre) var(--ease-suave) both;
   }
   .tj-dm-pliega {
-    animation: tj-dm-pliega 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: tj-dm-pliega var(--dur-estado) var(--ease-acelera) both;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -4890,26 +4796,18 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
 }
 @keyframes tj-dm-ancho {
   from {
-    width: 0;
+    transform: scaleX(0);
   }
 }
 @keyframes tj-dm-alto {
   from {
-    height: 0;
+    transform: scaleY(0);
     opacity: 0;
   }
 }
 @keyframes tj-dm-anillo {
   from {
     stroke-dashoffset: var(--dm-anillo);
-  }
-}
-@keyframes tj-dm-anillo-rebasa {
-  from {
-    stroke-dashoffset: var(--dm-anillo);
-  }
-  62% {
-    stroke-dashoffset: var(--dm-rebase);
   }
 }
 @keyframes tj-dm-traza {
@@ -4939,7 +4837,7 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
   pointer-events: none;
 }
 .tj-pestanas[data-desliza="viaja"]::after {
-  transition: transform 0.55s var(--ease-salida);
+  transition: transform var(--dur-abre) var(--ease-suave);
 }
 
 @media print {

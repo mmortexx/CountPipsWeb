@@ -14,6 +14,10 @@ import { usePathname } from "next/navigation";
  * - Estado en atributos `data-tj-ap`, que React no gestiona ni pisa.
  */
 const LISTAS = "ul, ol, dl, [data-orden], .grid";
+// Franja inferior de la ventana que aún no cuenta como vista. La misma para
+// decidir qué se oculta al montar y para el observador: con dos cifras, lo
+// que caía entre ambas se ocultaba y volvía a entrar en el mismo instante.
+const MARGEN = 0.08;
 
 export function Aparecer() {
   const pathname = usePathname();
@@ -52,7 +56,7 @@ export function Aparecer() {
             });
         }
       },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0 },
+      { rootMargin: `0px 0px -${MARGEN * 100}% 0px`, threshold: 0 },
     );
 
     const valido = (el: Element): el is HTMLElement => {
@@ -63,14 +67,22 @@ export function Aparecer() {
       return el.offsetHeight > 0;
     };
 
-    const marcar = (el: HTMLElement, nivel: 1 | 2) => {
-      const r = el.getBoundingClientRect();
-      if (r.top < innerHeight * 0.9) {
+    // `funde`: lo de dentro ya se mueve (piezas que entran solas o un gráfico
+    // que se dibuja) y el bloque no se desplaza, solo aparece.
+    type Marca = { el: HTMLElement; nivel: 1 | 2; espera: boolean; funde?: boolean };
+    const medir = (el: HTMLElement, nivel: 1 | 2, marcas: Marca[]): Marca => {
+      const m: Marca = { el, nivel, espera: el.getBoundingClientRect().top >= innerHeight * (1 - MARGEN) };
+      marcas.push(m);
+      return m;
+    };
+    const escribir = ({ el, nivel, espera, funde }: Marca) => {
+      if (!espera) {
         el.dataset.tjAp = "ya";
         return;
       }
       el.dataset.tjAp = "0";
       el.dataset.tjNivel = String(nivel);
+      if (funde || el.querySelector("[data-dibuja]")) el.dataset.tjFunde = "";
       if (el.matches(".tj-lamina-marco, figure") || el.querySelector(".tj-lamina-marco")) el.dataset.tjTipo = "lamina";
       io.observe(el);
     };
@@ -100,18 +112,17 @@ export function Aparecer() {
       },
       { threshold: [0, 0.35] },
     );
+    // Primero se mide todo y después se escribe: medir tras escribir un
+    // `data-tj-*` obliga al navegador a recalcular estilos y maqueta antes de
+    // contestar, una vez por pieza (`tests/aparecer-lecturas.test.ts`).
     const recorrer = () => {
-      for (const d of main.querySelectorAll<HTMLElement>('[data-dibuja]:not([data-tj-dib="1"])')) {
-        if (d.closest(".demo-window")) continue;
-        d.dataset.tjDib = "0";
-        ioDib.observe(d);
-      }
+      const marcas: Marca[] = [];
       for (const s of main.querySelectorAll("section")) {
         if (s.id === "top" || s.classList.contains("tj-cabecera") || s.parentElement?.closest("section") || s.closest(".demo-window")) continue;
         const raiz = s.querySelector(":scope > .tj-container") ?? s;
         const bloques = [...raiz.children].filter(valido);
         bloques.forEach((b) => {
-          marcar(b, 1);
+          const bloque = medir(b, 1, marcas);
           if (!conPiezas) return;
           const contenedores = [...(b.matches(LISTAS) ? [b] : []), ...b.querySelectorAll<HTMLElement>(LISTAS)].filter(
             (c) => c === b || !c.parentElement?.closest(LISTAS) || !b.contains(c.parentElement.closest(LISTAS)),
@@ -120,11 +131,17 @@ export function Aparecer() {
             const hijas = [...c.children].filter(valido);
             if (hijas.length < 3 || hijas.length > 40) continue;
             hijas.forEach((h) => {
-              if (recortada(h, b)) h.dataset.tjAp = "ya";
-              else marcar(h, 2);
+              if (recortada(h, b)) marcas.push({ el: h, nivel: 2, espera: false });
+              else if (medir(h, 2, marcas).espera) bloque.funde = true;
             });
           }
         });
+      }
+      marcas.forEach(escribir);
+      for (const d of main.querySelectorAll<HTMLElement>('[data-dibuja]:not([data-tj-dib="1"])')) {
+        if (d.closest(".demo-window")) continue;
+        d.dataset.tjDib = "0";
+        ioDib.observe(d);
       }
     };
 

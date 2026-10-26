@@ -39,14 +39,14 @@ export default function Error({
 
         <h1
           id="error-heading"
-          style={{ animationDelay: "0.1s" }}
+          style={{ animationDelay: "calc(var(--escalon) * 2)" }}
           className="tj-alza t-h2 text-primary"
         >
           {es ? "Algo salió mal" : "Something went wrong"}
         </h1>
 
         <p
-          style={{ animationDelay: "0.2s" }}
+          style={{ animationDelay: "calc(var(--escalon) * 4)" }}
           className="tj-alza mt-4 text-base md:text-lg text-secondary leading-relaxed"
         >
           {es
@@ -56,7 +56,7 @@ export default function Error({
 
         {error?.digest ? (
           <p
-            style={{ animationDelay: "0.3s" }}
+            style={{ animationDelay: "calc(var(--escalon) * 6)" }}
             className="tj-alza mt-3 text-[12px] text-tertiary tnum"
           >
             {es ? "Referencia" : "Reference"}: {error.digest}
@@ -64,18 +64,18 @@ export default function Error({
         ) : null}
 
         <div
-          style={{ animationDelay: "0.35s" }}
+          style={{ animationDelay: "calc(var(--escalon) * 7)" }}
           className="tj-alza mt-9 flex flex-wrap items-center justify-center gap-3"
         >
           <div className="tj-pulsa inline-flex">
             <button
               type="button"
               onClick={reset}
-              /* `group` para el giro del icono y `min-h-[44px]` de objetivo táctil. */
-              className="group inline-flex min-h-[44px] items-center bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] px-6 rounded-[4px] text-sm font-semibold hover:bg-[rgb(var(--accent-hover))] transition-colors"
+              /* `min-h-[44px]` de objetivo táctil. */
+              className="inline-flex min-h-[44px] items-center bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] px-6 rounded-[4px] text-sm font-semibold hover:bg-[rgb(var(--accent-hover))] transition-colors"
             >
               <svg
-                className="mr-2 transition-transform group-hover:-rotate-45"
+                className="mr-2"
                 width="16"
                 height="16"
                 viewBox="0 0 16 16"

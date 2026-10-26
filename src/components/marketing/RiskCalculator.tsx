@@ -354,7 +354,7 @@ export function RiskCalculator() {
                     aria-pressed={futuresContractId === fc.id}
                     title={fc.nombre}
                     onClick={() => handleFuturesChange(fc.id)}
-                    className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-all ${
+                    className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-[color,background-color,box-shadow] ${
                       futuresContractId === fc.id
                         ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] text-primary font-semibold shadow-[inset_0_0_0_1px_var(--line-2)]"
                         : "text-secondary shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:text-primary hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
@@ -382,7 +382,7 @@ export function RiskCalculator() {
                       type="button"
                       aria-pressed={parForex.id === p.id}
                       onClick={() => handleParChange(p.id)}
-                      className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-all ${
+                      className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-[color,background-color,box-shadow] ${
                         parForex.id === p.id
                           ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] text-primary font-semibold shadow-[inset_0_0_0_1px_var(--line-2)]"
                           : "text-secondary shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:text-primary hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
@@ -422,7 +422,7 @@ export function RiskCalculator() {
                       type="button"
                       aria-pressed={forexLotType === lot.id}
                       onClick={() => setForexLotType(lot.id)}
-                      className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-all ${
+                      className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-[color,background-color,box-shadow] ${
                         forexLotType === lot.id
                           ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] text-primary font-semibold shadow-[inset_0_0_0_1px_var(--line-2)]"
                           : "text-secondary shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:text-primary hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
@@ -458,7 +458,7 @@ export function RiskCalculator() {
             >
               <span
                 aria-hidden
-                className={`absolute top-[3px] left-[3px] h-[18px] w-[18px] rounded-full bg-[var(--raised)] shadow-sm transition-transform duration-200 ${
+                className={`absolute top-[3px] left-[3px] h-[18px] w-[18px] rounded-full bg-[var(--raised)] shadow-sm transition-transform ${
                   includeFriction ? "translate-x-4" : ""
                 }`}
               />
@@ -757,7 +757,7 @@ export function RiskCalculator() {
                 aria-expanded={showKelly}
                 className="toque-comodo shrink-0 whitespace-nowrap text-[13px] text-secondary hover:text-primary flex items-center gap-2 transition-colors"
               >
-                <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden className={`transition-transform duration-150 ${showKelly ? "rotate-90" : ""}`}>
+                <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden className={`transition-transform duration-(--dur-abre) ${showKelly ? "rotate-90" : ""}`}>
                   <path d="M3.5 2l3 3-3 3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 <span>{es ? "Criterio de Kelly" : "Kelly criterion"}</span>

@@ -198,7 +198,7 @@ export function WindowChrome() {
           data-demo-maximizar=""
           aria-label={fullscreen ? t("winRestore") : t("winMaximize")}
           onClick={() => setFullscreen(!fullscreen)}
-          className="w-11 sm:w-[46px] h-full flex items-center justify-center text-tertiary hover:bg-[rgb(var(--divider)/0.08)] hover:text-primary transition-colors duration-150"
+          className="w-11 sm:w-[46px] h-full flex items-center justify-center text-tertiary hover:bg-[rgb(var(--divider)/0.08)] hover:text-primary transition-colors"
         >
           {fullscreen ? (
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
@@ -218,7 +218,7 @@ export function WindowChrome() {
             type="button"
             aria-label={t("winExitFull")}
             onClick={() => setFullscreen(false)}
-            className="w-11 sm:w-[46px] h-full flex items-center justify-center text-tertiary hover:bg-[rgb(var(--pnl-neg))] hover:text-[rgb(var(--pnl-ink))] transition-colors duration-150"
+            className="w-11 sm:w-[46px] h-full flex items-center justify-center text-tertiary hover:bg-[rgb(var(--pnl-neg))] hover:text-[rgb(var(--pnl-ink))] transition-colors"
           >
             <CruzCerrar />
           </button>

@@ -289,7 +289,7 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
         role={fullscreen ? "dialog" : undefined}
         aria-modal={fullscreen || undefined}
         aria-label={fullscreen ? t("demoFullDialog") : undefined}
-        className={`relative mx-auto transition-[transform,border-radius,box-shadow,opacity] duration-500 ease-[var(--ease-suave)] ${
+        className={`relative mx-auto transition-[transform,opacity] duration-(--dur-entra) ${
           fullscreen ? "fixed inset-3 z-[100] rounded-[2px]" : "rounded-[2px]"
         }`}
       >

@@ -8,16 +8,12 @@ export function Viajero({
   clave,
   className,
   style,
-  ms,
-  curva,
 }: {
   clave: string;
   className?: string;
   style?: CSSProperties;
-  ms?: number;
-  curva?: string;
 }) {
-  const ref = useViaje<HTMLSpanElement>(clave, ms, curva);
+  const ref = useViaje<HTMLSpanElement>(clave);
   // `data-viajero`: en alto contraste se pinta del color de selección del sistema (globals.css).
   return <span ref={ref} data-viajero="" aria-hidden="true" className={className} style={style} />;
 }

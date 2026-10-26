@@ -884,7 +884,7 @@ export function EquityProjector() {
                   <button
                     type="button"
                     onClick={() => setShowConfidenceCone(!showConfidenceCone)}
-                    className="toque-comodo text-[12px] tnum px-2.5 py-1 rounded-[4px] transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="toque-comodo text-[12px] tnum px-2.5 py-1 rounded-[4px] transition-colors flex items-center gap-1.5 cursor-pointer"
                     aria-pressed={showConfidenceCone}
                     style={{ color: showConfidenceCone ? "var(--ink)" : "var(--ink-3)" }}
                   >

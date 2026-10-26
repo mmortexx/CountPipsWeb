@@ -1,10 +1,13 @@
 /**
  * MOVIMIENTO: abre cada ruta con `prefers-reduced-motion: reduce`, la recorre
  * entera para disparar las animaciones de entrada y vigila fotograma a
- * fotograma si algún elemento cambia de posición o si una cifra marcada con
- * `data-cuenta` (`CountUp`, en la pestaña Operaciones de la demo) cuenta en
- * vez de salir ya en su valor. Un fallo es movimiento que escapa a la regla
- * global de `globals.css`, típicamente animado por JavaScript.
+ * fotograma si algún elemento cambia de posición. Un fallo es movimiento que
+ * escapa a la regla global de `globals.css`, típicamente animado por JavaScript.
+ *
+ * En todas las pasadas, además: ninguna cifra cuenta hasta su valor (sale ya
+ * en él; contar compite con el dato) y nada se desplaza dentro de algo que se
+ * desplaza. Para que la vigilancia de cifras no se quede verde si deja de ver,
+ * cada página recibe un testigo que cuenta y que tiene que aparecer.
  *
  * Solo la posición, no la opacidad: los fundidos no marean y medirlos daba
  * falsos positivos.
@@ -70,21 +73,65 @@ async function servir(raiz) {
 const ESPIA = `
 window.__mov = new Map();
 window.__cuenta = new Map();
+window.__nidos = new Map();
 (function () {
   const previo = new WeakMap();
+  let marco = 0;
+  /* Una cifra que cuenta cambia de texto en fotogramas seguidos; un reloj, una
+     vez por segundo. Se anota cada elemento cuyo texto con cifras cambia, y la
+     racha más larga de fotogramas consecutivos (con un hueco de hasta 2). */
   const textoPrevio = new WeakMap();
-  function mira() {
-    for (const el of document.querySelectorAll("[data-cuenta]")) {
+  new MutationObserver((ms) => {
+    for (const m of ms) {
+      const el = m.target.nodeType === 3 ? m.target.parentElement : m.target;
+      if (!el || !el.isConnected) continue;
       const t = el.textContent;
       const antes = textoPrevio.get(el);
-      if (antes !== undefined && antes !== t) {
-        const v = window.__cuenta.get(el) || { veces: 0 };
-        v.veces++;
-        v.texto = t.trim().slice(0, 34);
-        window.__cuenta.set(el, v);
-      }
       textoPrevio.set(el, t);
+      // Una cifra es texto corto: un contenedor que monta secciones también cambia.
+      if (antes === undefined || antes === t || t.length > 40 || !/\\d/.test(t)) continue;
+      const v = window.__cuenta.get(el) || { racha: 0, max: 0, ultimo: -9 };
+      if (v.ultimo === marco) continue;
+      v.racha = marco - v.ultimo <= 3 ? v.racha + 1 : 1;
+      v.max = Math.max(v.max, v.racha);
+      v.ultimo = marco;
+      v.texto = t.trim().slice(0, 34);
+      v.testigo = el.id === "testigo-cuenta";
+      window.__cuenta.set(el, v);
     }
+  }).observe(document, { subtree: true, childList: true, characterData: true });
+  const desc = (el) => el.tagName.toLowerCase() + (typeof el.className === "string" && el.className.trim() ? "." + el.className.trim().split(/\\s+/).slice(0, 3).join(".") : "");
+  /* Un desplazamiento dentro de otro: el contenido recorre la suma de los dos
+     y se lee como un tirón. Solo animaciones por tiempo (las atadas al scroll
+     siguen al dedo) que muevan algo, en su fase activa. */
+  function anidados() {
+    const mueve = new Map();
+    for (const a of document.getAnimations()) {
+      const ef = a.effect;
+      if (!ef || !ef.target || ef.pseudoElement || a.playState !== "running" || !(a.timeline instanceof DocumentTimeline)) continue;
+      const ct = ef.getComputedTiming();
+      const lt = ct.localTime ?? 0;
+      if (ct.progress === null || lt < (ct.delay || 0) || lt > (ct.delay || 0) + ct.activeDuration) continue;
+      let props = [];
+      try { props = ef.getKeyframes().flatMap((k) => Object.keys(k)); } catch {}
+      if (!props.some((p) => p === "transform" || p === "translate")) continue;
+      mueve.set(ef.target, a.animationName || (a.transitionProperty ? "transición" : "JavaScript"));
+    }
+    for (const [el, nombre] of mueve) {
+      for (let p = el.parentElement; p; p = p.parentElement) {
+        if (!mueve.has(p)) continue;
+        // La demo imita la entrada de página del programa, con sus piezas
+        // entrando dentro: excepción decidida (PROJECT.md, «Movimiento»).
+        if (p.matches(".tj-demo-entra")) break;
+        const k = desc(p) + " [" + mueve.get(p) + "] > " + desc(el) + " [" + nombre + "]";
+        window.__nidos.set(k, (window.__nidos.get(k) || 0) + 1);
+        break;
+      }
+    }
+  }
+  function mira() {
+    marco++;
+    anidados();
     for (const el of document.querySelectorAll("body *")) {
       const cs = getComputedStyle(el);
       const t = cs.transform;
@@ -117,27 +164,46 @@ async function recorrer(ctx, ruta, base) {
     return null;
   }
   await p.waitForTimeout(900);
+  await p.evaluate(() => {
+    const t = document.createElement("span");
+    t.id = "testigo-cuenta";
+    t.textContent = "0";
+    document.body.append(t);
+    let n = 0;
+    const paso = () => {
+      t.textContent = String(++n);
+      if (n < 20) requestAnimationFrame(paso);
+      else t.remove();
+    };
+    requestAnimationFrame(paso);
+  });
   // Las animaciones de entrada esperan a que la sección aparezca: hay que bajar la página entera.
   for (let i = 0; i < 8; i++) {
     await p.evaluate(() => window.scrollBy(0, window.innerHeight * 0.8));
     await p.waitForTimeout(260);
   }
   await p.waitForTimeout(600);
-  // En la demo, además, la pestaña Operaciones: su franja de cifras cuenta.
+  // En la demo, además, la pestaña Operaciones, con su franja de cifras.
   if (ruta === "/demo/") {
     await p.evaluate(() => window.scrollTo(0, 0));
     await p.getByRole("tab", { name: "Operaciones", exact: true }).first().click().catch(() => {});
     await p.waitForTimeout(400);
-    // Cuentan al verse: sin desplazarse hasta ellas la pasada de control no vería nada.
-    await p.locator("[data-cuenta]").first().evaluate((el) => el.scrollIntoView({ block: "center" })).catch(() => {});
-    await p.waitForTimeout(2000);
+    for (let i = 0; i < 4; i++) {
+      await p.evaluate(() => window.scrollBy(0, window.innerHeight * 0.6));
+      await p.waitForTimeout(400);
+    }
   }
   const r = await p.evaluate((minimo) => {
     const out = [];
     for (const v of window.__mov.values()) if (v.veces >= minimo) out.push(v);
     const cuentas = [];
-    for (const v of window.__cuenta.values()) if (v.veces >= minimo) cuentas.push(v);
-    return { mov: out.sort((a, b) => b.veces - a.veces), cuentas };
+    let testigo = false;
+    for (const v of window.__cuenta.values()) {
+      if (v.max < minimo) continue;
+      if (v.testigo) testigo = true;
+      else cuentas.push(v);
+    }
+    return { mov: out.sort((a, b) => b.veces - a.veces), cuentas, testigo, nidos: [...window.__nidos.keys()] };
   }, FOTOGRAMAS_MINIMOS);
   await p.close();
   return r;
@@ -148,11 +214,18 @@ const navegador = await chromium.launch();
 
 const fallos = [];
 let controlTotal = 0;
-let controlCuentas = 0;
 const sinControl = [];
+const cifras = [];
+const sinTestigo = [];
 
-for (const modo of ["reduce", "no-preference"]) {
-  const ctx = await navegador.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: modo });
+/* La tercera pasada hace como Firefox o Safari, que no tienen
+   `animation-timeline`: ahí entran los respaldos por JavaScript. */
+const SIN_VIEW = `{ const o = CSS.supports.bind(CSS); CSS.supports = (a, b) => (String(a).includes("animation-timeline") ? false : b === undefined ? o(a) : o(a, b)); }`;
+const anidados = [];
+
+for (const modo of ["reduce", "no-preference", "sin-view"]) {
+  const ctx = await navegador.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: modo === "reduce" ? "reduce" : "no-preference" });
+  if (modo === "sin-view") await ctx.addInitScript(SIN_VIEW);
   await ctx.addInitScript(ESPIA);
   for (const ruta of RUTAS) {
     const res = await recorrer(ctx, ruta, base);
@@ -161,17 +234,17 @@ for (const modo of ["reduce", "no-preference"]) {
       continue;
     }
     const r = res.mov;
+    if (!res.testigo) sinTestigo.push(`${ruta} (${modo})`);
+    for (const v of res.cuentas) cifras.push(`${ruta} (${modo})  una cifra cambió ${v.max} fotogramas seguidos hasta «${v.texto}»`);
     if (modo === "reduce") {
-      for (const v of res.cuentas) {
-        fallos.push({ ruta, detalle: `una cifra cambió durante ${v.veces} fotogramas hasta «${v.texto}»: cuenta pese a la preferencia` });
-      }
       for (const v of r.slice(0, 5)) {
         fallos.push({ ruta, detalle: `<${v.tag}> se movió durante ${v.veces} fotogramas — «${v.texto}» · ${v.clase}` });
       }
       if (r.length > 5) fallos.push({ ruta, detalle: `… y ${r.length - 5} elemento(s) más` });
     } else {
+      for (const n of res.nidos) anidados.push(`${ruta}${modo === "sin-view" ? " (sin view())" : ""}  ${n}`);
+      if (modo === "sin-view") continue;
       controlTotal += r.length;
-      controlCuentas += res.cuentas.length;
       if (r.length === 0) sinControl.push(ruta);
       console.log(`[movimiento] control ${ruta.padEnd(16)} ${String(r.length).padStart(3)} elementos con movimiento`);
     }
@@ -187,7 +260,7 @@ if (fallos.length) {
   for (const f of fallos) console.log(`     ${f.ruta}  ${f.detalle}`);
 }
 
-console.log(`\n[movimiento] ${RUTAS.length} rutas · control: ${controlTotal} elementos con movimiento y ${controlCuentas} cifras que cuentan cuando se permite`);
+console.log(`\n[movimiento] ${RUTAS.length} rutas · control: ${controlTotal} elementos con movimiento cuando se permite; testigo de cifras visto en ${RUTAS.length * 3 - sinTestigo.length} de ${RUTAS.length * 3} pasadas`);
 
 // La pasada de control evita que la guarda se quede verde: sin movimiento permitido, la otra pasada no significa nada.
 if (sinControl.length > RUTAS.length / 2 || controlTotal < 20) {
@@ -195,8 +268,20 @@ if (sinControl.length > RUTAS.length / 2 || controlTotal < 20) {
   console.log("[movimiento] eso no dice que el sitio esté quieto: dice que esta guarda está rota y no vale su respuesta");
   process.exit(1);
 }
-if (controlCuentas === 0) {
-  console.log("[movimiento] ninguna cifra de la demo contó ni con el movimiento permitido: la vigilancia de `data-cuenta` está rota o la pestaña no se abrió");
+if (sinTestigo.length) {
+  console.log(`[movimiento] el testigo que cuenta no se vio en ${sinTestigo.join(", ")}: la vigilancia de cifras está rota y su respuesta no vale`);
+  process.exit(1);
+}
+if (cifras.length) {
+  console.log(`\n  cifras que cuentan hasta su valor — ${cifras.length}`);
+  for (const c of cifras) console.log(`     ${c}`);
+  console.log("[movimiento] una cifra sale ya en su valor: contar compite con el dato (PROJECT.md, «Movimiento»)");
+  process.exit(1);
+}
+if (anidados.length) {
+  console.log(`\n  desplazamientos dentro de otro desplazamiento — ${anidados.length}`);
+  for (const n of [...new Set(anidados)]) console.log(`     ${n}`);
+  console.log("[movimiento] un movimiento por rama: si el contenedor se desplaza, lo de dentro solo funde (PROJECT.md, «Movimiento»)");
   process.exit(1);
 }
 if (fallos.length) {

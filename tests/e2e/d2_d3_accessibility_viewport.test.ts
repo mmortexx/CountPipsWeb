@@ -113,12 +113,9 @@ describe("Dimension D2 & D3: Accessibility & Mobile Viewport (Tier 1 Feature Cov
 
   it("T1.4: prefers-reduced-motion is respected across animations and scroll behaviors", () => {
     const globalsCss = readSrc("src/app/globals.css");
-    const countUp = readSrc("src/components/tj/CountUp.tsx");
 
+    // Lo que anima por JavaScript lo vigila `scripts/movimiento.mjs` en el navegador.
     expect(globalsCss).toMatch(/@media\s*\(\s*prefers-reduced-motion:\s*reduce\s*\)/);
-
-    // Lo que la hoja no resuelve (el contador) lo consulta el JS.
-    expect(countUp).toContain("prefers-reduced-motion: reduce");
   });
 
   it("T1.5: Skip link is the first focusable element, bilingual, and targets #main-content", () => {

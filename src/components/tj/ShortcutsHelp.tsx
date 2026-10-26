@@ -30,7 +30,7 @@ export function ShortcutsHelp({
 
   const panelRef = useRef<HTMLDivElement>(null);
   // Mantiene la ventana en el árbol los 180 ms de su despedida.
-  const { montado, saliendo } = usePresencia(open, 180);
+  const { montado, saliendo } = usePresencia(open);
 
   // Escape se captura en fase de captura para que ningún otro manejador lo trague.
   useEffect(() => {
@@ -273,7 +273,7 @@ export function ShortcutsHelp({
               >
                 <span
                   aria-hidden
-                  className={`absolute top-[3px] left-[3px] h-[18px] w-[18px] rounded-full bg-[var(--raised)] shadow-sm transition-transform duration-200 ${
+                  className={`absolute top-[3px] left-[3px] h-[18px] w-[18px] rounded-full bg-[var(--raised)] shadow-sm transition-transform ${
                     encendidos ? "translate-x-4" : ""
                   }`}
                 />

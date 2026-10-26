@@ -147,8 +147,11 @@ for (const ruta of RUTAS) {
           const m = regla.selectorText?.match(/^::view-transition-(old|new)\(pagina\)$/);
           if (!m) continue;
           // Con un `var()` dentro, el atajo no se reparte en sus longhands: se leen
-          // los tiempos del texto, en su orden (duración y luego retardo).
-          const tiempos = [...regla.style.cssText.matchAll(/(?<![\w.(-])(\d*\.?\d+)(ms|s)\b/g)].map((t) => (t[2] === "ms" ? +t[1] / 1000 : +t[1]));
+          // los tiempos del texto, en su orden (duración y luego retardo), con
+          // los tokens (`--dur-*`) sustituidos por su valor.
+          const raiz = getComputedStyle(document.documentElement);
+          const texto = regla.style.cssText.replace(/var\((--[\w-]+)\)/g, (_, n) => raiz.getPropertyValue(n).trim() || "?");
+          const tiempos = [...texto.matchAll(/(?<![\w.(-])(\d*\.?\d+)(ms|s)\b/g)].map((t) => (t[2] === "ms" ? +t[1] / 1000 : +t[1]));
           lados[m[1]] = tiempos.length ? { dur: tiempos[0], ret: tiempos[1] ?? 0 } : null;
         }
       }

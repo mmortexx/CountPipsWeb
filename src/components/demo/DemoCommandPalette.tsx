@@ -285,7 +285,7 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
-  const { montado, saliendo } = usePresencia(open, 180);
+  const { montado, saliendo } = usePresencia(open);
   /* Patrón de combobox, como el glosario: el foco no sale del campo y
      `aria-activedescendant` indica la opción resaltada. */
   const idLista = useId();

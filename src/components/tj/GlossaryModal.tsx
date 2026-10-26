@@ -405,7 +405,7 @@ export function GlossaryModal({
                       <div className="flex items-center gap-1.5 min-w-0">
                         <ChevronDown
                           className={[
-                            "size-3.5 text-tertiary shrink-0 transition-transform duration-200",
+                            "size-3.5 text-tertiary shrink-0 transition-transform duration-(--dur-abre)",
                             isExpanded ? "rotate-180" : "",
                           ].join(" ")}
                           aria-hidden="true"

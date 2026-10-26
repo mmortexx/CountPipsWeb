@@ -31,7 +31,7 @@ import { useAllTrades } from "@/lib/trading/demoStore";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
-import { CountUp } from "@/components/tj/CountUp";
+import { CifraDemo } from "@/components/tj/CifraDemo";
 import { Reveal } from "@/components/tj/Reveal";
 import { Histogram } from "@/components/charts/Histogram";
 import { Heatmap } from "@/components/charts/Heatmap";
@@ -179,7 +179,7 @@ function WinnersDonut({
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <div className="text-2xl font-semibold tnum text-pnl-pos leading-none">
-          <CountUp
+          <CifraDemo
             key={`donut-pct-${reKey}`}
             to={winFrac * 100}
             decimals={1}
@@ -261,7 +261,7 @@ function ROverTimeChart({ trades }: { trades: Trade[] }) {
               fill={color}
               fillOpacity={0.85}
               className="tj-dm-crece-y"
-              style={{ transformOrigin: `0 ${baselineY}px`, "--dm-retardo": `${Math.min(0.6, i * 0.012)}s`, "--dm-dur": "0.5s" } as CSSProperties}
+              style={{ transformOrigin: `0 ${baselineY}px`, "--dm-retardo": `calc(var(--escalon) * ${Math.min(8, Math.floor(i / 6))})` } as CSSProperties}
             >
               <title>{`R ${t.rMultiple >= 0 ? "+" : ""}${fmtNum(t.rMultiple, lang, 2)}`}</title>
             </rect>
@@ -294,8 +294,7 @@ function WeekdayBars({ trades }: { trades: Trade[] }) {
               <div
                 className="tj-dm-crece-x h-full rounded-[2px]"
                 style={{
-                  "--dm-retardo": `${i * 0.05}s`,
-                  "--dm-dur": "0.7s",
+                  "--dm-retardo": `calc(var(--escalon) * ${Math.min(i, 8)})`,
                   width: `${pct}%`,
                   backgroundColor: pos
                     ? "rgb(var(--pnl-pos) / 0.7)"
@@ -379,7 +378,7 @@ function MonthlyBars({ trades }: { trades: Trade[] }) {
                 fill={color}
                 fillOpacity={0.85}
                 className="tj-dm-crece-y"
-                style={{ transformOrigin: `0 ${baselineY}px`, "--dm-retardo": `${i * 0.05}s`, "--dm-dur": "0.6s" } as CSSProperties}
+                style={{ transformOrigin: `0 ${baselineY}px`, "--dm-retardo": `calc(var(--escalon) * ${Math.min(i, 8)})` } as CSSProperties}
               >
                 <title>{`${r.month}: ${fmtMoney(r.pnl, lang, { sign: true })}`}</title>
               </rect>
@@ -463,8 +462,7 @@ function RankingCard({
                   <div
                     className="tj-dm-crece-x h-full rounded-[2px]"
                     style={{
-                      "--dm-retardo": `${i * 0.06}s`,
-                      "--dm-dur": "0.7s",
+                      "--dm-retardo": `calc(var(--escalon) * ${Math.min(i, 8)})`,
                       width: `${pct}%`,
                       backgroundColor: pos
                         ? "rgb(var(--pnl-pos) / 0.7)"
@@ -1239,7 +1237,7 @@ export function AnalyticsPage() {
                 showHairline
                 reKey={`count-${filterSig}`}
               >
-                <CountUp to={m.closedCount} decimals={0} />
+                <CifraDemo to={m.closedCount} decimals={0} />
               </KpiStripCell>
               <KpiStripCell
                 label={t("pnlTotal")}
@@ -1253,7 +1251,7 @@ export function AnalyticsPage() {
                 showHairline
                 reKey={`wr-${filterSig}`}
               >
-                <CountUp to={m.winRate * 100} decimals={1} suffix={pctSep(lang)} />
+                <CifraDemo to={m.winRate * 100} decimals={1} suffix={pctSep(lang)} />
               </KpiStripCell>
               <KpiStripCell
                 label={t("expectancy")}
@@ -1267,7 +1265,7 @@ export function AnalyticsPage() {
                 showHairline={false}
                 reKey={`pf-${filterSig}`}
               >
-                <CountUp to={m.profitFactor} decimals={2} />
+                <CifraDemo to={m.profitFactor} decimals={2} />
               </KpiStripCell>
             </div>
           </div>
