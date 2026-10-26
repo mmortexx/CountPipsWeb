@@ -2194,6 +2194,60 @@ button.icon-btn:hover > svg,
     min-height: 44px;
   }
 }
+/* Cuando las pestañas no caben, la última se cortaba a media palabra
+   («Analytiq») sin nada que dijera que la fila sigue. El aviso es el de
+   `tj-fila-sigue`, pero como máscara: el `::after` ya es el subrayado. Se
+   retira al llegar al final con `scroll()`, y al dejar atrás el principio
+   vela el canto izquierdo; sin líneas de tiempo queda fijo a la derecha y
+   la fila reserva su ancho para que al final vele hueco, no una pestaña. */
+@property --tj-sigue {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --tj-antes {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+.tj-pestanas {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--tj-antes),
+    #000 calc(100% - var(--tj-sigue)),
+    transparent
+  );
+}
+@supports (animation-timeline: scroll()) {
+  .tj-pestanas {
+    animation: tj-pestanas-sigue linear both;
+    animation-timeline: scroll(self inline);
+  }
+}
+@supports not (animation-timeline: scroll()) {
+  .tj-pestanas {
+    --tj-sigue: 3rem;
+  }
+  .tj-pestanas > :last-child {
+    margin-right: 3rem;
+  }
+}
+@keyframes tj-pestanas-sigue {
+  0% {
+    --tj-antes: 0px;
+    --tj-sigue: 3rem;
+  }
+  15%,
+  85% {
+    --tj-antes: 3rem;
+    --tj-sigue: 3rem;
+  }
+  100% {
+    --tj-antes: 3rem;
+    --tj-sigue: 0px;
+  }
+}
 
 /* ---- Llamadas y notas de una cifra ----------------------------------
    La cifra lleva su número volado y, debajo del cuadro, la nota con la

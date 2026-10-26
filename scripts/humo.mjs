@@ -1974,6 +1974,7 @@ if (SERVIR) {
 // lector: los titulares que el borde corta se miran aparte.
 const ANCHO_ESTRECHO = 320;
 let estrechasMedidas = 0;
+let pestanasDeslizadas = 0;
 let espaciadosMedidos = 0;
 {
   const compiladas = async (carpeta, rel = "") => {
@@ -2050,6 +2051,34 @@ let espaciadosMedidos = 0;
           if (r.sobra > 1) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el contenido se sale ${r.sobra} px por «${r.texto}»`);
           else for (const c of r.cortados) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el borde corta el titular ${c}`);
           if (r.migaLineas > 1) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px la miga de pan ocupa ${r.migaLineas} líneas`);
+          // Una fila de pestañas que no cabe se desliza, y lo dice: la última
+          // pestaña cortada a media palabra («Analytiq») sin aviso parece un
+          // fallo. El aviso vela el canto que esconde pestañas: el derecho al
+          // principio y el izquierdo al final.
+          const filas = await pagina.evaluate(async () => {
+            const marco = () => new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok)));
+            const aviso = (l, lado = "--tj-sigue") => (l.classList.contains("tj-fila-sigue") ? 48 : parseFloat(getComputedStyle(l).getPropertyValue(lado)) || 0);
+            const mal = [];
+            let medidas = 0;
+            for (const l of document.querySelectorAll("main [role=tablist]")) {
+              if (!l.getClientRects().length || !/auto|scroll/.test(getComputedStyle(l).overflowX)) continue;
+              if (l.scrollWidth - l.clientWidth < 2) continue;
+              medidas++;
+              const nombre = `[${[...l.querySelectorAll("[role=tab]")].map((t) => t.textContent.trim()).join(" | ").slice(0, 60)}]`;
+              l.scrollLeft = 0;
+              await marco();
+              if (aviso(l) < 24) mal.push(`${nombre} se corta sin aviso de que sigue`);
+              if (l.classList.contains("tj-fila-sigue")) continue;
+              l.scrollLeft = l.scrollWidth;
+              await marco();
+              if (aviso(l) > 1) mal.push(`${nombre} sigue velando la última pestaña al final del recorrido (${aviso(l)} px)`);
+              if (aviso(l, "--tj-antes") < 24) mal.push(`${nombre} corta la primera pestaña al final del recorrido sin aviso`);
+              l.scrollLeft = 0;
+            }
+            return { mal, medidas };
+          });
+          pestanasDeslizadas += filas.medidas;
+          for (const m of filas.mal) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px la fila de pestañas ${m}`);
           // Con el espaciado de texto de WCAG 1.4.12 (o la letra grande del
           // móvil), titulares, botones, pestañas y cifras de matriz siguen
           // enteros: lo que no cabe parte línea o se desliza, no se recorta.
@@ -2103,6 +2132,9 @@ let espaciadosMedidos = 0;
     }),
   );
   if (!estrechasMedidas) fallos.push("estrecho: no se midió ninguna página");
+  // La portada en seis idiomas, Funciones y Métricas desbordan a 320 px: sin
+  // ninguna fila medida, la comprobación de pestañas no miró nada.
+  if (SERVIR && pestanasDeslizadas < 6) fallos.push(`estrecho: solo ${pestanasDeslizadas} filas de pestañas deslizables medidas`);
   if (espaciadosMedidos < estrechasMedidas) fallos.push(`estrecho: texto espaciado medido en ${espaciadosMedidos} de ${estrechasMedidas} páginas`);
 }
 
@@ -2234,7 +2266,7 @@ console.log(
 if (subirMedidos) {
   console.log(`[humo] botón de subir — ${subirMedidos} finales de página medidos en 3 anchos sin tapar el pie`);
 }
-console.log(`[humo] estrecho — ${estrechasMedidas} páginas medidas a ${ANCHO_ESTRECHO} px`);
+console.log(`[humo] estrecho — ${estrechasMedidas} páginas medidas a ${ANCHO_ESTRECHO} px, ${pestanasDeslizadas} filas de pestañas deslizables con su aviso`);
 if (elementosMirados && !desenfoquesVistos) {
   console.log(`[humo] desenfoque — ${elementosMirados} elementos recorridos en 5 rutas, ninguno desenfoca su fondo`);
 }
