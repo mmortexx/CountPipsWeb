@@ -97,8 +97,10 @@ export const Histogram = memo(function Histogram({
                       ? "w-max self-end"
                       : "w-full text-center"
                 } ${
+                  // Invisible y no fuera del flujo: sin su renglón, la barra bajaba
+                  // hasta el fondo y cruzaba los rótulos de las vecinas.
                   salto > 1 && i % salto !== 0 && i !== data.length - 1
-                    ? "hidden sm:block"
+                    ? "invisible sm:visible"
                     : ""
                 }`}
               >
