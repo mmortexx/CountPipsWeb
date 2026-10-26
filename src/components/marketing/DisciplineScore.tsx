@@ -31,7 +31,7 @@ type Dim = {
   tipEn: string;
 };
 
-const DIMS: Dim[] = [
+export const DIMS: Dim[] = [
   {
     id: "riesgo",
     es: "Riesgo",
@@ -93,6 +93,41 @@ const MAX_OPT = 3;
 /** Desde aquí, el eje más bajo ya no es un punto flaco sino uno que vigilar. */
 const UMBRAL_SIN_PUNTO_FLACO = 85;
 
+/** Puntuación por eje y cifra global (0-100) de unas respuestas, completas o no. */
+export function puntuar(answers: (number | null)[]) {
+  /* Por eje: media ponderada de sus preguntas. Las no respondidas no cuentan,
+     así que el perfil ya dice algo antes de terminar. */
+  const acc: Record<DimId, { got: number; max: number }> = {
+    riesgo: { got: 0, max: 0 },
+    plan: { got: 0, max: 0 },
+    registro: { got: 0, max: 0 },
+    temple: { got: 0, max: 0 },
+    constancia: { got: 0, max: 0 },
+  };
+  QUESTIONS.forEach((q, i) => {
+    const a = answers[i];
+    if (a === null || a === undefined) return;
+    acc[q.dim].got += a * q.weight;
+    acc[q.dim].max += MAX_OPT * q.weight;
+  });
+  const perDim = DIMS.map((d) => ({
+    dim: d,
+    pct: acc[d.id].max > 0 ? Math.round((acc[d.id].got / acc[d.id].max) * 100) : 0,
+    respondidas: acc[d.id].max > 0,
+  }));
+  /* Global: media de los ejes respondidos ponderada por el peso del eje, no el
+     porcentaje de aciertos. Con la fracción sin redondear de cada eje. */
+  let suma = 0;
+  let pesos = 0;
+  for (const d of DIMS) {
+    const { got, max } = acc[d.id];
+    if (max === 0) continue;
+    suma += d.weight * (got / max);
+    pesos += d.weight;
+  }
+  return { perDim, score: pesos > 0 ? Math.round((suma / pesos) * 100) : 0 };
+}
+
 /** Dónde se recuerdan las respuestas (solo en el navegador de quien responde). */
 const CLAVE_GUARDADO = "tj-test-disciplina-v1";
 
@@ -144,44 +179,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
   const answeredCount = answers.filter((a) => a !== null).length;
   const allAnswered = answeredCount === QUESTIONS.length;
 
-  /* Puntuación por eje: media ponderada de sus preguntas, en 0-100. Las no
-     respondidas no cuentan, así que el perfil ya dice algo antes de terminar. */
-  const perDim = useMemo(() => {
-    const acc: Record<DimId, { got: number; max: number }> = {
-      riesgo: { got: 0, max: 0 },
-      plan: { got: 0, max: 0 },
-      registro: { got: 0, max: 0 },
-      temple: { got: 0, max: 0 },
-      constancia: { got: 0, max: 0 },
-    };
-    QUESTIONS.forEach((q, i) => {
-      const a = answers[i];
-      if (a === null) return;
-      acc[q.dim].got += a * q.weight;
-      acc[q.dim].max += MAX_OPT * q.weight;
-    });
-    return DIMS.map((d) => ({
-      dim: d,
-      pct: acc[d.id].max > 0 ? Math.round((acc[d.id].got / acc[d.id].max) * 100) : 0,
-      respondidas: acc[d.id].max > 0,
-    }));
-  }, [answers]);
-
-  /* Cifra global: media de los ejes ponderada por su peso, no el porcentaje
-     de aciertos. */
-  const score = useMemo(() => {
-    let got = 0;
-    let max = 0;
-    QUESTIONS.forEach((q, i) => {
-      const a = answers[i];
-      if (a === null) return;
-      const dim = DIMS.find((d) => d.id === q.dim);
-      const w = q.weight * (dim ? dim.weight : 1);
-      got += a * w;
-      max += MAX_OPT * w;
-    });
-    return max > 0 ? Math.round((got / max) * 100) : 0;
-  }, [answers]);
+  const { perDim, score } = useMemo(() => puntuar(answers), [answers]);
 
   const level = useMemo(() => {
     if (!allAnswered) return null;
