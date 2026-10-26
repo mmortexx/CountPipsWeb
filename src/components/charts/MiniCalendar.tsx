@@ -124,7 +124,7 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
               onMouseLeave={() => setHovered(null)}
             >
               <span className={pnl !== undefined ? "cal-day-num" : "text-tertiary"}>{day}</span>
-              {pnl !== undefined && intensity > 0.25 && (
+              {pnl !== undefined && (
                 /* `cal-day-pnl` y no el token de P&L directo: escrito en el mismo
                    color que el tinte de la celda el contraste es imposible (en
                    claro caía a 2,2:1). La clase mantiene el token en oscuro y usa
