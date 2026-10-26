@@ -1208,7 +1208,7 @@ export function JournalPage() {
                 <div className="grid grid-cols-2 gap-3">
                   {/* `text-secondary`: la etiqueta va sobre el tinte de ganancia o
                       pérdida y la terciaria se queda corta de contraste. */}
-                  <div className="rounded-[2px] p-3 bg-pnl-pos/10 border border-pnl-pos/20">
+                  <div className="flex flex-col justify-between rounded-[2px] p-3 bg-pnl-pos/10 border border-pnl-pos/20">
                     <div className="text-[11px] uppercase leading-[1.25] tracking-[0.12em] text-secondary [overflow-wrap:anywhere]">
                       {t("expInPlan")}
                     </div>
@@ -1216,7 +1216,7 @@ export function JournalPage() {
                       <Money value={expInPlan} sign compact colorizeSign />
                     </div>
                   </div>
-                  <div className="rounded-[2px] p-3 bg-pnl-neg/10 border border-pnl-neg/20">
+                  <div className="flex flex-col justify-between rounded-[2px] p-3 bg-pnl-neg/10 border border-pnl-neg/20">
                     <div className="text-[11px] uppercase leading-[1.25] tracking-[0.12em] text-secondary [overflow-wrap:anywhere]">
                       {t("expOutPlan")}
                     </div>
@@ -1468,19 +1468,17 @@ export function JournalPage() {
                         </div>
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
+                        {/* Cada dato lleva su punto delante y se corre a la izquierda lo
+                            que mide el punto, que así ocupa el hueco (`gap-x-4`, el mismo
+                            ancho) entre dato y dato: el que abre renglón lo deja fuera de la caja
+                            (`overflow-hidden`) y ningún renglón acaba ni empieza en «·». */}
+                        <div className="flex items-center flex-wrap gap-x-4 overflow-hidden [&>span]:-ml-4 [&>span]:before:inline-block [&>span]:before:w-4 [&>span]:before:text-center [&>span]:before:content-['·']">
                           <span className="text-[11px] text-tertiary tnum">
                             {fmtDate(entry.date, lang)}
                           </span>
-                          <span className="text-tertiary" aria-hidden="true">
-                            ·
-                          </span>
                           <span className="text-[11px] text-tertiary tnum">
                             {fmtInt(entry.count, lang)}{" "}
-                            {L("ops.", "trades")}
-                          </span>
-                          <span className="text-tertiary" aria-hidden="true">
-                            ·
+                            {entry.count === 1 ? L("op.", "trade") : L("ops.", "trades")}
                           </span>
                           <span className="text-[11px] text-tertiary tnum">
                             {t("dayScore")}:{" "}
