@@ -70,10 +70,41 @@ async function servir(raiz) {
 const ESPIA = `
 window.__mov = new Map();
 window.__cuenta = new Map();
+window.__nidos = new Map();
 (function () {
   const previo = new WeakMap();
   const textoPrevio = new WeakMap();
+  const desc = (el) => el.tagName.toLowerCase() + (typeof el.className === "string" && el.className.trim() ? "." + el.className.trim().split(/\\s+/).slice(0, 3).join(".") : "");
+  /* Un desplazamiento dentro de otro: el contenido recorre la suma de los dos
+     y se lee como un tirón. Solo animaciones por tiempo (las atadas al scroll
+     siguen al dedo) que muevan algo, en su fase activa. */
+  function anidados() {
+    const mueve = new Map();
+    for (const a of document.getAnimations()) {
+      const ef = a.effect;
+      if (!ef || !ef.target || ef.pseudoElement || a.playState !== "running" || !(a.timeline instanceof DocumentTimeline)) continue;
+      const ct = ef.getComputedTiming();
+      const lt = ct.localTime ?? 0;
+      if (ct.progress === null || lt < (ct.delay || 0) || lt > (ct.delay || 0) + ct.activeDuration) continue;
+      let props = [];
+      try { props = ef.getKeyframes().flatMap((k) => Object.keys(k)); } catch {}
+      if (!props.some((p) => p === "transform" || p === "translate")) continue;
+      mueve.set(ef.target, a.animationName || (a.transitionProperty ? "transición" : "JavaScript"));
+    }
+    for (const [el, nombre] of mueve) {
+      for (let p = el.parentElement; p; p = p.parentElement) {
+        if (!mueve.has(p)) continue;
+        // La demo imita la entrada de página de la app de escritorio y sus
+        // piezas entran dentro de ella: pendiente de decidir (PROJECT.md).
+        if (p.matches(".tj-demo-entra")) break;
+        const k = desc(p) + " [" + mueve.get(p) + "] > " + desc(el) + " [" + nombre + "]";
+        window.__nidos.set(k, (window.__nidos.get(k) || 0) + 1);
+        break;
+      }
+    }
+  }
   function mira() {
+    anidados();
     for (const el of document.querySelectorAll("[data-cuenta]")) {
       const t = el.textContent;
       const antes = textoPrevio.get(el);
@@ -137,7 +168,7 @@ async function recorrer(ctx, ruta, base) {
     for (const v of window.__mov.values()) if (v.veces >= minimo) out.push(v);
     const cuentas = [];
     for (const v of window.__cuenta.values()) if (v.veces >= minimo) cuentas.push(v);
-    return { mov: out.sort((a, b) => b.veces - a.veces), cuentas };
+    return { mov: out.sort((a, b) => b.veces - a.veces), cuentas, nidos: [...window.__nidos.keys()] };
   }, FOTOGRAMAS_MINIMOS);
   await p.close();
   return r;
@@ -151,8 +182,14 @@ let controlTotal = 0;
 let controlCuentas = 0;
 const sinControl = [];
 
-for (const modo of ["reduce", "no-preference"]) {
-  const ctx = await navegador.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: modo });
+/* La tercera pasada hace como Firefox o Safari, que no tienen
+   `animation-timeline`: ahí entran los respaldos por JavaScript. */
+const SIN_VIEW = `{ const o = CSS.supports.bind(CSS); CSS.supports = (a, b) => (String(a).includes("animation-timeline") ? false : b === undefined ? o(a) : o(a, b)); }`;
+const anidados = [];
+
+for (const modo of ["reduce", "no-preference", "sin-view"]) {
+  const ctx = await navegador.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: modo === "reduce" ? "reduce" : "no-preference" });
+  if (modo === "sin-view") await ctx.addInitScript(SIN_VIEW);
   await ctx.addInitScript(ESPIA);
   for (const ruta of RUTAS) {
     const res = await recorrer(ctx, ruta, base);
@@ -170,6 +207,8 @@ for (const modo of ["reduce", "no-preference"]) {
       }
       if (r.length > 5) fallos.push({ ruta, detalle: `… y ${r.length - 5} elemento(s) más` });
     } else {
+      for (const n of res.nidos) anidados.push(`${ruta}${modo === "sin-view" ? " (sin view())" : ""}  ${n}`);
+      if (modo === "sin-view") continue;
       controlTotal += r.length;
       controlCuentas += res.cuentas.length;
       if (r.length === 0) sinControl.push(ruta);
@@ -197,6 +236,12 @@ if (sinControl.length > RUTAS.length / 2 || controlTotal < 20) {
 }
 if (controlCuentas === 0) {
   console.log("[movimiento] ninguna cifra de la demo contó ni con el movimiento permitido: la vigilancia de `data-cuenta` está rota o la pestaña no se abrió");
+  process.exit(1);
+}
+if (anidados.length) {
+  console.log(`\n  desplazamientos dentro de otro desplazamiento — ${anidados.length}`);
+  for (const n of [...new Set(anidados)]) console.log(`     ${n}`);
+  console.log("[movimiento] un movimiento por rama: si el contenedor se desplaza, lo de dentro solo funde (PROJECT.md, «Movimiento»)");
   process.exit(1);
 }
 if (fallos.length) {

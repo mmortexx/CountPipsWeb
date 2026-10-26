@@ -58,6 +58,10 @@ Windows (WinUI 3, en otro repositorio).
     posición, filas de rejilla) solo con su porqué en `EXCEPCIONES_CSS` de la
     prueba: pliegues, trazos SVG, recortes, barras que siguen a un valor y la
     guía del gráfico de métricas (trasladada, su línea de 1 px salía borrosa).
+  - Un movimiento por rama: si el contenedor se desplaza, lo de dentro solo funde.
+    Un bloque cuyas piezas entran solas, o que guarda un gráfico que se dibuja,
+    aparece sin subir (`data-tj-funde`, Aparecer.tsx); `movimiento.mjs` lo vigila,
+    también como un navegador sin `animation-timeline`.
   - Desde JavaScript, `curva()` y `duracion()` de `src/lib/motion.ts` leen los mismos
     tokens; `usePresencia` espera `--dur-estado`, lo que dura toda salida.
 - **Afirmaciones técnicas**: sólo lo comprobado en el código del programa. Las cifras y
@@ -68,6 +72,9 @@ Windows (WinUI 3, en otro repositorio).
 ## Pendiente de decidir por el dueño
 
 - Las capturas del programa sólo existen en español.
+- La demo (`/demo/`) entra como la página de la app de escritorio y sus piezas
+  entran dentro de ella: dos desplazamientos a la vez. Imita al programa, así que
+  `movimiento.mjs` la exime; ¿se queda así o la página solo funde?
 
 ## Puertas
 
@@ -105,7 +112,7 @@ node scripts/papel.mjs --serve out         # impresión completa
 node scripts/pesos.mjs --serve out         # grosores de la serif
 node scripts/rejillas.mjs --serve out      # alineación de fichas, columnas y cifras
 node scripts/escala.mjs --serve out        # escala tipográfica e interlineado
-node scripts/movimiento.mjs --serve out    # «reducir movimiento» respetado
+node scripts/movimiento.mjs --serve out    # «reducir movimiento» respetado; nada se desplaza dentro de algo que se desplaza
 node scripts/orden.mjs --serve out         # primera pantalla en orden de lectura; cambio de página sin solape
 node scripts/proporcion.mjs --serve out    # textos de gráficos SVG sin estirar (también dentro de la demo)
 node scripts/tema.mjs --serve out          # elección de tema, sin fogonazo blanco y barra del móvil del color del fondo

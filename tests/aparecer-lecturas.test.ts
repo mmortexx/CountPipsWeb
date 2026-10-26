@@ -25,6 +25,8 @@ describe("Aparecer mide todo antes de escribir nada", () => {
   let lecturas = 0;
   let lecturasTrasEscribir = 0;
   let midiendo = false;
+  let arriba = 3000;
+  let margenRaiz = "";
   const restaurar: Array<() => void> = [];
 
   const anota = () => {
@@ -36,10 +38,15 @@ describe("Aparecer mide todo antes de escribir nada", () => {
   beforeEach(() => {
     lecturas = 0;
     lecturasTrasEscribir = 0;
+    arriba = 3000;
+    margenRaiz = "";
     vi.stubGlobal("matchMedia", (q: string) => ({ matches: q.includes("min-width"), addEventListener() {}, removeEventListener() {} }));
     vi.stubGlobal(
       "IntersectionObserver",
       class {
+        constructor(_: unknown, op?: IntersectionObserverInit) {
+          if (op?.rootMargin) margenRaiz = op.rootMargin;
+        }
         observe() {}
         unobserve() {}
         disconnect() {}
@@ -63,7 +70,7 @@ describe("Aparecer mide todo antes de escribir nada", () => {
     // Todo bajo el pliegue, para que cada pieza quede marcada a la espera.
     Element.prototype.getBoundingClientRect = function () {
       anota();
-      return { top: 3000, bottom: 3040, left: 0, right: 100, width: 100, height: 40, x: 0, y: 3000, toJSON() {} } as DOMRect;
+      return { top: arriba, bottom: arriba + 40, left: 0, right: 100, width: 100, height: 40, x: 0, y: arriba, toJSON() {} } as DOMRect;
     };
     restaurar.push(() => (Element.prototype.getBoundingClientRect = rect));
 
@@ -108,5 +115,38 @@ describe("Aparecer mide todo antes de escribir nada", () => {
     expect((document.querySelector("figure") as HTMLElement).dataset.tjTipo).toBe("lamina");
     expect((document.querySelector("[data-dibuja]") as HTMLElement).dataset.tjDib).toBe("0");
     expect((document.querySelector("svg") as unknown as HTMLElement).dataset.tjAp).toBeUndefined();
+  });
+
+  // Un movimiento por rama: si el bloque subiera mientras sus piezas suben
+  // dentro, el contenido recorrería la suma de los dos.
+  it("un bloque cuyas piezas entran por su cuenta solo funde; uno sin piezas, sube", () => {
+    act(() => raiz.render(createElement(Aparecer)));
+    expect(document.querySelector("ul")!.dataset.tjFunde).toBe("");
+    expect((document.querySelector(".grid") as HTMLElement).dataset.tjFunde).toBe("");
+    expect(document.querySelector("ol")!.dataset.tjFunde).toBe("");
+    expect(document.querySelector("h2")!.dataset.tjFunde).toBeUndefined();
+    expect(document.querySelector("p")!.dataset.tjFunde).toBeUndefined();
+    expect(document.querySelector("li")!.dataset.tjFunde).toBeUndefined();
+  });
+
+  // Lo que el observador ya da por visto no se oculta al montar: se ocultaría
+  // y volvería a entrar en el mismo instante.
+  it("oculta al montar justo lo que el observador aún no da por visto", () => {
+    const pct = (m: string) => Number(/-(\d+(?:\.\d+)?)%\s+0px$/.exec(m)?.[1]);
+    const linea = (pctMargen: number) => innerHeight * (1 - pctMargen / 100);
+    // Primera pasada solo para leer el margen del observador.
+    act(() => raiz.render(createElement(Aparecer)));
+    const p = pct(margenRaiz);
+    expect(p, `margen del observador: «${margenRaiz}»`).toBeGreaterThan(0);
+    act(() => raiz.unmount());
+    for (const [desfase, esperado] of [[-2, "ya"], [2, "0"]] as const) {
+      document.querySelectorAll<HTMLElement>("[data-tj-ap]").forEach((e) => delete e.dataset.tjAp);
+      arriba = linea(p) + desfase;
+      raiz = createRoot(cont);
+      act(() => raiz.render(createElement(Aparecer)));
+      expect(document.querySelector("h2")!.dataset.tjAp, `bloque a ${desfase} px de la línea`).toBe(esperado);
+      act(() => raiz.unmount());
+    }
+    raiz = createRoot(cont);
   });
 });

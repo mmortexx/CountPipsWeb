@@ -3563,8 +3563,10 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
    está en pantalla en el primer fotograma nace en su estado final, y lo
    hace el compositor.
    `:not(section section)` deja fuera las secciones anidadas (la demo
-   interactiva tiene las suyas) y `#top` conserva la entrada del hero. El
-   respaldo para quien no lo soporte está en `SectionReveal.tsx`. */
+   interactiva tiene las suyas) y `#top` conserva la entrada del hero. Sin
+   `view()` no hay respaldo por secciones: con JavaScript entra la página
+   por bloques (Aparecer.tsx), y una sección que sube con sus bloques
+   subiendo dentro se leía doble. */
 @supports (animation-timeline: view()) {
   /* Las secciones con panel no entran con opacidad: el panel ya se asienta
      con `tj-asienta` y dos a la vez se leían como un tirón. */
@@ -3782,7 +3784,6 @@ svg [data-entra="sello"] {
   }
   to {
     opacity: 1;
-    transform: none;
   }
 }
 
@@ -4026,6 +4027,11 @@ svg [data-entra="sello"] {
   .tj-pulsa:active {
     transform: none;
   }
+}
+/* El contenedor de «volver arriba» ya se desplaza con el pie: el botón,
+   dentro, solo funde. */
+.tj-emerge.tj-subir:not([data-visible="true"]) {
+  transform: none;
 }
 .tj-emerge.tj-subir {
   transition:
@@ -4392,9 +4398,10 @@ svg [data-entra="sello"] {
   }
   /* Lo que la página enseña justo debajo de su cabecera sale en la primera
      pantalla, sin scroll que lo anime: llega detrás de la entradilla. Orden de
-     lectura: titular, entradilla, contenido. */
+     lectura: titular, entradilla, contenido. Solo funde: lo de dentro
+     (barras, la demo) ya tiene su propio gesto. */
   #main-content .tj-cabecera + section:not(#top):not(section section) {
-    animation: tj-carga-tenue var(--dur-entra) var(--ease-suave) calc(var(--escalon) * 7) both;
+    animation: tj-funde-tenue var(--dur-entra) var(--ease-suave) calc(var(--escalon) * 7) both;
     animation-timeline: auto;
     animation-range: normal;
   }
@@ -4411,9 +4418,10 @@ svg [data-entra="sello"] {
     animation: tj-carga var(--dur-entra) var(--ease-suave) calc(var(--escalon) * 6) both;
   }
 
-  /* Los enlaces del desplegable llegan uno detrás de otro. */
+  /* Los enlaces del desplegable llegan uno detrás de otro. Solo funden: el
+     desplegable y el cajón ya se desplazan. */
   .tj-cae [role="menuitem"] {
-    animation: tj-cae-fila var(--dur-abre) var(--ease-suave) both;
+    animation: tj-aparece var(--dur-abre) var(--ease-suave) both;
   }
   .tj-cae [role="menuitem"]:nth-child(3) { animation-delay: var(--escalon); }
   .tj-cae [role="menuitem"]:nth-child(4) { animation-delay: calc(var(--escalon) * 2); }
@@ -4421,7 +4429,7 @@ svg [data-entra="sello"] {
 
   /* El cajón móvil: los grupos entran detrás del cajón. */
   .tj-cajon[data-visible="true"] .tj-cajon-lista > * {
-    animation: tj-cae-fila var(--dur-entra) var(--ease-suave) calc(var(--escalon) * 2) both;
+    animation: tj-aparece var(--dur-entra) var(--ease-suave) calc(var(--escalon) * 2) both;
   }
   .tj-cajon[data-visible="true"] .tj-cajon-lista > :nth-child(2) { animation-delay: calc(var(--escalon) * 3); }
   .tj-cajon[data-visible="true"] .tj-cajon-lista > :nth-child(n + 3) { animation-delay: calc(var(--escalon) * 4); }
@@ -4447,14 +4455,12 @@ svg [data-entra="sello"] {
     transform: none;
   }
 }
-@keyframes tj-cae-fila {
+@keyframes tj-funde-tenue {
   from {
-    opacity: 0;
-    transform: translate3d(0, 8px, 0);
+    opacity: 0.2;
   }
   to {
     opacity: 1;
-    transform: none;
   }
 }
 
@@ -4469,13 +4475,14 @@ html.tj-mov #main-content h2.t-h2,
 html.tj-mov #main-content .tj-cristal:not(#top *) {
   animation: none !important;
 }
-/* Los ratios del panel de la portada llegan tras el panel, por tiempo. */
+/* Los ratios del panel de la portada llegan tras el panel, por tiempo, y
+   solo funden: el panel aún se está desplazando. */
 @media (prefers-reduced-motion: no-preference) {
   html.tj-mov-pronto #main-content .tj-hero .tj-metricas-ratios > * {
-    animation-name: tj-carga !important;
+    animation-name: tj-aparece !important;
     animation-duration: var(--dur-entra) !important;
     animation-timing-function: var(--ease-suave) !important;
-    animation-delay: calc(var(--escalon) * (3 + var(--i, 0))) !important;
+    animation-delay: calc(var(--escalon) * (8 + var(--i, 0))) !important;
     animation-fill-mode: both !important;
     animation-timeline: auto !important;
     animation-range: normal !important;
@@ -4517,6 +4524,12 @@ html.tj-mov #main-content .tj-cristal:not(#top *) {
   opacity: 0.001;
   transform: translate3d(0, 16px, 0);
   clip-path: inset(3% 2.5% 3% 2.5% round 12px);
+}
+/* Un bloque cuyas piezas entran por su cuenta, o que guarda un gráfico que
+   se dibuja, solo funde: subirlo a la vez que lo de dentro sube o crece se
+   lee como dos gestos. */
+[data-tj-ap="0"][data-tj-funde] {
+  transform: none;
 }
 [data-tj-paso="1"] { --tj-retardo: var(--escalon); }
 [data-tj-paso="2"] { --tj-retardo: calc(var(--escalon) * 2); }
