@@ -3026,6 +3026,9 @@ select.tj-campo:invalid {
   white-space: nowrap;
   color: rgb(var(--pnl-neg));
 }
+/* La guía y los puntos siguen al puntero con `left`/`top`, no con transform:
+   trasladados quedaban a medio píxel y la línea de 1 px salía borrosa. Son
+   piezas sueltas de pocos píxeles; moverlas no recoloca nada más. */
 .tj-metricas-guia {
   position: absolute;
   inset-block: 0;
@@ -4725,8 +4728,9 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
 
 /* ── El movimiento de las páginas de la demo ──────────────────────────
    Cada pieza lleva su clase y, donde cambia algo, variables en línea:
-   `--dm-retardo`, `--dm-dur` y el punto de partida de la entrada (`--dm-x`,
-   `--dm-y`, `--dm-s`, `--dm-o`). Las animaciones rellenan solo hacia atrás
+   `--dm-retardo`, `--dm-dur`, el punto de partida de la entrada (`--dm-x`,
+   `--dm-y`, `--dm-s`, `--dm-o`) y, en las barras, el lado desde el que
+   crecen (`--dm-origen`). Las animaciones rellenan solo hacia atrás
    (`backwards`): al acabar manda el estilo de la pieza, y las barras que
    cambian de valor después lo hacen con su transición. Con movimiento
    reducido nada se mueve. */
@@ -4734,11 +4738,15 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
   .tj-dm-entra {
     animation: tj-dm-entra var(--dm-dur, var(--dur-entra)) var(--ease-suave) var(--dm-retardo, 0s) backwards;
   }
+  /* Las barras entran escalando; si luego cambian de valor, cambian de ancho
+     (o de alto) dentro de su pista: escalarlas deformaría el radio en reposo. */
   .tj-dm-ancho {
+    transform-origin: var(--dm-origen, 0 50%);
     animation: tj-dm-ancho var(--dur-entra) var(--ease-suave) var(--dm-retardo, 0s) backwards;
     transition: width var(--dur-entra) var(--ease-suave);
   }
   .tj-dm-alto {
+    transform-origin: var(--dm-origen, 50% 100%);
     animation: tj-dm-alto var(--dur-entra) var(--ease-suave) var(--dm-retardo, 0s) backwards;
     transition: height var(--dur-entra) var(--ease-suave);
   }
@@ -4879,12 +4887,12 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
 }
 @keyframes tj-dm-ancho {
   from {
-    width: 0;
+    transform: scaleX(0);
   }
 }
 @keyframes tj-dm-alto {
   from {
-    height: 0;
+    transform: scaleY(0);
     opacity: 0;
   }
 }

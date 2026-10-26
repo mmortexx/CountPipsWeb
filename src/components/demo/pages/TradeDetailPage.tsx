@@ -304,7 +304,7 @@ function ExcursionBar({ mae, mfe }: { mae: number; mfe: number }) {
       <div className="absolute left-1/2 top-0 bottom-0 w-px bg-[rgb(var(--divider)/0.25)] z-10" />
       <div
         className="tj-dm-ancho absolute top-0 bottom-0 right-1/2 bg-pnl-neg/80"
-        style={{ width: `${maePct}%`, "--dm-retardo": "calc(var(--escalon) * 4)" } as CSSProperties}
+        style={{ width: `${maePct}%`, "--dm-origen": "100% 50%", "--dm-retardo": "calc(var(--escalon) * 4)" } as CSSProperties}
       />
       <div
         className="tj-dm-ancho absolute top-0 bottom-0 left-1/2 bg-pnl-pos/80"

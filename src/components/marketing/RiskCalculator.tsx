@@ -354,7 +354,7 @@ export function RiskCalculator() {
                     aria-pressed={futuresContractId === fc.id}
                     title={fc.nombre}
                     onClick={() => handleFuturesChange(fc.id)}
-                    className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-all ${
+                    className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-[color,background-color,box-shadow] ${
                       futuresContractId === fc.id
                         ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] text-primary font-semibold shadow-[inset_0_0_0_1px_var(--line-2)]"
                         : "text-secondary shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:text-primary hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
@@ -382,7 +382,7 @@ export function RiskCalculator() {
                       type="button"
                       aria-pressed={parForex.id === p.id}
                       onClick={() => handleParChange(p.id)}
-                      className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-all ${
+                      className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-[color,background-color,box-shadow] ${
                         parForex.id === p.id
                           ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] text-primary font-semibold shadow-[inset_0_0_0_1px_var(--line-2)]"
                           : "text-secondary shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:text-primary hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
@@ -422,7 +422,7 @@ export function RiskCalculator() {
                       type="button"
                       aria-pressed={forexLotType === lot.id}
                       onClick={() => setForexLotType(lot.id)}
-                      className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-all ${
+                      className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-[color,background-color,box-shadow] ${
                         forexLotType === lot.id
                           ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] text-primary font-semibold shadow-[inset_0_0_0_1px_var(--line-2)]"
                           : "text-secondary shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:text-primary hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"

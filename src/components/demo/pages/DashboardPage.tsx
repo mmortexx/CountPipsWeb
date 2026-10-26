@@ -665,8 +665,8 @@ export function DashboardPage() {
                       } peer-focus-visible:ring-2 peer-focus-visible:ring-[rgb(var(--accent-base)/0.5)]`}
                     >
                       <span
-                        className={`absolute top-[3px] w-3.5 h-3.5 rounded-[2px] transition-[left] ${
-                          advanced ? "left-[19px] bg-[rgb(var(--accent-ink))]" : "left-[3px] bg-[rgb(var(--txt-secondary))]"
+                        className={`absolute top-[3px] left-[3px] w-3.5 h-3.5 rounded-[2px] transition-[translate] ${
+                          advanced ? "translate-x-4 bg-[rgb(var(--accent-ink))]" : "bg-[rgb(var(--txt-secondary))]"
                         }`}
                       />
                     </span>

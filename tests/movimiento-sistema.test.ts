@@ -225,3 +225,106 @@ describe("las duraciones y las curvas salen de sus tokens", () => {
     expect(CODIGO.flatMap(([f, t]) => codigoSuelto(f, t))).toEqual([]);
   });
 });
+
+/* Lo que se mueve, se mueve con transform u opacidad: el navegador lo hace sin
+   recalcular la página. Los cambios de tono de un estado (color, fondo, filete,
+   anillo de foco, filtro de tono) también valen: no mueven nada de sitio. Lo
+   demás, solo con su porqué escrito aquí. */
+const PROPS_LIBRES = new Set([
+  "transform", "translate", "scale", "rotate", "opacity", "visibility",
+  "color", "background-color", "border-color", "outline-color", "text-decoration-color",
+  "fill", "stroke", "filter", "box-shadow",
+]);
+
+const EXCEPCIONES_CSS: Array<[RegExp, string, string]> = [
+  [/tj-pliegue|tj-dm-despliega|tj-dm-pliega/, "grid-template-rows", "un pliegue que se abre empuja lo de debajo, y eso solo lo hace la maqueta"],
+  [/tj-dm-anillo|tj-dm-traza/, "stroke-dashoffset", "un trazo SVG que se dibuja: no hay transform que lo haga"],
+  [/tj-metricas-trazo|lamina/, "clip-path", "la curva y la captura se descubren recortadas, sin deformarse"],
+  [/\.tj-dm-ancho/, "width", "barra que sigue a un valor dentro de una pista de tamaño fijo: escalarla deformaría su radio en reposo"],
+  [/\.tj-dm-alto/, "height", "la misma barra, en vertical"],
+  [/\.tj-metricas-(guia|punto)/, "left", "trasladada, la guía de 1 px quedaba a medio píxel y borrosa; son piezas sueltas"],
+  [/\.tj-metricas-punto/, "top", "el punto que acompaña a la guía"],
+];
+
+/** Propiedades que anima cada regla: las de sus `transition` y las de sus `@keyframes`. */
+function propsAnimadas(css: string): Array<[string, string]> {
+  const out: Array<[string, string]> = [];
+  for (const r of reglas(css)) {
+    const marco = r.padres.find((p) => p.startsWith("@keyframes"));
+    for (const [prop, valor] of declaraciones(r.cuerpo)) {
+      if (marco) {
+        if (prop !== "animation-timing-function") out.push([marco, prop]);
+      } else if (prop === "transition-property") {
+        for (const p of porComas(valor)) out.push([r.padres.at(-1)!, p]);
+      } else if (prop === "transition" && valor !== "none") {
+        for (const item of porComas(valor)) out.push([r.padres.at(-1)!, item.split(/\s+/)[0]]);
+      }
+    }
+  }
+  return out;
+}
+
+function cssFueraDeSistema(css: string): string[] {
+  return propsAnimadas(css)
+    .filter(([, prop]) => !PROPS_LIBRES.has(prop) && !prop.startsWith("--"))
+    .filter(([quien, prop]) => !EXCEPCIONES_CSS.some(([re, p]) => p === prop && re.test(quien)))
+    .map(([quien, prop]) => `${quien}: ${prop}`);
+}
+
+/* En los componentes, nada de `transition-all` (anima también la maqueta) y,
+   en las listas explícitas, las mismas propiedades. Las barras de valor de las
+   herramientas son la excepción de `.tj-dm-ancho`, contadas por fichero: una
+   barra nueva que anime su ancho tiene que pasar por aquí. */
+const ANCHOS_DE_VALOR: Record<string, number> = {
+  "components/marketing/EdgeSignificanceChecker.tsx": 1,
+  "components/marketing/DisciplineScore.tsx": 2,
+  "components/marketing/DisciplineCost.tsx": 1,
+  "components/beta/TraderProfilePage.tsx": 1,
+};
+const TRAZOS_SVG = new Set(["components/demo/pages/JournalPage.tsx"]);
+
+function tsxFueraDeSistema(nombre: string, texto: string): string[] {
+  const hallados = [...texto.matchAll(/(?<![\w-])transition-all\b/g)].map(() => "transition-all");
+  const props = [
+    ...[...texto.matchAll(/transition-\[([^\]]+)\]/g)].flatMap((m) => m[1].split(",")),
+    ...[...texto.matchAll(/transition:\s*["`]([^"`]+)["`]/g)].flatMap((m) => porComas(m[1]).map((i) => i.split(/\s+/)[0])),
+  ];
+  const anchos = props.filter((p) => p === "width").length;
+  if (anchos !== (ANCHOS_DE_VALOR[nombre] ?? 0)) hallados.push(`width ×${anchos}`);
+  for (const p of props) {
+    if (PROPS_LIBRES.has(p) || p === "width") continue;
+    if (p === "stroke-dashoffset" && TRAZOS_SVG.has(nombre)) continue;
+    hallados.push(p);
+  }
+  return hallados.map((h) => `${nombre}: ${h}`);
+}
+
+describe("solo se anima transform y opacidad, salvo excepción escrita", () => {
+  it("el detector caza la maqueta animada en la hoja y en los componentes", () => {
+    const hoja = `
+      .a { transition: left var(--dur-pulsa) linear, opacity var(--dur-estado) var(--ease-suave); }
+      @keyframes b { from { width: 0; } }
+      .tj-pliegue { transition: grid-template-rows var(--dur-abre) var(--ease-suave); }
+      .c { transition-property: color, height; }
+    `;
+    expect(cssFueraDeSistema(hoja)).toEqual([".a: left", "@keyframes b: width", ".c: height"]);
+    expect(tsxFueraDeSistema("x.tsx", `className="transition-all" className="transition-[left]" style={{ transition: "width var(--dur-abre) var(--ease-suave)" }}`)).toEqual([
+      "x.tsx: transition-all",
+      "x.tsx: width ×1",
+      "x.tsx: left",
+    ]);
+  });
+
+  it("globals.css no anima la maqueta fuera de sus excepciones", () => {
+    expect(cssFueraDeSistema(CSS)).toEqual([]);
+  });
+
+  it("cada excepción sigue en uso", () => {
+    const animadas = propsAnimadas(CSS);
+    for (const [re, prop] of EXCEPCIONES_CSS) expect(animadas.some(([q, p]) => p === prop && re.test(q)), `${re} ${prop}`).toBe(true);
+  });
+
+  it("ningún componente anima la maqueta ni usa `transition-all`", () => {
+    expect(CODIGO.flatMap(([f, t]) => tsxFueraDeSistema(f, t))).toEqual([]);
+  });
+});

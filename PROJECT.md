@@ -53,6 +53,11 @@ Windows (WinUI 3, en otro repositorio).
     salidas bajan un peldaño de duración (abre en `--dur-abre`, cierra en
     `--dur-estado`). `linear` solo en lo atado al scroll.
   - Cascadas en múltiplos de `--escalon` (40 ms), sin pasar de 8 pasos (320 ms).
+  - Lo que se mueve, se mueve con transform u opacidad; un estado cambia de tono
+    (color, fondo, filete, anillo, filtro). Animar la maqueta (ancho, alto,
+    posición, filas de rejilla) solo con su porqué en `EXCEPCIONES_CSS` de la
+    prueba: pliegues, trazos SVG, recortes, barras que siguen a un valor y la
+    guía del gráfico de métricas (trasladada, su línea de 1 px salía borrosa).
   - Desde JavaScript, `curva()` y `duracion()` de `src/lib/motion.ts` leen los mismos
     tokens; `usePresencia` espera `--dur-estado`, lo que dura toda salida.
 - **Afirmaciones técnicas**: sólo lo comprobado en el código del programa. Las cifras y

@@ -421,7 +421,7 @@ function DivergingBar({
       <div className="absolute left-1/2 top-0 bottom-0 w-px bg-[rgb(var(--divider)/0.25)] z-10" />
       <div
         className="tj-dm-ancho absolute top-0 bottom-0 right-1/2 bg-pnl-pos/80"
-        style={{ width: `${inPct}%`, "--dm-retardo": "calc(var(--escalon) * 3)" } as CSSProperties}
+        style={{ width: `${inPct}%`, "--dm-origen": "100% 50%", "--dm-retardo": "calc(var(--escalon) * 3)" } as CSSProperties}
       />
       <div
         className="tj-dm-ancho absolute top-0 bottom-0 left-1/2 bg-pnl-neg/80"
@@ -452,8 +452,8 @@ function PnlBarChart({ data }: { data: { label: string; pnl: number }[] }) {
             <div className="relative w-full flex-1">
               <div className="absolute left-0 right-0 top-1/2 h-px bg-[rgb(var(--divider)/0.1)] -translate-y-1/2" />
               <div
-                style={{ height: `${pct / 2}%`, "--dm-retardo": `calc(var(--escalon) * ${Math.min(i, 8)})` } as CSSProperties}
-                className={`tj-dm-alto absolute left-1/2 -translate-x-1/2 w-2/3 rounded-[2px] group-hover:w-4/5 transition-[width] ${
+                style={{ height: `${pct / 2}%`, "--dm-origen": isPos ? "50% 100%" : "50% 0", "--dm-retardo": `calc(var(--escalon) * ${Math.min(i, 8)})` } as CSSProperties}
+                className={`tj-dm-alto absolute left-1/2 -translate-x-1/2 w-2/3 rounded-[2px] group-hover:scale-x-120 transition-[scale] ${
                   isPos
                     ? "bottom-1/2 bg-pnl-pos/80"
                     : "top-1/2 bg-pnl-neg/80"
@@ -699,8 +699,8 @@ function PlanToggle({
           }`}
         >
           <span
-            className={`absolute top-0.5 motion-safe:transition-[left] ${
-              on ? "left-[1.375rem]" : "left-0.5"
+            className={`absolute top-0.5 left-0.5 motion-safe:transition-[translate] ${
+              on ? "translate-x-5" : ""
             } w-5 h-5 rounded-[2px] ${
               // Contraste con su pista, no blanco fijo (desaparecía en el tema
               // claro): tinta de acento sobre el acento, tinta normal sobre el aviso.
