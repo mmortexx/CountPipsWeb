@@ -276,10 +276,12 @@ function HeroStat({
   divider?: boolean;
 }) {
   return (
+    // Filete y sangría solo cuando las cuatro caben en una fila (contenedor de
+    // 48rem): al partirse, el filete quedaba en el arranque de renglón y sangraba la cifra.
     <div
-      className={`relative px-5 first:pl-0 ${
+      className={`relative @3xl:px-5 @3xl:first:pl-0 ${
         divider
-          ? "before:absolute before:left-0 before:top-2 before:bottom-2 before:w-px before:bg-[rgb(var(--divider)/0.12)]"
+          ? "@3xl:before:absolute @3xl:before:left-0 @3xl:before:top-2 @3xl:before:bottom-2 @3xl:before:w-px @3xl:before:bg-[rgb(var(--divider)/0.12)]"
           : ""
       }`}
     >
@@ -597,10 +599,10 @@ export function TradeDetailPage() {
         className="tj-dm-entra relative overflow-hidden demo-card p-6"
         style={{ "--dm-y": "16px", "--dm-dur": "0.6s" } as CSSProperties}
       >
-        <div className="relative space-y-6">
+        <div className="@container relative space-y-6">
           {/* Las cuatro cifras de cabecera llevan los nombres de la app
               (TradeDetailPage.xaml): P&L neto, R múltiplo, Riesgo y RR planeado. */}
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-5">
+          <div className="flex flex-wrap items-center gap-x-10 gap-y-5 @3xl:gap-x-2">
             <HeroStat label={lang === "es" ? "P&L neto" : "Net P&L"}>
               <div className="flex items-baseline gap-2">
                 <CountUp
