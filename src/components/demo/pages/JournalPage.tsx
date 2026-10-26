@@ -286,8 +286,6 @@ function ComplianceRing({ pct, label }: { pct: number; label: string }) {
   const R = 52;
   const C = 2 * Math.PI * R;
   const targetOffset = C * (1 - pct);
-  const overshoot = C * 0.06 * (1 - pct);
-  const overshootOffset = Math.max(0, targetOffset - overshoot);
   const tone: "pos" | "warn" | "neg" =
     pct > 0.7 ? "pos" : pct > 0.5 ? "warn" : "neg";
   const colorVar =
@@ -321,7 +319,6 @@ function ComplianceRing({ pct, label }: { pct: number; label: string }) {
           stroke="rgb(var(--divider) / 0.14)"
           strokeWidth={8}
         />
-        {/* Se pasa un poco del valor y vuelve a él. */}
         <circle
           cx="60"
           cy="60"
@@ -331,8 +328,8 @@ function ComplianceRing({ pct, label }: { pct: number; label: string }) {
           strokeWidth={8}
           strokeLinecap="round"
           strokeDasharray={C}
-          className="tj-dm-anillo-rebasa"
-          style={{ strokeDashoffset: targetOffset, "--dm-anillo": C, "--dm-rebase": overshootOffset } as CSSProperties}
+          className="tj-dm-anillo"
+          style={{ strokeDashoffset: targetOffset, "--dm-anillo": C } as CSSProperties}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -1194,7 +1191,6 @@ export function JournalPage() {
                     decimals={0}
                     prefix={headlinePrefix}
                     suffix={headlineSuffix}
-                    duration={2.4}
                   />
                 </div>
                 <div className="mt-2 text-[11px] text-tertiary max-w-[15rem]">

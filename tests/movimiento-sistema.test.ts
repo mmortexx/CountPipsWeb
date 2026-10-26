@@ -328,3 +328,62 @@ describe("solo se anima transform y opacidad, salvo excepción escrita", () => {
     expect(CODIGO.flatMap(([f, t]) => tsxFueraDeSistema(f, t))).toEqual([]);
   });
 });
+
+/* Nada compite con la cifra: nada crece por encima de su tamaño, ningún
+   fotograma intermedio se pasa del valor para volver (rebote), y ningún
+   número cuenta hasta el suyo. Los intermedios solo pueden fundir, mover o
+   llevar variables propias. */
+const PASO_EXTREMO = /^(from|to|0%|100%)$/;
+const PROPS_INTERMEDIAS = new Set(["opacity", "transform"]);
+
+function rebotes(css: string): string[] {
+  const out: string[] = [];
+  for (const r of reglas(css)) {
+    const i = r.padres.findIndex((p) => p.startsWith("@keyframes"));
+    if (i < 0 || i === r.padres.length - 1) continue;
+    const marco = r.padres[i];
+    const paso = r.padres.at(-1)!;
+    const intermedio = paso.split(",").some((s) => !PASO_EXTREMO.test(s.trim()));
+    for (const [prop, valor] of declaraciones(r.cuerpo)) {
+      for (const m of valor.matchAll(/scale[XY3d]*\(\s*([\d.]+)/g)) if (Number(m[1]) > 1) out.push(`${marco}: crece a ${m[1]}`);
+      if (prop === "scale" && Number(valor.split(/\s+/)[0]) > 1) out.push(`${marco}: crece a ${valor}`);
+      if (intermedio && !PROPS_INTERMEDIAS.has(prop) && !prop.startsWith("--")) out.push(`${marco} ${paso.replace(/\s+/g, " ")}: ${prop}`);
+    }
+  }
+  return out;
+}
+
+function cuentas(css: string): string[] {
+  const numericas = new Set(
+    [...css.matchAll(/@property\s+(--[\w-]+)\s*\{[^}]*syntax:\s*["']<(?:integer|number)>["']/g)].map((m) => m[1]),
+  );
+  return reglas(css)
+    .filter((r) => r.padres.some((p) => p.startsWith("@keyframes")))
+    .flatMap((r) => declaraciones(r.cuerpo).filter(([p]) => numericas.has(p)).map(([p]) => `${r.padres.find((x) => x.startsWith("@keyframes"))}: ${p}`));
+}
+
+describe("nada compite con la cifra: sin rebotes ni cuentas", () => {
+  it("el detector caza el rebote, lo que crece de más y la cifra que cuenta", () => {
+    const hoja = `
+      @property --n { syntax: "<integer>"; inherits: false; initial-value: 0; }
+      @keyframes a { 0% { transform: scale(0); } 30% { transform: scale(1.3); } 100% { transform: scale(1); } }
+      @keyframes b { from { stroke-dashoffset: 10; } 62% { stroke-dashoffset: 2; } }
+      @keyframes c { from { --n: 0; } to { --n: 9; } }
+      @keyframes d { 0%, 88% { opacity: 1; } to { opacity: 0; } }
+    `;
+    expect(rebotes(hoja)).toEqual(["@keyframes a: crece a 1.3", "@keyframes b 62%: stroke-dashoffset"]);
+    expect(cuentas(hoja)).toEqual(["@keyframes c: --n", "@keyframes c: --n"]);
+  });
+
+  it("en globals.css nada rebota ni crece por encima de su tamaño", () => {
+    expect(rebotes(CSS)).toEqual([]);
+  });
+
+  it("en globals.css ninguna cifra cuenta hasta su valor", () => {
+    expect(cuentas(CSS)).toEqual([]);
+  });
+
+  it("ningún componente usa los rebotes y pulsos de Tailwind", () => {
+    expect(CODIGO.flatMap(([f, t]) => [...t.matchAll(/(?<![\w-])animate-(bounce|ping)\b/g)].map((m) => `${f}: ${m[0]}`))).toEqual([]);
+  });
+});

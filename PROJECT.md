@@ -62,6 +62,10 @@ Windows (WinUI 3, en otro repositorio).
     Un bloque cuyas piezas entran solas, o que guarda un gráfico que se dibuja,
     aparece sin subir (`data-tj-funde`, Aparecer.tsx); `movimiento.mjs` lo vigila,
     también como un navegador sin `animation-timeline`.
+  - Nada compite con la cifra: las cifras salen ya en su valor (no cuentan), nada
+    crece por encima de su tamaño y ningún fotograma intermedio se pasa para volver
+    (rebote). Lo vigilan `tests/movimiento-sistema.test.ts` en la hoja y
+    `movimiento.mjs` en el navegador.
   - Desde JavaScript, `curva()` y `duracion()` de `src/lib/motion.ts` leen los mismos
     tokens; `usePresencia` espera `--dur-estado`, lo que dura toda salida.
 - **Afirmaciones técnicas**: sólo lo comprobado en el código del programa. Las cifras y

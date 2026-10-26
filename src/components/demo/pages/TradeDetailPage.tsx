@@ -608,12 +608,10 @@ export function TradeDetailPage() {
                 <CountUp
                   key={trade.id}
                   to={Math.abs(trade.netPnl)}
-                  from={0}
                   decimals={2}
                   prefix={`${trade.netPnl >= 0 ? "+" : "−"}${lang === "es" ? "" : "$"}`}
                   suffix={lang === "es" ? "\u00a0$" : ""}
                   tone={tone}
-                  duration={1.6}
                   className="text-3xl md:text-4xl font-semibold tracking-tight"
                 />
               </div>

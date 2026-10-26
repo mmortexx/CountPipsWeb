@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang, tx } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
@@ -103,12 +103,7 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
                   lineHeight: 1,
                 }}
               >
-                <span
-                  className="tj-cifra-cuenta"
-                  style={{ "--hasta": parseInt(s.v, 10) || 0, "--sufijo": `"${s.v.replace(/^\d+/, "")}"` } as CSSProperties}
-                >
-                  <span className="tj-cifra-real">{s.v}</span>
-                </span>
+                {s.v}
                 <sup aria-hidden className="tj-llamada">{i + 1}</sup>
               </div>
               <div className="max-w-[22em] text-balance text-[15px] leading-snug text-secondary sm:mt-3">{s.l}</div>

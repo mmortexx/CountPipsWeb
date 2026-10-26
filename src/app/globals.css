@@ -3527,21 +3527,6 @@ select.tj-campo:invalid {
   font-variant-numeric: tabular-nums;
 }
 
-/* ============================================================
-   TJ-PING — pulso "live" de los indicadores en tiempo real (SessionClock):
-   un ping sutil que se expande y se desvanece. Se desactiva con
-   prefers-reduced-motion.
-   ============================================================ */
-@keyframes tj-ping {
-  0% { transform: scale(1); opacity: 0.6; }
-  75%, 100% { transform: scale(2.6); opacity: 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  @keyframes tj-ping {
-    0%, 100% { transform: scale(1); opacity: 0.6; }
-  }
-}
-
 /* Con el cajón móvil abierto (`data-drawer-open` en <body>, lo marca el
    Navbar) se oculta el botón de subir: tras el velo translúcido seguía
    viéndose y competía con el menú. */
@@ -3688,7 +3673,7 @@ svg [data-entra="sello"] {
 }
 @keyframes tj-pulso-viaja {
   0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
-  30% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+  30% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   70% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   100% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
 }
@@ -4330,47 +4315,6 @@ svg [data-entra="sello"] {
   }
 }
 
-/* ── LAS CIFRAS QUE CUENTAN ───────────────────────────────────────────
-   La franja de datos cuenta de 0 a su valor mientras entra. El número real
-   sigue en el documento (lectores de pantalla, sin soporte, movimiento
-   reducido); la cuenta es un contador generado con texto alternativo
-   vacío para que no se lea dos veces. */
-@property --cuenta {
-  syntax: "<integer>";
-  inherits: false;
-  initial-value: 0;
-}
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .tj-cifra-cuenta {
-      --cuenta: var(--hasta);
-      counter-reset: cifra var(--cuenta);
-      animation: tj-cuenta var(--ease-suave) both;
-      animation-timeline: view(block);
-      animation-range: cover 4% cover 34%;
-    }
-    .tj-cifra-cuenta::before {
-      content: counter(cifra) var(--sufijo) / "";
-    }
-    .tj-cifra-cuenta > .tj-cifra-real {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip-path: inset(50%);
-      white-space: nowrap;
-    }
-  }
-}
-@keyframes tj-cuenta {
-  from {
-    --cuenta: 0;
-  }
-  to {
-    --cuenta: var(--hasta);
-  }
-}
-
 /* ── LA PRIMERA PANTALLA SE COMPONE AL ABRIR ──────────────────────────
    Lo que está a la vista al cargar no tiene scroll que lo anime: con
    `view()` nace ya colocado. Aquí entra por tiempo, en cascada: etiqueta,
@@ -4537,25 +4481,6 @@ html.tj-mov #main-content .tj-cristal:not(#top *) {
 [data-tj-paso="4"] { --tj-retardo: calc(var(--escalon) * 4); }
 [data-tj-paso="5"] { --tj-retardo: calc(var(--escalon) * 5); }
 [data-tj-paso="6"] { --tj-retardo: calc(var(--escalon) * 6); }
-/* Animación nueva, no la de scroll reutilizada: Chrome deja el reloj en
-   negativo al pasar una animación de `view()` a tiempo y no llega a contar. */
-html.tj-mov .tj-cifra-cuenta {
-  animation: none;
-}
-html.tj-mov [data-tj-ap="0"] .tj-cifra-cuenta {
-  --cuenta: 0;
-}
-html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
-  animation: tj-cuenta-tiempo var(--dur-entra) var(--ease-suave) both;
-}
-@keyframes tj-cuenta-tiempo {
-  from {
-    --cuenta: 0;
-  }
-  to {
-    --cuenta: var(--hasta);
-  }
-}
 @media (prefers-reduced-motion: reduce) {
   [data-tj-ap] {
     opacity: 1 !important;
@@ -4776,9 +4701,6 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
     animation: tj-dm-anillo var(--dur-entra) var(--ease-suave) var(--dm-retardo, 0s) backwards;
     transition: stroke-dashoffset var(--dur-entra) var(--ease-suave);
   }
-  .tj-dm-anillo-rebasa {
-    animation: tj-dm-anillo-rebasa var(--dur-entra) var(--ease-suave) backwards;
-  }
   .tj-dm-traza {
     animation: tj-dm-traza var(--dur-entra) var(--ease-suave) var(--dm-retardo, 0s) backwards;
   }
@@ -4912,14 +4834,6 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
 @keyframes tj-dm-anillo {
   from {
     stroke-dashoffset: var(--dm-anillo);
-  }
-}
-@keyframes tj-dm-anillo-rebasa {
-  from {
-    stroke-dashoffset: var(--dm-anillo);
-  }
-  62% {
-    stroke-dashoffset: var(--dm-rebase);
   }
 }
 @keyframes tj-dm-traza {
