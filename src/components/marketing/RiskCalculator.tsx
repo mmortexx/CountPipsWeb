@@ -458,7 +458,7 @@ export function RiskCalculator() {
             >
               <span
                 aria-hidden
-                className={`absolute top-[3px] left-[3px] h-[18px] w-[18px] rounded-full bg-[var(--raised)] shadow-sm transition-transform duration-200 ${
+                className={`absolute top-[3px] left-[3px] h-[18px] w-[18px] rounded-full bg-[var(--raised)] shadow-sm transition-transform ${
                   includeFriction ? "translate-x-4" : ""
                 }`}
               />
@@ -757,7 +757,7 @@ export function RiskCalculator() {
                 aria-expanded={showKelly}
                 className="toque-comodo shrink-0 whitespace-nowrap text-[13px] text-secondary hover:text-primary flex items-center gap-2 transition-colors"
               >
-                <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden className={`transition-transform duration-150 ${showKelly ? "rotate-90" : ""}`}>
+                <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden className={`transition-transform duration-(--dur-abre) ${showKelly ? "rotate-90" : ""}`}>
                   <path d="M3.5 2l3 3-3 3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 <span>{es ? "Criterio de Kelly" : "Kelly criterion"}</span>

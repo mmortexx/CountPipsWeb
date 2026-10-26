@@ -43,6 +43,18 @@ Windows (WinUI 3, en otro repositorio).
 - **Cifras que caben**: `.caja-cifra` + `.cifra-xl/-lg/-sm` (consultas de contenedor),
   nunca `clamp()` contra el ancho de la ventana.
 - **Toque**: 44 px en puntero grueso (`.toque-comodo`); campos a 16 px en móvil.
+- **Movimiento**: cuatro duraciones y dos curvas, como tokens en `globals.css`; nada
+  escribe un tiempo ni una curva a mano (`tests/movimiento-sistema.test.ts`).
+  - `--dur-pulsa` 100 ms (el control se hunde al pulsar), `--dur-estado` 150 ms
+    (pasar por encima, foco, elegido; también es el defecto de `transition-*`),
+    `--dur-abre` 220 ms (menús, ventanas, pliegues y la flecha que los acompaña),
+    `--dur-entra` 320 ms (lo que entra o recorre la pantalla; es el tope).
+  - `--ease-suave` para lo que llega y `--ease-acelera` para lo que se va; las
+    salidas bajan un peldaño de duración (abre en `--dur-abre`, cierra en
+    `--dur-estado`). `linear` solo en lo atado al scroll.
+  - Cascadas en múltiplos de `--escalon` (40 ms), sin pasar de 8 pasos (320 ms).
+  - Desde JavaScript, `curva()` y `duracion()` de `src/lib/motion.ts` leen los mismos
+    tokens; `usePresencia` espera `--dur-estado`, lo que dura toda salida.
 - **Afirmaciones técnicas**: sólo lo comprobado en el código del programa. Las cifras y
   listas que cita la web viven en `PROGRAMA` (`src/lib/producto.ts`) y las conexiones en
   `src/lib/conexiones.ts`; `tests/programa.test.ts` las compara con el código del programa

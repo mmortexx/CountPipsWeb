@@ -90,7 +90,7 @@ function CheckMark({ checked }: { checked: boolean }) {
         pathLength={1}
         strokeDasharray={1}
         style={{ strokeDashoffset: checked ? 0 : 1, opacity: checked ? 1 : 0 }}
-        className={`motion-safe:transition-[stroke-dashoffset,opacity] motion-safe:duration-[320ms] motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)] ${checked ? "tj-dm-traza" : ""}`}
+        className={`motion-safe:transition-[stroke-dashoffset,opacity] motion-safe:duration-(--dur-entra) ${checked ? "tj-dm-traza" : ""}`}
       />
     </svg>
   );
@@ -182,7 +182,7 @@ function DayScoreDots({
               className="absolute inset-0 rounded-[2px] bg-[rgb(var(--divider)/0.10)]"
             />
             <span
-              className="absolute inset-0 rounded-[2px] bg-[rgb(var(--accent-base))] motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]"
+              className="absolute inset-0 rounded-[2px] bg-[rgb(var(--accent-base))] motion-safe:transition-[opacity,transform]"
               style={{ opacity: active ? 1 : 0, transform: active ? "none" : "scale(0.7)" }}
             />
             {isSelected && (
@@ -381,7 +381,7 @@ function TrafficLight({ level }: { level: "green" | "amber" | "red" }) {
           return (
             <div key={l.key} className="relative w-2.5 h-2.5">
               <span
-                className="absolute inset-0 rounded-[1px] motion-safe:transition-[opacity,transform] motion-safe:duration-300"
+                className="absolute inset-0 rounded-[1px] motion-safe:transition-[opacity,transform]"
                 style={{
                   backgroundColor: l.color,
                   opacity: active ? 1 : 0.22,
@@ -421,11 +421,11 @@ function DivergingBar({
       <div className="absolute left-1/2 top-0 bottom-0 w-px bg-[rgb(var(--divider)/0.25)] z-10" />
       <div
         className="tj-dm-ancho absolute top-0 bottom-0 right-1/2 bg-pnl-pos/80"
-        style={{ width: `${inPct}%`, "--dm-retardo": "0.4s" } as CSSProperties}
+        style={{ width: `${inPct}%`, "--dm-retardo": "calc(var(--escalon) * 3)" } as CSSProperties}
       />
       <div
         className="tj-dm-ancho absolute top-0 bottom-0 left-1/2 bg-pnl-neg/80"
-        style={{ width: `${outPct}%`, "--dm-retardo": "0.55s" } as CSSProperties}
+        style={{ width: `${outPct}%`, "--dm-retardo": "calc(var(--escalon) * 4)" } as CSSProperties}
       />
     </div>
   );
@@ -452,7 +452,7 @@ function PnlBarChart({ data }: { data: { label: string; pnl: number }[] }) {
             <div className="relative w-full flex-1">
               <div className="absolute left-0 right-0 top-1/2 h-px bg-[rgb(var(--divider)/0.1)] -translate-y-1/2" />
               <div
-                style={{ height: `${pct / 2}%`, "--dm-retardo": `${0.04 * i}s` } as CSSProperties}
+                style={{ height: `${pct / 2}%`, "--dm-retardo": `calc(var(--escalon) * ${Math.min(i, 8)})` } as CSSProperties}
                 className={`tj-dm-alto absolute left-1/2 -translate-x-1/2 w-2/3 rounded-[2px] group-hover:w-4/5 transition-[width] ${
                   isPos
                     ? "bottom-1/2 bg-pnl-pos/80"
@@ -640,7 +640,7 @@ function SleepStepper({
           <div className="relative h-1.5 rounded-[2px] bg-[rgb(var(--divider)/0.08)] overflow-hidden">
             <div
               className="tj-dm-ancho absolute inset-y-0 left-0 rounded-[2px] bg-[rgb(var(--accent-base))]"
-              style={{ width: `${pct}%`, "--dm-dur": "0.6s" } as CSSProperties}
+              style={{ width: `${pct}%` } as CSSProperties}
             />
           </div>
         </div>
@@ -699,7 +699,7 @@ function PlanToggle({
           }`}
         >
           <span
-            className={`absolute top-0.5 motion-safe:transition-[left] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            className={`absolute top-0.5 motion-safe:transition-[left] ${
               on ? "left-[1.375rem]" : "left-0.5"
             } w-5 h-5 rounded-[2px] ${
               // Contraste con su pista, no blanco fijo (desaparecía en el tema
@@ -1187,7 +1187,7 @@ export function JournalPage() {
                 <div
                   ref={alVer}
                   className={`tj-dm-entra relative font-semibold tracking-tight text-4xl md:text-5xl tnum ${headlineTone}`}
-                  style={{ textShadow: headlineShadow, "--dm-o": 0.55, "--dm-s": 0.94, "--dm-dur": "0.7s", "--dm-retardo": "0.15s" } as CSSProperties}
+                  style={{ textShadow: headlineShadow, "--dm-o": 0.55, "--dm-s": 0.94, "--dm-retardo": "var(--escalon)" } as CSSProperties}
                 >
                   <CountUp
                     to={headlineValue}
@@ -1299,7 +1299,7 @@ export function JournalPage() {
                   <li
                     key={row.label}
                     ref={alVer}
-                    style={{ "--dm-x": "-8px", "--dm-dur": "0.35s", "--dm-retardo": `${i * 0.04}s` } as CSSProperties}
+                    style={{ "--dm-x": "-8px", "--dm-retardo": `calc(var(--escalon) * ${Math.min(i, 8)})` } as CSSProperties}
                     className="tj-dm-entra grid grid-cols-[3rem_1fr_2.5rem] gap-3 items-center"
                   >
                     <span className="text-[11px] text-secondary tnum">
@@ -1316,8 +1316,7 @@ export function JournalPage() {
                               ? "rgb(var(--pnl-warn))"
                               : "rgb(var(--pnl-neg))",
                           width: `${row.fraction * 100}%`,
-                          "--dm-dur": "0.7s",
-                          "--dm-retardo": `${0.1 + i * 0.04}s`,
+                          "--dm-retardo": `calc(var(--escalon) * ${Math.min(2 + i, 8)})`,
                         } as CSSProperties}
                       />
                     </div>
@@ -1386,7 +1385,7 @@ export function JournalPage() {
             id="review-tabpanel"
             aria-label={tab === "weekly" ? t("weekly") : t("monthly")}
             className="tj-dm-entra"
-            style={{ "--dm-y": "8px", "--dm-dur": "0.28s" } as CSSProperties}
+            style={{ "--dm-y": "8px", "--dm-dur": "var(--dur-abre)" } as CSSProperties}
           >
             {tab === "weekly" ? (
               <PnlBarChart data={weekly} />
@@ -1447,7 +1446,7 @@ export function JournalPage() {
                 <li
                   key={entry.key}
                   ref={alVer}
-                  style={{ "--dm-x": "-10px", "--dm-dur": "0.5s", "--dm-retardo": `${0.06 * i}s` } as CSSProperties}
+                  style={{ "--dm-x": "-10px", "--dm-retardo": `calc(var(--escalon) * ${Math.min(i, 8)})` } as CSSProperties}
                   className={`tj-dm-entra tj-dm-alza demo-card border-l-2 ${borderColor} p-4`}
                 >
                   <div className="flex items-start justify-between gap-3 flex-wrap">

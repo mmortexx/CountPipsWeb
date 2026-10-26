@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef } from "react";
+import { curva, duracion } from "@/lib/motion";
 
 /**
  * Una pieza que viaja de una opción a otra en vez de apagarse y encenderse: la
@@ -28,7 +29,8 @@ export function saltoViaje(desde: Caja, hasta: Caja): string | null {
   return `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`;
 }
 
-export function useViaje<T extends HTMLElement>(clave: string, ms = 350, curva = "cubic-bezier(0.22, 1, 0.36, 1)") {
+/** Viaja con el tiempo y la curva de lo que se abre a petición (`--dur-abre`, `--ease-suave`). */
+export function useViaje<T extends HTMLElement>(clave: string) {
   const ref = useRef<T>(null);
   useLayoutEffect(() => {
     const el = ref.current;
@@ -37,13 +39,17 @@ export function useViaje<T extends HTMLElement>(clave: string, ms = 350, curva =
     ultimas.delete(clave);
     if (previa && performance.now() - previa.t < VIGENCIA && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
       const salto = saltoViaje(previa.caja, el.getBoundingClientRect());
-      if (salto) el.animate([{ transformOrigin: "0 0", transform: salto }, { transformOrigin: "0 0", transform: "none" }], { duration: ms, easing: curva });
+      if (salto)
+        el.animate([{ transformOrigin: "0 0", transform: salto }, { transformOrigin: "0 0", transform: "none" }], {
+          duration: duracion("--dur-abre"),
+          easing: curva("--ease-suave"),
+        });
     }
     // React limpia el efecto antes de quitar el nodo: la caja medida es la de la pieza aún en su sitio.
     return () => {
       const { left, top, width, height } = el.getBoundingClientRect();
       ultimas.set(clave, { caja: { left, top, width, height }, t: performance.now() });
     };
-  }, [clave, ms, curva]);
+  }, [clave]);
   return ref;
 }

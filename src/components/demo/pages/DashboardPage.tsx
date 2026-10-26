@@ -277,7 +277,7 @@ export function DashboardPage() {
                 key={`risk-${riskUsdLive.toFixed(2)}`}
                 /* En la tira apilada: 22 px y sin margen, comparte línea con el rótulo. */
                 className="tj-dm-entra text-[22px] font-semibold leading-none tnum text-primary sm:mt-1 sm:text-[28px]"
-                style={{ "--dm-o": 0.55, "--dm-y": "3px", "--dm-dur": "0.35s" } as CSSProperties}
+                style={{ "--dm-o": 0.55, "--dm-y": "3px" } as CSSProperties}
               >
                 <Money value={riskUsdLive} />
               </div>
@@ -455,7 +455,7 @@ export function DashboardPage() {
                                     // navegadores tiñen de gris el degradado.
                                     : "0 0 0px 0px rgb(var(--sombra) / 0)",
                                 }}
-                                className={`inline-block w-2 h-2 rounded-[1px] motion-safe:transition-[transform,box-shadow] motion-safe:duration-[250ms] ${
+                                className={`inline-block w-2 h-2 rounded-[1px] motion-safe:transition-[transform,box-shadow] ${
                                   d === "long" ? "bg-pnl-pos" : "bg-pnl-neg"
                                 }`}
                                 aria-hidden="true"
@@ -969,7 +969,7 @@ export function DashboardPage() {
                     key={tr.id}
                     type="button"
                     onClick={() => goDetail(tr.id)}
-                    style={{ "--dm-y": "4px", "--dm-dur": "0.3s", "--dm-retardo": `${Math.min(i * 0.04, 0.24)}s` } as CSSProperties}
+                    style={{ "--dm-y": "4px", "--dm-retardo": `calc(var(--escalon) * ${Math.min(i, 6)})` } as CSSProperties}
                     /* `flex-wrap` en móvil: las cinco celdas son `shrink-0` y a 390 px
                        sumaban 319 en 207 útiles, con el P&L cortado. Envolver no
                        pierde datos (truncar devolvía «XAU/U…»); en sm+ vuelve a una

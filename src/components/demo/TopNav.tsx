@@ -141,7 +141,7 @@ export function TopNav() {
               // `min-w-[44px]` garantiza el tamaño de toque con solo icono. En móvil
               // el activo lleva además un fondo teñido (`sm:bg-transparent` lo
               // quita) y la barrita sube de w-5 a w-6.
-              className={`relative h-full min-w-[44px] sm:min-w-0 px-3 sm:px-4 flex items-center justify-center sm:justify-start gap-2 text-[13px] transition-[background-color,color,transform] duration-150 ease-[var(--ease-menu-in)] whitespace-nowrap outline-none focus-visible:ring-1 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:-ring-offset-1 rounded-[2px] sm:rounded-none ${
+              className={`relative h-full min-w-[44px] sm:min-w-0 px-3 sm:px-4 flex items-center justify-center sm:justify-start gap-2 text-[13px] transition-[background-color,color,transform] whitespace-nowrap outline-none focus-visible:ring-1 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:-ring-offset-1 rounded-[2px] sm:rounded-none ${
                 active
                   ? "text-primary bg-[rgb(var(--accent-base)/0.10)] sm:bg-transparent"
                   : "text-secondary hover:text-primary hover:bg-[rgb(var(--divider)/0.04)] sm:hover:bg-transparent"
@@ -169,8 +169,6 @@ export function TopNav() {
                   clave="demo-indicador-pestana"
                   className="absolute bottom-[6px] left-1/2 -ml-3 sm:-ml-2.5 w-6 sm:w-5 h-[3px] rounded-[1px]"
                   style={{ background: "rgb(var(--accent-base))" }}
-                  ms={400}
-                  curva="cubic-bezier(0.1, 0.9, 0.2, 1)"
                 />
               )}
             </button>

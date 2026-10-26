@@ -304,11 +304,11 @@ function ExcursionBar({ mae, mfe }: { mae: number; mfe: number }) {
       <div className="absolute left-1/2 top-0 bottom-0 w-px bg-[rgb(var(--divider)/0.25)] z-10" />
       <div
         className="tj-dm-ancho absolute top-0 bottom-0 right-1/2 bg-pnl-neg/80"
-        style={{ width: `${maePct}%`, "--dm-retardo": "0.5s" } as CSSProperties}
+        style={{ width: `${maePct}%`, "--dm-retardo": "calc(var(--escalon) * 4)" } as CSSProperties}
       />
       <div
         className="tj-dm-ancho absolute top-0 bottom-0 left-1/2 bg-pnl-pos/80"
-        style={{ width: `${mfePct}%`, "--dm-retardo": "0.65s" } as CSSProperties}
+        style={{ width: `${mfePct}%`, "--dm-retardo": "calc(var(--escalon) * 5)" } as CSSProperties}
       />
     </div>
   );
@@ -335,11 +335,11 @@ function RiskRewardBar({
       <div className="relative h-2.5 rounded-[2px] bg-[rgb(var(--divider)/0.05)] overflow-hidden flex">
         <div
           className="tj-dm-ancho h-full bg-pnl-neg/80 shrink-0"
-          style={{ width: `${riskFraction * 100}%`, "--dm-retardo": "0.7s" } as CSSProperties}
+          style={{ width: `${riskFraction * 100}%`, "--dm-retardo": "calc(var(--escalon) * 6)" } as CSSProperties}
         />
         <div
           className="tj-dm-ancho h-full bg-pnl-pos/80 shrink-0"
-          style={{ width: `${rewardFraction * 100}%`, "--dm-retardo": "1s" } as CSSProperties}
+          style={{ width: `${rewardFraction * 100}%`, "--dm-retardo": "calc(var(--escalon) * 8)" } as CSSProperties}
         />
       </div>
     </div>
@@ -508,7 +508,7 @@ export function TradeDetailPage() {
     <div className="relative p-5 md:p-6 space-y-5">
       <section
         className="tj-dm-entra flex items-center justify-between gap-3 flex-wrap"
-        style={{ "--dm-y": "12px", "--dm-dur": "0.5s" } as CSSProperties}
+        style={{ "--dm-y": "12px" } as CSSProperties}
       >
         <button
           type="button"
@@ -597,7 +597,7 @@ export function TradeDetailPage() {
 
       <section
         className="tj-dm-entra relative overflow-hidden demo-card p-6"
-        style={{ "--dm-y": "16px", "--dm-dur": "0.6s" } as CSSProperties}
+        style={{ "--dm-y": "16px" } as CSSProperties}
       >
         <div className="@container relative space-y-6">
           {/* Las cuatro cifras de cabecera llevan los nombres de la app
@@ -681,7 +681,7 @@ export function TradeDetailPage() {
 
       <section
         className="tj-dm-entra"
-        style={{ "--dm-y": "16px", "--dm-dur": "0.6s", "--dm-retardo": "0.25s" } as CSSProperties}
+        style={{ "--dm-y": "16px", "--dm-retardo": "calc(var(--escalon) * 2)" } as CSSProperties}
       >
         <TradeCandleChart trade={trade} decimals={decimals} />
       </section>
@@ -690,7 +690,7 @@ export function TradeDetailPage() {
         <div className="flex flex-col gap-5 min-w-0">
           <div
             className="tj-dm-entra tj-dm-alza demo-card p-5"
-            style={{ "--dm-y": "16px", "--dm-retardo": "0.35s" } as CSSProperties}
+            style={{ "--dm-y": "16px", "--dm-retardo": "calc(var(--escalon) * 3)" } as CSSProperties}
           >
             <Eyebrow className="mb-4">{t("execution")}</Eyebrow>
             <dl className="grid grid-cols-3 gap-y-3.5 gap-x-4">
@@ -724,7 +724,7 @@ export function TradeDetailPage() {
 
           <div
             className="tj-dm-entra tj-dm-alza demo-card p-5"
-            style={{ "--dm-y": "16px", "--dm-retardo": "0.4s" } as CSSProperties}
+            style={{ "--dm-y": "16px", "--dm-retardo": "calc(var(--escalon) * 3)" } as CSSProperties}
           >
             <div className="flex items-center gap-3 mb-4">
               <Eyebrow>
@@ -752,7 +752,7 @@ export function TradeDetailPage() {
                     <li
                       key={i}
                       className="tj-dm-entra grid grid-cols-[3.5rem_1fr_3.5rem_4rem_3rem_3.5rem] gap-x-3 py-2 items-center text-xs min-w-[24rem]"
-                      style={{ "--dm-x": "-8px", "--dm-dur": "0.35s", "--dm-retardo": `${0.5 + i * 0.08}s` } as CSSProperties}
+                      style={{ "--dm-x": "-8px", "--dm-retardo": `calc(var(--escalon) * ${Math.min(4 + i, 8)})` } as CSSProperties}
                     >
                     <div className="flex flex-col">
                       <span
@@ -788,7 +788,7 @@ export function TradeDetailPage() {
 
           <div
             className="tj-dm-entra tj-dm-alza demo-card p-5"
-            style={{ "--dm-y": "16px", "--dm-retardo": "0.45s" } as CSSProperties}
+            style={{ "--dm-y": "16px", "--dm-retardo": "calc(var(--escalon) * 4)" } as CSSProperties}
           >
             <Eyebrow className="mb-4">
               {lang === "es" ? "Dónde cayó dentro del día" : "Where it fell in the day"}
@@ -838,7 +838,7 @@ export function TradeDetailPage() {
           <div className="grid sm:grid-cols-2 gap-5">
             <div
               className="tj-dm-entra tj-dm-alza demo-card p-5"
-              style={{ "--dm-y": "16px", "--dm-retardo": "0.55s" } as CSSProperties}
+              style={{ "--dm-y": "16px", "--dm-retardo": "calc(var(--escalon) * 4)" } as CSSProperties}
             >
               <Eyebrow className="mb-4">{t("plan")}</Eyebrow>
               <dl className="grid grid-cols-2 gap-y-3.5 gap-x-4">
@@ -867,7 +867,7 @@ export function TradeDetailPage() {
 
             <div
               className="tj-dm-entra tj-dm-alza demo-card p-5"
-              style={{ "--dm-y": "16px", "--dm-retardo": "0.6s" } as CSSProperties}
+              style={{ "--dm-y": "16px", "--dm-retardo": "calc(var(--escalon) * 5)" } as CSSProperties}
             >
               <Eyebrow className="mb-4">{t("context")}</Eyebrow>
               <dl className="grid grid-cols-2 gap-y-3.5 gap-x-4">
@@ -920,7 +920,7 @@ export function TradeDetailPage() {
         <div className="flex flex-col gap-5 min-w-0">
           <div
             className="tj-dm-entra tj-dm-alza demo-card p-5"
-            style={{ "--dm-y": "16px", "--dm-retardo": "0.4s" } as CSSProperties}
+            style={{ "--dm-y": "16px", "--dm-retardo": "calc(var(--escalon) * 3)" } as CSSProperties}
           >
             <Eyebrow className="mb-4">{t("screenshots")}</Eyebrow>
             <div className="border-2 border-dashed border-[rgb(var(--divider)/0.1)] rounded-[2px] p-4 text-center text-xs text-tertiary mb-3 transition-colors hover:border-[rgb(var(--divider)/0.2)] hover:bg-[rgb(var(--divider)/0.02)]">
@@ -952,7 +952,7 @@ export function TradeDetailPage() {
 
           <div
             className="tj-dm-entra tj-dm-alza demo-card p-5"
-            style={{ "--dm-y": "16px", "--dm-retardo": "0.45s" } as CSSProperties}
+            style={{ "--dm-y": "16px", "--dm-retardo": "calc(var(--escalon) * 4)" } as CSSProperties}
           >
             <Eyebrow className="mb-4">
               {lang === "es" ? "Etiquetas" : "Tags"}
@@ -1003,7 +1003,7 @@ export function TradeDetailPage() {
 
           <div
             className="tj-dm-entra tj-dm-alza demo-card p-5"
-            style={{ "--dm-y": "16px", "--dm-retardo": "0.5s" } as CSSProperties}
+            style={{ "--dm-y": "16px", "--dm-retardo": "calc(var(--escalon) * 4)" } as CSSProperties}
           >
             <Eyebrow className="mb-4">{t("review")}</Eyebrow>
 

@@ -97,7 +97,7 @@ export function BackToTop() {
           evita que el contenedor intercepte clics con el botón oculto. */}
       <div
         ref={anclaRef}
-        className="fixed right-[calc(env(safe-area-inset-right)+1.5rem)] bottom-[calc(env(safe-area-inset-bottom)+1.5rem)] z-40 pointer-events-none transition-transform duration-200 ease-[var(--ease-suave)] motion-reduce:transition-none"
+        className="fixed right-[calc(env(safe-area-inset-right)+1.5rem)] bottom-[calc(env(safe-area-inset-bottom)+1.5rem)] z-40 pointer-events-none transition-transform motion-reduce:transition-none"
         style={{ transform: `translateY(-${pieLift}px)` }}
       >
         {/* Visible por atributo (`.tj-emerge`, globals.css). `tabIndex={-1}`

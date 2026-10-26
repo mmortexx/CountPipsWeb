@@ -20,8 +20,8 @@ const GlossaryModal = dynamic(
   { ssr: false }
 );
 
-// Margen para la animación de salida antes de quitar el overlay del árbol
-// (el fundido dura 180 ms).
+// Margen holgado sobre la animación de salida (`--dur-estado`) antes de
+// quitar el overlay del árbol.
 const EXIT_MS = 260;
 
 export function OverlayHost() {

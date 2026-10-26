@@ -363,7 +363,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                   style={{
                     width: `${(answeredCount / QUESTIONS.length) * 100}%`,
                     background: "rgb(var(--accent-base))",
-                    transition: "width 0.22s var(--ease-suave)",
+                    transition: "width var(--dur-abre) var(--ease-suave)",
                   }}
                 />
               </div>
@@ -422,7 +422,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                             tabIndex={enfocable ? 0 : -1}
                             onClick={() => setAnswer(qi, oi)}
                             onKeyDown={(e) => moverConFlechas(e, oi, (d) => setAnswer(qi, d))}
-                            className={`text-left rounded-[4px] transition-[background-color,color,box-shadow] duration-200 ${
+                            className={`text-left rounded-[4px] transition-[background-color,color,box-shadow] ${
                               activa
                                 ? "bg-[var(--ink)] text-[var(--bg)]"
                                 : "text-[var(--ink-2)] shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)] hover:text-[var(--ink)] hover:shadow-[inset_0_0_0_1px_var(--line-2)]"
@@ -454,7 +454,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                 type="button"
                 onClick={() => irA(actual - 1)}
                 disabled={actual === 0}
-                className="order-2 inline-flex items-center gap-2 rounded-[4px] transition-colors duration-200 disabled:opacity-35 disabled:cursor-not-allowed sm:order-none"
+                className="order-2 inline-flex items-center gap-2 rounded-[4px] transition-colors disabled:opacity-35 disabled:cursor-not-allowed sm:order-none"
                 style={{ minHeight: 44, padding: "10px 16px", fontSize: 14, cursor: "pointer",
                          color: "var(--ink-2)", border: "1px solid transparent" }}
               >
@@ -527,7 +527,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                   className="tj-cifra"
                   style={{
                     color: level ? level.color : "var(--ink-3)",
-                    transition: "color 0.25s ease",
+                    transition: "color var(--dur-estado) var(--ease-suave)",
                   }}
                 >
                   {/* Sin respuestas no hay cifra: un «0» se leería como nota. */}
@@ -587,7 +587,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                         style={{
                           width: `${respondidas ? pct : 0}%`,
                           background: barColor(pct),
-                          transition: "width 0.3s var(--ease-suave), background-color 0.3s ease",
+                          transition: "width var(--dur-abre) var(--ease-suave), background-color var(--dur-abre) var(--ease-suave)",
                         }}
                       />
                     </div>

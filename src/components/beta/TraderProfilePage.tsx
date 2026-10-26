@@ -179,7 +179,7 @@ export function TraderProfileBody({ profile, terminos }: { profile: TraderProfil
               </div>
               <div className="relative h-[3px] rounded-[1px] overflow-hidden bg-[var(--ficha-division)]">
                 <div
-                  className="h-full transition-[width] duration-300"
+                  className="h-full transition-[width] duration-(--dur-abre)"
                   style={{
                     width: `${Math.min(100, Math.max(0, distancePct))}%`,
                     background: distancePct > 50

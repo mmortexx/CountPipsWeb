@@ -58,7 +58,7 @@ export function HerramientasIndice() {
                 <Reveal delay={i * 0.03}>
                   <Link
                     href={f.href}
-                    className={`group link-underline-host grid min-h-[72px] grid-cols-1 items-center gap-1 py-4 transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:min-h-[64px] sm:gap-4 sm:py-2.5 ${COLUMNAS}`}
+                    className={`group link-underline-host grid min-h-[72px] grid-cols-1 items-center gap-1 py-4 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:min-h-[64px] sm:gap-4 sm:py-2.5 ${COLUMNAS}`}
                   >
                     <span className="min-w-0">
                       <span className="block t-h5 text-primary">

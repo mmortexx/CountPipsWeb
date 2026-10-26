@@ -39,14 +39,14 @@ export default function Error({
 
         <h1
           id="error-heading"
-          style={{ animationDelay: "0.1s" }}
+          style={{ animationDelay: "calc(var(--escalon) * 2)" }}
           className="tj-alza t-h2 text-primary"
         >
           {es ? "Algo salió mal" : "Something went wrong"}
         </h1>
 
         <p
-          style={{ animationDelay: "0.2s" }}
+          style={{ animationDelay: "calc(var(--escalon) * 4)" }}
           className="tj-alza mt-4 text-base md:text-lg text-secondary leading-relaxed"
         >
           {es
@@ -56,7 +56,7 @@ export default function Error({
 
         {error?.digest ? (
           <p
-            style={{ animationDelay: "0.3s" }}
+            style={{ animationDelay: "calc(var(--escalon) * 6)" }}
             className="tj-alza mt-3 text-[12px] text-tertiary tnum"
           >
             {es ? "Referencia" : "Reference"}: {error.digest}
@@ -64,7 +64,7 @@ export default function Error({
         ) : null}
 
         <div
-          style={{ animationDelay: "0.35s" }}
+          style={{ animationDelay: "calc(var(--escalon) * 7)" }}
           className="tj-alza mt-9 flex flex-wrap items-center justify-center gap-3"
         >
           <div className="tj-pulsa inline-flex">

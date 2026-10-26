@@ -83,7 +83,7 @@ export function NotFoundClient() {
         </div>
 
         <h1
-          style={{ animationDelay: "0.15s" }}
+          style={{ animationDelay: "calc(var(--escalon) * 2)" }}
           id="not-found-heading"
           className="tj-alza mt-6 text-2xl md:text-3xl font-semibold tracking-tight text-primary text-balance"
         >
@@ -93,7 +93,7 @@ export function NotFoundClient() {
         </h1>
 
         <p
-          style={{ animationDelay: "0.25s" }}
+          style={{ animationDelay: "calc(var(--escalon) * 4)" }}
           className="tj-alza mt-4 t-entradilla text-secondary"
         >
           {es
@@ -102,7 +102,7 @@ export function NotFoundClient() {
         </p>
 
         <form
-          style={{ animationDelay: "0.32s" }}
+          style={{ animationDelay: "calc(var(--escalon) * 5)" }}
           onSubmit={onSubmitSearch}
           className="tj-alza mt-8 mx-auto max-w-md"
           role="search"
@@ -137,7 +137,7 @@ export function NotFoundClient() {
 
         {/* Mismo ancho que el buscador para que compartan cantos. */}
         <ul
-          style={{ animationDelay: "0.4s" }}
+          style={{ animationDelay: "calc(var(--escalon) * 7)" }}
           className="tj-alza mx-auto mt-8 mb-0 max-w-md list-none p-0 text-left"
         >
           {tiles.map((tile) => (
@@ -158,7 +158,7 @@ export function NotFoundClient() {
         </ul>
 
         <div
-          style={{ animationDelay: "0.48s" }}
+          style={{ animationDelay: "calc(var(--escalon) * 8)" }}
           className="tj-alza mt-9"
         >
           <div

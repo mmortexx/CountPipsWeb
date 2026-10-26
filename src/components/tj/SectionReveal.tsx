@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { curva } from "@/lib/motion";
+import { curva, duracion } from "@/lib/motion";
 
 /**
  * Respaldo de la entrada de sección para navegadores sin
@@ -35,8 +35,8 @@ export function SectionReveal() {
               { opacity: 0, transform: "translateY(22px)" },
               { opacity: 1, transform: "none" },
             ],
-            // `curva()` resuelve el token: WAAPI no admite `var(...)` (src/lib/motion.ts).
-            { duration: 650, easing: curva("--ease-suave") }
+            // `curva()` y `duracion()` resuelven los tokens: WAAPI no admite `var(...)` (src/lib/motion.ts).
+            { duration: duracion("--dur-entra"), easing: curva("--ease-suave") }
           );
         });
       },
