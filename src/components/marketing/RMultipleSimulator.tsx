@@ -195,7 +195,7 @@ export function RMultipleSimulator() {
                 nota:
                   p.muestra === "riesgo"
                     ? `${fmtPct(p.risk, Number.isInteger(p.risk * 10) ? 1 : 2)} ${es ? "riesgo" : "risk"}${p.peligro ? (es ? " · peligro" : " · danger") : ""}`
-                    : `${fmtPct(p.wr, 0)} ${es ? "acierto" : "hit"} · ${fmtNum(p.winR, 1)} R`,
+                    : `${fmtPct(p.wr, 0)} ${es ? "acierto" : "hit"} · ${fmtNum(p.winR, 1)}\u00a0R`,
               })).map((preset) => {
                 const activo =
                   winRate === preset.wr &&
