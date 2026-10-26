@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang, tx } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
@@ -79,7 +79,7 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
       es: <>Las calculadoras abiertas hoy en {enlace("/herramientas", "Herramientas")}; el test de disciplina no entra en la cuenta.</>,
       en: <>The calculators open today under {enlace("/herramientas", "Tools")}; the discipline test is not counted.</>,
       pt: <>As calculadoras disponíveis hoje em {enlace("/herramientas", "Ferramentas")}; o teste de disciplina não entra na contagem.</>,
-      fr: <>Les calculateurs disponibles aujourd’hui dans {enlace("/herramientas", "Outils")} ; le test de discipline n’est pas compté.</>,
+      fr: <>Les calculateurs disponibles aujourd’hui dans {enlace("/herramientas", "Outils")}{" "}; le test de discipline n’est pas compté.</>,
       de: <>Verfügbare Rechner unter {enlace("/herramientas", "Tools")}; der Disziplintest zählt nicht dazu.</>,
       it: <>I calcolatori disponibili oggi su {enlace("/herramientas", "Strumenti")}; il test di disciplina non è conteggiato.</>,
     }),
@@ -103,12 +103,7 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
                   lineHeight: 1,
                 }}
               >
-                <span
-                  className="tj-cifra-cuenta"
-                  style={{ "--hasta": parseInt(s.v, 10) || 0, "--sufijo": `"${s.v.replace(/^\d+/, "")}"` } as CSSProperties}
-                >
-                  <span className="tj-cifra-real">{s.v}</span>
-                </span>
+                {s.v}
                 <sup aria-hidden className="tj-llamada">{i + 1}</sup>
               </div>
               <div className="max-w-[22em] text-balance text-[15px] leading-snug text-secondary sm:mt-3">{s.l}</div>

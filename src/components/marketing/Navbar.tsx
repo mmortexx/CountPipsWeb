@@ -436,6 +436,8 @@ export function Navbar() {
     raf = requestAnimationFrame(() => entrar(5));
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
+        // Con el selector de idioma desplegado, Escape es suyo: cierra solo esa capa.
+        if (drawerRef.current?.querySelector("[data-panel-idiomas]")) return;
         e.preventDefault();
         setMobileOpen(false);
         return;
@@ -510,6 +512,18 @@ export function Navbar() {
     };
   }, [mobileOpen]);
 
+  // Desde 1120 px el cajón se oculta por CSS: abierto, dejaría la página sin
+  // scroll y el foco atrapado en nada.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const escritorio = matchMedia("(min-width: 1120px)");
+    const alCambiar = (e: { matches: boolean }) => {
+      if (e.matches) setMobileOpen(false);
+    };
+    escritorio.addEventListener("change", alCambiar);
+    return () => escritorio.removeEventListener("change", alCambiar);
+  }, [mobileOpen]);
+
   // Cierra cajón y megamenú al cambiar de ruta; `hovered` también se limpia
   // para que el realce no quede encallado bajo el elemento pulsado.
   useEffect(() => {
@@ -558,7 +572,7 @@ export function Navbar() {
           }}
           /* `whitespace-nowrap`: un rótulo («Prop firms») a dos líneas rompe la
              altura de la fila. Si no cabe, debe pasar al cajón lateral. */
-          className="relative z-10 block whitespace-nowrap rounded-[4px] px-3 py-[9px] text-sm transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+          className="relative z-10 block whitespace-nowrap rounded-[4px] px-3 py-[9px] text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
           style={{ color: active || hovered === href ? "var(--ink)" : "var(--ink-2)" }}
         >
           {label}
@@ -650,7 +664,7 @@ export function Navbar() {
                    lectura en NVDA/JAWS. */
                 aria-expanded={megaOpen}
                 aria-controls={megaOpen ? "navbar-producto-panel" : undefined}
-                className="relative z-10 inline-flex cursor-pointer items-center gap-1.5 rounded-[4px] border-0 bg-transparent px-[15px] py-[9px] text-sm outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                className="relative z-10 inline-flex cursor-pointer items-center gap-1.5 rounded-[4px] border-0 bg-transparent px-[15px] py-[9px] text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                 style={{
                   color:
                     megaOpen || productActive || hovered === "product"
@@ -667,7 +681,7 @@ export function Navbar() {
                   fill="none"
                   aria-hidden
                   style={{
-                    transition: "transform 0.28s var(--ease-suave)",
+                    transition: "transform var(--dur-abre) var(--ease-suave)",
                     transform: megaOpen ? "rotate(180deg)" : "rotate(0deg)",
                   }}
                 >
@@ -724,7 +738,7 @@ export function Navbar() {
                           key={item.href}
                           href={item.href}
                           onClick={() => setMegaOpen(false)}
-                          className="group flex gap-[11px] rounded-[4px] px-2.5 py-[9px] outline-none transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                          className="group flex gap-[11px] rounded-[4px] px-2.5 py-[9px] outline-none transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                           style={{ color: "var(--ink)" }}
                           /* Sin precarga manual: `Link` ya precarga con el prefijo
                              de despliegue y el idioma. */
@@ -818,7 +832,7 @@ export function Navbar() {
 
             <Link
               href="/demo"
-              className="hidden h-[38px] flex-none items-center gap-[7px] whitespace-nowrap rounded-[4px] bg-[rgb(var(--accent-base))] px-[18px] text-sm font-semibold text-[rgb(var(--accent-ink))] outline-none transition-[background-color,transform] duration-150 hover:bg-[rgb(var(--accent-hover))] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] motion-safe:active:scale-[0.98] sm:inline-flex"
+              className="hidden h-[38px] flex-none items-center gap-[7px] whitespace-nowrap rounded-[4px] bg-[rgb(var(--accent-base))] px-[18px] text-sm font-semibold text-[rgb(var(--accent-ink))] outline-none transition-[background-color,transform] hover:bg-[rgb(var(--accent-hover))] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] motion-safe:active:scale-[0.98] sm:inline-flex"
             >
               {tx(lang, { es: "Ver la demo", en: "See the demo", pt: "Ver a demo", fr: "Voir la démo", de: "Demo ansehen", it: "Guarda la demo" })}
             </Link>
@@ -837,7 +851,7 @@ export function Navbar() {
                 }
                 setMobileOpen((o) => !o);
               }}
-              className="grid h-11 w-11 place-items-center rounded-[4px] text-[var(--ink-2)] outline-none transition-colors duration-200 hover:bg-[rgb(var(--divider)/0.05)] hover:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] min-[1120px]:hidden"
+              className="grid h-11 w-11 place-items-center rounded-[4px] text-[var(--ink-2)] outline-none transition-colors hover:bg-[rgb(var(--divider)/0.05)] hover:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] min-[1120px]:hidden"
               aria-label={
                 mobileOpen
                   ? tx(lang, { es: "Cerrar menú", en: "Close menu", pt: "Fechar menu", fr: "Fermer le menu", de: "Menü schließen", it: "Chiudi menu" })
@@ -845,7 +859,9 @@ export function Navbar() {
               }
               aria-expanded={mobileOpen}
               aria-haspopup="dialog"
-              aria-controls="mobile-nav-drawer"
+              aria-controls={cajonMontado ? "mobile-nav-drawer" : undefined}
+              // Lo busca `scripts/teclado.mjs`; `aria-controls` no existe hasta montar el cajón.
+              data-menu-movil=""
             >
               {mobileOpen ? (
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
@@ -938,7 +954,7 @@ export function Navbar() {
                             href={l.href}
                             onClick={() => setMobileOpen(false)}
                             aria-current={active ? "page" : undefined}
-                            className={`group relative flex min-h-[44px] items-center gap-3 rounded-[4px] py-2 pr-3 pl-3 text-sm outline-none transition-[background-color,color] duration-150 ease-[var(--ease-suave)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
+                            className={`group relative flex min-h-[44px] items-center gap-3 rounded-[4px] py-2 pr-3 pl-3 text-sm outline-none transition-[background-color,color] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
                               active
                                 ? "bg-[rgb(var(--divider)/0.06)] font-medium text-[var(--ink)]"
                                 : "text-[var(--ink-2)] hover:bg-[rgb(var(--divider)/0.04)] hover:text-[var(--ink)]"
@@ -973,14 +989,17 @@ export function Navbar() {
                   {tx(lang, { es: "Preferencias", en: "Preferences", pt: "Preferências", fr: "Préférences", de: "Einstellungen", it: "Preferenze" })}
                 </span>
                 <div className="flex items-center gap-2 px-3 pb-1">
-                  <LanguagePicker size="md" />
+                  {/* Se cierra antes de navegar, como con los enlaces: si no,
+                      al cerrarse tras la navegación devolvería la página nueva
+                      a la altura de la anterior. */}
+                  <LanguagePicker size="md" hacia="arriba" alElegir={() => setMobileOpen(false)} />
                   <button
                     type="button"
                     onClick={toggleTheme}
                     aria-label={tx(lang, { es: "Cambiar tema", en: "Toggle theme", pt: "Alternar tema", fr: "Changer de thème", de: "Theme umschalten", it: "Cambia tema" })}
                     title={tx(lang, { es: "Cambiar tema", en: "Toggle theme", pt: "Alternar tema", fr: "Changer de thème", de: "Theme umschalten", it: "Cambia tema" })}
                     data-theme-toggle
-                    className="inline-flex h-11 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-[4px] border-0 bg-transparent px-2.5 text-[12px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                    className="inline-flex h-11 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-[4px] border-0 bg-transparent px-2.5 text-[12px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                   >
                     <span
                       key={theme}
@@ -1005,7 +1024,7 @@ export function Navbar() {
                   <Link
                     href="/demo"
                     onClick={() => setMobileOpen(false)}
-                    className="flex h-12 w-full items-center justify-center gap-1.5 rounded-[4px] bg-[rgb(var(--accent-base))] text-sm font-semibold text-[rgb(var(--accent-ink))] outline-none transition-[background-color,transform] duration-150 hover:bg-[rgb(var(--accent-hover))] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] motion-safe:active:scale-[0.98]"
+                    className="flex h-12 w-full items-center justify-center gap-1.5 rounded-[4px] bg-[rgb(var(--accent-base))] text-sm font-semibold text-[rgb(var(--accent-ink))] outline-none transition-[background-color,transform] hover:bg-[rgb(var(--accent-hover))] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] motion-safe:active:scale-[0.98]"
                   >
                     {tx(lang, { es: "Ver la demo", en: "See the demo", pt: "Ver a demo", fr: "Voir la démo", de: "Demo ansehen", it: "Guarda la demo" })}
                   </Link>
@@ -1039,7 +1058,7 @@ function IconButton({
       onClick={onClick}
       aria-label={label}
       title={label}
-      className={`grid flex-none cursor-pointer place-items-center rounded-[4px] border-0 bg-transparent text-[var(--ink-2)] outline-none transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${className}`}
+      className={`grid flex-none cursor-pointer place-items-center rounded-[4px] border-0 bg-transparent text-[var(--ink-2)] outline-none transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${className}`}
       style={{ width: 36, height: 36 }}
       {...extraProps}
     >
@@ -1059,7 +1078,16 @@ function IconButton({
  * idioma activo. No es un `listbox` porque no tiene navegación con flechas.
  * Escape o clic fuera cierran.
  */
-function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
+function LanguagePicker({
+  size = "sm",
+  hacia = "abajo",
+  alElegir,
+}: {
+  size?: "sm" | "md";
+  /** En el cajón el selector va al pie de la lista: abajo el panel caía bajo la botonera fija. */
+  hacia?: "abajo" | "arriba";
+  alElegir?: () => void;
+}) {
   const { lang, setLang } = useLang();
   const pathname = usePathname();
   const disponibles = useMemo(() => idiomasDeRuta(pathname), [pathname]);
@@ -1073,6 +1101,8 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
 
   useEffect(() => {
     if (!open) return;
+    // Dentro de una lista que se desplaza, el panel puede abrirse a medias fuera de vista.
+    popRef.current?.scrollIntoView?.({ block: "nearest" });
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setOpen(false);
@@ -1103,7 +1133,7 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
         aria-controls={open ? panelId : undefined}
         aria-label={tx(lang, { es: "Cambiar idioma", en: "Change language", pt: "Mudar idioma", fr: "Changer de langue", de: "Sprache ändern", it: "Cambia lingua" })}
         title={tx(lang, { es: "Cambiar idioma", en: "Change language", pt: "Mudar idioma", fr: "Changer de langue", de: "Sprache ändern", it: "Cambia lingua" })}
-        className={`inline-flex ${sizeCls} cursor-pointer items-center gap-1.5 rounded-[4px] border-0 bg-transparent px-2.5 text-[12px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]`}
+        className={`inline-flex ${sizeCls} cursor-pointer items-center gap-1.5 rounded-[4px] border-0 bg-transparent px-2.5 text-[12px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]`}
       >
         <GlobeIcon />
         <span className="tnum">{actual.code2}</span>
@@ -1114,7 +1144,7 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
           fill="none"
           aria-hidden
           style={{
-            transition: "transform 0.18s var(--ease-suave)",
+            transition: "transform var(--dur-abre) var(--ease-suave)",
             transform: open ? "rotate(180deg)" : "rotate(0deg)",
           }}
         >
@@ -1130,8 +1160,8 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
             role="group"
             aria-label={tx(lang, { es: "Idiomas", en: "Languages", pt: "Idiomas", fr: "Langues", de: "Sprachen", it: "Lingue" })}
             // Mismo material que el menú «Producto».
-            className="tj-cae tj-cristal tj-cristal--denso tj-cristal--menu absolute right-0 z-50 min-w-[168px] rounded-[6px] p-1"
-            style={{ position: "absolute", top: "calc(100% + 8px)" }}
+            className={`tj-cae tj-cristal tj-cristal--denso tj-cristal--menu absolute z-50 min-w-[168px] rounded-[6px] p-1 ${hacia === "arriba" ? "left-0" : "right-0"}`}
+            style={{ position: "absolute", ...(hacia === "arriba" ? { bottom: "calc(100% + 8px)" } : { top: "calc(100% + 8px)" }) }}
           >
             {disponibles.map((l) => {
               const activo = l.codigo === lang;
@@ -1146,11 +1176,12 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
                     // Con modificador o clic central, el navegador abre la pestaña.
                     if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
                     e.preventDefault();
+                    alElegir?.();
                     setLang(l.codigo);
                     setOpen(false);
                     btnRef.current?.focus();
                   }}
-                  className="flex w-full cursor-pointer items-center gap-2.5 rounded-[4px] border-0 bg-transparent px-2.5 py-2 text-left outline-none transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                  className="flex w-full cursor-pointer items-center gap-2.5 rounded-[4px] border-0 bg-transparent px-2.5 py-2 text-left outline-none transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                   style={{ fontFamily: "inherit" }}
                 >
                   <span

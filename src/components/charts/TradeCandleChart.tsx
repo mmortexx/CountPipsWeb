@@ -30,6 +30,38 @@ function seededRnd(seed: number) {
   };
 }
 
+/** Vela ya en píxeles: `alto` es la y de su máximo (arriba) y `bajo` la de su mínimo. */
+export interface VelaPx {
+  x: number;
+  alto: number;
+  bajo: number;
+}
+
+/** Ancho aproximado de un texto monoespaciado de 10 px. */
+export const anchoMono = (texto: string) => texto.length * 6.1;
+
+/**
+ * Lado de la vela de salida donde va su rótulo (flecha y texto): debajo salvo
+ * que ahí pise más velas que encima. En móvil el texto abarca una docena de
+ * velas, y con la tendencia a favor del rótulo caía sobre ellas.
+ */
+export function ladoRotuloSalida(
+  velas: VelaPx[],
+  i: number,
+  anchoTexto: number,
+  ancla: "middle" | "end",
+  medioCuerpo: number,
+  alto: number
+): "debajo" | "encima" {
+  const v = velas[i];
+  const x0 = ancla === "end" ? v.x + 5 - anchoTexto : v.x - anchoTexto / 2;
+  const x1 = x0 + anchoTexto;
+  const coste = (y0: number, y1: number) =>
+    (y0 < 0 || y1 > alto ? velas.length : 0) +
+    velas.filter((w, j) => j !== i && w.x + medioCuerpo > x0 && w.x - medioCuerpo < x1 && w.bajo > y0 && w.alto < y1).length;
+  return coste(v.alto - 36, v.alto - 12) < coste(v.bajo + 12, v.bajo + 35) ? "encima" : "debajo";
+}
+
 export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps) {
   const { lang } = useLang();
   const es = lang === "es";
@@ -168,13 +200,15 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
       counts[idx] += c.volume;
     }
     const maxV = Math.max(...counts, 1);
+    // Hasta 40 px, sin pasar de un 12 % del área: en móvil tapaba las últimas velas.
+    const anchoMax = Math.min(40, chartW * 0.12);
     return counts.map((v, idx) => ({
       y: padT + (1 - (idx + 1) / buckets) * chartH,
       h: Math.max(2, chartH / buckets - 2),
-      w: (v / maxV) * 40,
+      w: (v / maxV) * anchoMax,
       isPoc: v === maxV,
     }));
-  }, [visibleCandles, priceRange, minPrice, chartH, padT]);
+  }, [visibleCandles, priceRange, minPrice, chartH, chartW, padT]);
 
   const getY = (price: number) => padT + (1 - (price - minPrice) / priceRange) * chartH;
   const getX = (i: number) => padL + (i / (candles.length - 1)) * chartW;
@@ -182,6 +216,22 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
   const entryY = getY(trade.entry);
   const stopY = getY(trade.initialStop);
   const targetY = getY(trade.target);
+
+  const EXIT_IDX = 26;
+  const textoSalida = `${es ? "Salida" : "Exit"} ${fmtR(trade.rMultiple, lang)}`;
+  // Cerca del margen derecho el rótulo se alinea a la derecha: centrado
+  // se metía bajo las etiquetas de precio.
+  const anclaSalida: "middle" | "end" = getX(EXIT_IDX) + anchoMono(textoSalida) / 2 > W - padR ? "end" : "middle";
+  const ladoSalida = ladoRotuloSalida(
+    candles.map((c, i) => ({ x: getX(i), alto: getY(c.high), bajo: getY(c.low) })),
+    EXIT_IDX,
+    anchoMono(textoSalida),
+    anclaSalida,
+    cuerpo / 2,
+    H
+  );
+  // Halo del color del fondo: el rótulo se lee aunque cruce la SMA o la VWAP.
+  const halo = { stroke: "var(--paper-dense)", strokeWidth: 3, strokeLinejoin: "round" as const, paintOrder: "stroke" as const };
 
   return (
     <div className="demo-card p-4 sm:p-5 overflow-hidden">
@@ -389,10 +439,8 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             const bH = Math.max(1.5, botY - topY);
 
             const isEntryBar = i === 8;
-            const isExitBar = i === 26;
-            // Cerca del margen derecho el rótulo se alinea a la derecha: centrado
-            // se metía bajo las etiquetas de precio.
-            const anclaSalida = x + 48 > W - padR ? "end" : "middle";
+            const isExitBar = i === EXIT_IDX;
+            const colorSalida = trade.netPnl >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))";
 
             return (
               <g
@@ -417,20 +465,24 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
                       points={`${x},${highY - 14} ${x - 5},${highY - 22} ${x + 5},${highY - 22}`}
                       fill="rgb(var(--accent-base))"
                     />
-                    <text x={x} y={highY - 25} fill="rgb(var(--accent-base))" fontSize="10" fontWeight="bold" fontFamily="monospace" textAnchor="middle">
+                    <text x={x} y={highY - 25} fill="rgb(var(--accent-base))" fontSize="10" fontWeight="bold" fontFamily="monospace" textAnchor="middle" {...halo}>
                       {es ? "Entrada" : "Entry"}
                     </text>
                   </g>
                 )}
 
                 {isExitBar && (
-                  <g>
+                  <g data-rotulo-salida={ladoSalida}>
                     <polygon
-                      points={`${x},${lowY + 14} ${x - 5},${lowY + 22} ${x + 5},${lowY + 22}`}
-                      fill={trade.netPnl >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"}
+                      points={
+                        ladoSalida === "debajo"
+                          ? `${x},${lowY + 14} ${x - 5},${lowY + 22} ${x + 5},${lowY + 22}`
+                          : `${x},${highY - 14} ${x - 5},${highY - 22} ${x + 5},${highY - 22}`
+                      }
+                      fill={colorSalida}
                     />
-                    <text x={anclaSalida === "end" ? x + 5 : x} y={lowY + 32} fill={trade.netPnl >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} fontSize="10" fontWeight="bold" fontFamily="monospace" textAnchor={anclaSalida}>
-                      {es ? "Salida" : "Exit"} {fmtR(trade.rMultiple, lang)}
+                    <text x={anclaSalida === "end" ? x + 5 : x} y={ladoSalida === "debajo" ? lowY + 32 : highY - 25} fill={colorSalida} fontSize="10" fontWeight="bold" fontFamily="monospace" textAnchor={anclaSalida} {...halo}>
+                      {textoSalida}
                     </text>
                   </g>
                 )}

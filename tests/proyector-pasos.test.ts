@@ -5,7 +5,7 @@ import { renderToString } from "react-dom/server";
 vi.mock("next/navigation", () => ({ usePathname: () => "/", useRouter: () => ({ push() {}, replace() {} }) }));
 
 import { LanguageProvider } from "@/lib/i18n";
-import { EquityProjector, PRESETS } from "@/components/marketing/EquityProjector";
+import { COSTES_POR_OPERACION, EquityProjector, PRESETS } from "@/components/marketing/EquityProjector";
 
 /** Los deslizadores que pinta el proyector: mínimo, máximo, paso y valor. */
 function deslizadores(): { min: number; max: number; step: number; value: number }[] {
@@ -36,5 +36,7 @@ describe("proyector de capital: los perfiles caen en el paso del deslizador", ()
     expect(enElPaso(p.avgWinR, por(0.5, 6)), `ganancia media ${p.avgWinR}`).toBe(true);
     expect(enElPaso(p.avgLossR, por(0.25, 3)), `pérdida media ${p.avgLossR}`).toBe(true);
     expect(enElPaso(p.riskPct, por(0.1, 3)), `riesgo ${p.riskPct}`).toBe(true);
+    // Los costes no son deslizador sino botones: sin uno igual, ninguno queda marcado.
+    expect(COSTES_POR_OPERACION, `costes ${p.frictionR}`).toContain(p.frictionR);
   });
 });

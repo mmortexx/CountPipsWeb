@@ -206,6 +206,14 @@ describe("CORS y rutas", () => {
     }
   });
 
+  it("un PATCH con el id mal codificado da 404, no un 500", async () => {
+    const cabeceras = { Origin: ORIGEN, Authorization: "Bearer token-admin" };
+    const res = await worker.fetch(peticion("/v1/applications/%E0%A4%A", "PATCH", cabeceras), entorno());
+    expect(res.status).toBe(404);
+    conCors(res);
+    expect(await res.json()).toEqual({ ok: false, error: "not_found" });
+  });
+
   it("/health responde sin datos y el listado exige token", async () => {
     const salud = await worker.fetch(peticion("/health"), entorno());
     expect(salud.status).toBe(200);
@@ -230,6 +238,8 @@ describe("validación", () => {
 
   it.each([
     ["invalid_email", { email: "ana@ejemplo" }],
+    // Recortado a 254 seguiría pareciendo válido («…@ejemplo.c») y se guardaría otro correo.
+    ["invalid_email", { email: `${"a".repeat(244)}@ejemplo.com` }],
     ["invalid_profile", { profile: "fondo" }],
     ["missing_fields", { goal: "   " }],
     ["missing_fields", { markets: undefined }],

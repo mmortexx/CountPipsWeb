@@ -178,7 +178,7 @@ function TarjetaTermino({
         href={`/glosario/${termino.slug}`}
         /* Las columnas solo reparten ancho: `ch` se mediría con la tipografía de
            este enlace. La medida del texto la pone `.medida` (ver globals.css). */
-        className="group link-underline-host grid min-h-[56px] grid-cols-1 items-baseline gap-1 py-4 transition-colors duration-150 focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6 lg:grid-cols-1 lg:gap-1.5"
+        className="group link-underline-host grid min-h-[56px] grid-cols-1 items-baseline gap-1 py-4 transition-colors focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6 lg:grid-cols-1 lg:gap-1.5"
       >
         <span
           lang={es && termino.nombreEs ? undefined : "en"}

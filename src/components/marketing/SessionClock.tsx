@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 
 import { PLAZAS, cuentaAtras, estaAbierta, horaLocal, proximaApertura, ventanaUtc, type Plaza } from "@/lib/sesiones";
@@ -207,6 +207,12 @@ export function SessionClock() {
               const open = p.abierta;
               const ts = tramos(norm(p.desdeUtc + desfaseRef), norm(p.hastaUtc + desfaseRef));
               const principal = ts.length > 1 && ts[1][1] - ts[1][0] > ts[0][1] - ts[0][0] ? 1 : 0;
+              /* Opaca y no translúcida: el rótulo lleva detrás un fondo de este
+                 mismo color, que corta la raya de «ahora» a su paso en vez de
+                 dejar que tache el nombre («Lond|res»). Sobre la banda abierta
+                 (55 % de tinta) el nombre va en color de papel: en tinta se
+                 quedaba en negro sobre gris oscuro. */
+              const tinta = `color-mix(in oklab, var(--ink) ${open ? 55 : p.tintaCerrada}%, var(--ficha-fondo))`;
               return ts.map(([a, b], k) => (
                 <div
                   key={`${p.id}-${k}`}
@@ -215,14 +221,18 @@ export function SessionClock() {
                     top: 4 + i * 22,
                     left: `${pct(a)}%`,
                     width: `${pct(b - a)}%`,
-                    background: `color-mix(in oklab, var(--ink) ${open ? 55 : p.tintaCerrada}%, transparent)`,
-                  }}
+                    "--banda": tinta,
+                    background: "var(--banda)",
+                  } as CSSProperties}
                   role={k === principal ? "img" : undefined}
                   aria-label={k === principal ? `${nombre(p)} ${franja(p.desdeUtc, p.hastaUtc)}` : undefined}
                   aria-hidden={k !== principal || undefined}
                 >
                   {k === principal && (
-                    <span className="absolute inset-y-0 left-2 flex items-center whitespace-nowrap text-[12px] font-medium" style={{ color: "var(--ink)" }}>
+                    <span
+                      className="absolute inset-y-0 left-1 z-[1] flex items-center whitespace-nowrap rounded-[2px] px-1 text-[12px] font-medium"
+                      style={{ color: open ? "var(--ficha-fondo)" : "var(--ink)", background: "var(--banda)" }}
+                    >
                       {nombre(p)}
                     </span>
                   )}

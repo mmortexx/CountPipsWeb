@@ -6,6 +6,7 @@ import { useDemo, type DemoPage } from "./DemoContext";
 import { useLang } from "@/lib/i18n";
 import { useTheme } from "@/lib/theme";
 import { destinoConFlechas } from "@/lib/flechas";
+import { PESTANAS_DEMO } from "./pestanas";
 
 /*
  * Menú superior, réplica del NavigationView en modo Top de la app
@@ -18,39 +19,37 @@ import { destinoConFlechas } from "@/lib/flechas";
  * iconos son trazos equivalentes a los glifos Segoe Fluent (E80F, E8AB, E9D2,
  * E70B), que no existen fuera de Windows.
  */
-const NAV_ITEMS: {
-  key: DemoPage;
-  icon: React.ReactNode;
-  labelKey: "pageDashboard" | "pageTrades" | "pageAnalytics" | "pageJournal";
-}[] = [
-  {
-    // E80F "Home" — la casa del Resumen.
-    key: "dashboard",
+const DETALLE_PESTANA: Record<
+  (typeof PESTANAS_DEMO)[number],
+  { icon: React.ReactNode; labelKey: "pageDashboard" | "pageTrades" | "pageAnalytics" | "pageJournal" }
+> = {
+  // E80F "Home" — la casa del Resumen.
+  dashboard: {
     labelKey: "pageDashboard",
     icon: <path d="M4 10.5L12 4l8 6.5V19a1 1 0 01-1 1h-4v-6H9v6H5a1 1 0 01-1-1v-8.5z" />,
   },
-  {
-    // E8AB "Switch" — las dos flechas cruzadas de Operaciones.
-    key: "trades",
+  // E8AB "Switch" — las dos flechas cruzadas de Operaciones.
+  trades: {
     labelKey: "pageTrades",
     icon: <path d="M4 8h13l-3-3M20 16H7l3 3" />,
   },
-  {
-    // E9D2 "StackedLineChart" — la analítica.
-    key: "analytics",
+  // E9D2 "StackedLineChart" — la analítica.
+  analytics: {
     labelKey: "pageAnalytics",
     icon: <path d="M3 17l5-6 4 3 4-6 5 5" />,
   },
-  {
-    // E70B "Edit" (nota) — el Diario.
-    key: "journal",
+  // E70B "Edit" (nota) — el Diario.
+  journal: {
     labelKey: "pageJournal",
     icon: <path d="M5 4h11l4 4v12H5V4zM16 4v4h4M8 12h8M8 16h5" />,
   },
-];
+};
+
+const NAV_ITEMS: { key: DemoPage; icon: React.ReactNode; labelKey: (typeof DETALLE_PESTANA)[keyof typeof DETALLE_PESTANA]["labelKey"] }[] =
+  PESTANAS_DEMO.map((key) => ({ key, ...DETALLE_PESTANA[key] }));
 
 /** Cuántas pestañas se alcanzan con las teclas 1…n; la ayuda de atajos lo cita de aquí. */
-export const PESTANAS_NUMERADAS = NAV_ITEMS.length;
+export const PESTANAS_NUMERADAS = PESTANAS_DEMO.length;
 
 export function TopNav() {
   const { page, setPage } = useDemo();
@@ -142,7 +141,7 @@ export function TopNav() {
               // `min-w-[44px]` garantiza el tamaño de toque con solo icono. En móvil
               // el activo lleva además un fondo teñido (`sm:bg-transparent` lo
               // quita) y la barrita sube de w-5 a w-6.
-              className={`relative h-full min-w-[44px] sm:min-w-0 px-3 sm:px-4 flex items-center justify-center sm:justify-start gap-2 text-[13px] transition-[background-color,color,transform] duration-150 ease-[var(--ease-menu-in)] whitespace-nowrap outline-none focus-visible:ring-1 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:-ring-offset-1 rounded-[2px] sm:rounded-none ${
+              className={`relative h-full min-w-[44px] sm:min-w-0 px-3 sm:px-4 flex items-center justify-center sm:justify-start gap-2 text-[13px] transition-[background-color,color,transform] whitespace-nowrap outline-none focus-visible:ring-1 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:-ring-offset-1 rounded-[2px] sm:rounded-none ${
                 active
                   ? "text-primary bg-[rgb(var(--accent-base)/0.10)] sm:bg-transparent"
                   : "text-secondary hover:text-primary hover:bg-[rgb(var(--divider)/0.04)] sm:hover:bg-transparent"
@@ -170,8 +169,6 @@ export function TopNav() {
                   clave="demo-indicador-pestana"
                   className="absolute bottom-[6px] left-1/2 -ml-3 sm:-ml-2.5 w-6 sm:w-5 h-[3px] rounded-[1px]"
                   style={{ background: "rgb(var(--accent-base))" }}
-                  ms={400}
-                  curva="cubic-bezier(0.1, 0.9, 0.2, 1)"
                 />
               )}
             </button>

@@ -131,7 +131,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
               onChange={(e) => setQuery(e.target.value)}
               placeholder={es ? "Buscar en las preguntas…" : "Search questions…"}
               aria-label={es ? "Buscar en las preguntas frecuentes" : "Search frequently asked questions"}
-              className="tj-campo w-full h-11 pl-10 pr-3 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0"
+              className="tj-campo w-full h-11 pl-10 pr-3 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0"
             />
             </div>
             <div
@@ -210,7 +210,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                        la marca es la respuesta y el chevrón girado. */
                     className="border-b border-[var(--line)]"
                   >
-                    <AccordionTrigger className="text-left text-primary hover:text-primary hover:no-underline py-5 transition-colors [&>svg]:!text-tertiary hover:[&>svg]:!text-primary [&[data-state=open]>svg]:rotate-180 [&>svg]:transition-[transform,color] [&>svg]:duration-300 [&>svg]:ease-[var(--ease-suave)]">
+                    <AccordionTrigger className="text-left text-primary hover:text-primary hover:no-underline py-5 transition-colors [&>svg]:!text-tertiary hover:[&>svg]:!text-primary [&[data-state=open]>svg]:rotate-180 [&>svg]:transition-[transform,color] [&>svg]:duration-(--dur-abre)">
                       {/* `min-w-0` para que preguntas largas se partan en 375 px sin
                           empujar el chevrón. Sin número delante: la lista se
                           filtra al buscar y se renumeraría. */}

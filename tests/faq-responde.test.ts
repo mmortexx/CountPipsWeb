@@ -17,7 +17,7 @@ const casos = [
   {
     idioma: "es",
     faq: FAQ_ES,
-    pregunta: "¿Qué métodos de pago aceptáis?",
+    pregunta: "¿Qué métodos de pago se aceptan?",
     inicioProhibido: "La demo",
     nombra: "métodos de pago",
   },

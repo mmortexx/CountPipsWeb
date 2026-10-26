@@ -71,7 +71,7 @@ export const PRESETS: PresetConfig[] = [
     avgLossR: 1.0,
     riskPct: 1.0,
     tradesPerYear: 200,
-    frictionR: 0.03,
+    frictionR: 0.04,
   },
   {
     id: "swing",
@@ -100,6 +100,9 @@ export const PRESETS: PresetConfig[] = [
     frictionR: 0.04,
   },
 ];
+
+/** Botones de «Costes por operación», en R. */
+export const COSTES_POR_OPERACION = [0, 0.02, 0.04, 0.06];
 
 const CAPITAL_CHIPS = [5000, 10000, 25000, 50000, 100000, 250000].map((v) => ({ v }));
 
@@ -157,7 +160,8 @@ export function EquityProjector() {
     });
     ro.observe(caja);
     return () => ro.disconnect();
-  }, []);
+    // La caja se desmonta en «Por años»: al volver se vigila la nueva.
+  }, [viewTab]);
 
   // Aplicar Preset
   const applyPreset = useCallback((presetId: PresetKey) => {
@@ -680,7 +684,7 @@ export function EquityProjector() {
                     {es ? "Costes por operación" : "Costs per trade"}
                   </span>
                   <div className="tj-segmentado" role="group" aria-labelledby={idCostes}>
-                    {[0.0, 0.02, 0.04, 0.06].map((f) => {
+                    {COSTES_POR_OPERACION.map((f) => {
                       const active = frictionR === f;
                       return (
                         <button
@@ -880,7 +884,7 @@ export function EquityProjector() {
                   <button
                     type="button"
                     onClick={() => setShowConfidenceCone(!showConfidenceCone)}
-                    className="toque-comodo text-[12px] tnum px-2.5 py-1 rounded-[4px] transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="toque-comodo text-[12px] tnum px-2.5 py-1 rounded-[4px] transition-colors flex items-center gap-1.5 cursor-pointer"
                     aria-pressed={showConfidenceCone}
                     style={{ color: showConfidenceCone ? "var(--ink)" : "var(--ink-3)" }}
                   >

@@ -10,7 +10,6 @@ import { OverlayHost } from "@/components/tj/OverlayHost";
 import { ScrollToTop } from "@/components/tj/ScrollToTop";
 import { TransicionPagina } from "@/components/tj/TransicionPagina";
 import { SkipLink } from "@/components/tj/SkipLink";
-import { SectionReveal } from "@/components/tj/SectionReveal";
 import { Aparecer } from "@/components/tj/Aparecer";
 import { SubrayadoPestanas } from "@/components/tj/SubrayadoPestanas";
 import { SITE_URL } from "@/lib/site";
@@ -186,7 +185,6 @@ export default function RootLayout({
             y las dos portadas los emiten. */}
         <Providers>
           <div className="min-h-screen flex flex-col">
-            <SectionReveal />
             <Aparecer />
             <SubrayadoPestanas />
             <SkipLink />

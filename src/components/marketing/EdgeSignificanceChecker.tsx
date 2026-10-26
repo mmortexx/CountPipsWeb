@@ -301,7 +301,7 @@ export function EdgeSignificanceChecker() {
                 style={{
                   width: `${c.minSample95 === null ? 0 : Math.min(100, (trades / c.minSample95) * 100)}%`,
                   background: c.sampleAdequate ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
-                  transition: "width 0.3s var(--ease-suave)",
+                  transition: "width var(--dur-abre) var(--ease-suave)",
                 }}
               />
             </div>
@@ -373,7 +373,7 @@ function Result({ label, value, color }: { label: string; value: string; color: 
       </div>
       <div
         className="tnum mt-auto min-w-0 break-words relative pt-1"
-        style={{ fontSize: 18, fontWeight: 600, color, transition: "color 0.18s var(--ease-suave)" }}
+        style={{ fontSize: 18, fontWeight: 600, color, transition: "color var(--dur-estado) var(--ease-suave)" }}
       >
         {value}
       </div>

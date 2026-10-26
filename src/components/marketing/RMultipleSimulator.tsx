@@ -4,7 +4,7 @@ import { Fragment, useState, useMemo, useEffect, useId, useRef } from "react";
 import { marcasRedondas } from "@/lib/marcasEje";
 import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
-import { OPERACIONES_POR_MES, SEMILLA_MAX, siguienteSemilla, simulaMonteCarlo } from "@/lib/trading/montecarlo";
+import { OPERACIONES_POR_MES, SEMILLA_MAX, siguienteSemilla, simulaMonteCarlo, terminaPerdiendo } from "@/lib/trading/montecarlo";
 import { LIMITE_PROYECCION_USD } from "@/lib/trading/proyeccion";
 import { UMBRAL_RUINA_PCT } from "@/lib/trading/estadistica";
 import { fmtMoney, fmtNum as fmtNumBase, fmtOperaciones, fmtR, importeCortoPorTrozos, pctSep } from "@/lib/trading/format";
@@ -195,7 +195,7 @@ export function RMultipleSimulator() {
                 nota:
                   p.muestra === "riesgo"
                     ? `${fmtPct(p.risk, Number.isInteger(p.risk * 10) ? 1 : 2)} ${es ? "riesgo" : "risk"}${p.peligro ? (es ? " · peligro" : " · danger") : ""}`
-                    : `${fmtPct(p.wr, 0)} ${es ? "acierto" : "hit"} · ${fmtNum(p.winR, 1)}R`,
+                    : `${fmtPct(p.wr, 0)} ${es ? "acierto" : "hit"} · ${fmtNum(p.winR, 1)}\u00a0R`,
               })).map((preset) => {
                 const activo =
                   winRate === preset.wr &&
@@ -297,7 +297,8 @@ export function RMultipleSimulator() {
                   </text>
                 </g>
               ))}
-              {/* Capital inicial: la referencia que separa ganar de perder */}
+              {/* Capital inicial. Sin retiros separa ganar de perder; con
+                  retiros, quedar por debajo no es perder. */}
               <line
                 x1={padL}
                 y1={yDe(startBalance)}
@@ -329,8 +330,12 @@ export function RMultipleSimulator() {
           {/* Los cinco percentiles en una tira con filetes entre columnas; la
               mediana se marca con un filete de acento arriba. Cada columna
               es su contenedor de medida (`caja-cifra`) y el importe va
-              abreviado. El rojo significa «por debajo del capital inicial»,
-              no «peor percentil»: con ventaja sana el P5 también gana. */}
+              abreviado. El rojo significa «acaba perdiendo» contando lo
+              retirado (`terminaPerdiendo`), no «peor percentil»: con ventaja
+              sana el P5 también gana. Como en la tira de ruina, `grid-rows`
+              deja las cifras a la misma altura aunque un rótulo ocupe dos
+              líneas («Bottom 5%»); a 320 px la columna mide 48 px y el rótulo
+              baja a 11 px para que «Mediana» no se parta. */}
           <div className="tj-matriz grid-cols-5 text-center tnum">
             {[
               { k: "P5", n: es ? "Cola 5\u00a0%" : "Bottom 5%", v: c.finalP5, col: "var(--ink-2)", ref: false },
@@ -338,11 +343,11 @@ export function RMultipleSimulator() {
               { k: "P50", n: es ? "Mediana" : "Median", v: c.finalP50, col: "rgb(var(--accent-base))", ref: true },
               { k: "P75", n: "Q3", v: c.finalP75, col: "var(--ink-2)", ref: false },
               { k: "P95", n: es ? "Cima 5\u00a0%" : "Top 5%", v: c.finalP95, col: "var(--ink-2)", ref: false },
-            ].map((p) => ({ ...p, col: p.v < startBalance ? "rgb(var(--pnl-neg))" : p.col })).map((p) => (
+            ].map((p) => ({ ...p, col: terminaPerdiendo(p.v, { startBalance, trades, monthlyWithdrawal }) ? "rgb(var(--pnl-neg))" : p.col })).map((p) => (
               <div
                 key={p.k}
-                title={fmtUsd(p.v)}
-                className="caja-cifra relative min-w-0 px-1 py-2.5"
+                title={enVoz(p.v)}
+                className="caja-cifra relative grid min-w-0 grid-rows-[auto_auto_1fr] px-0.5 py-2.5 min-[360px]:px-1"
               >
                 {p.ref && (
                   <span
@@ -357,9 +362,9 @@ export function RMultipleSimulator() {
                 >
                   {p.k}
                 </span>
-                <span className="mt-0.5 block text-[12px] leading-[1.2] text-tertiary">{p.n}</span>
+                <span className="mt-0.5 block text-[11px] leading-[1.2] text-tertiary min-[360px]:text-[12px]">{p.n}</span>
                 {/* Cada trozo entero; si no cabe, parte entre la cifra y la unidad. */}
-                <span className="tnum cifra-sm mt-1.5 block font-semibold" style={{ color: p.col }}>
+                <span className="tnum cifra-sm mt-1.5 block self-end font-semibold" style={{ color: p.col }}>
                   {(({ trozos, junta }) =>
                     trozos.map((t, i) => (
                       <Fragment key={i}>

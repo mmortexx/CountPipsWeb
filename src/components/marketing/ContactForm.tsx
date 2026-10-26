@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "rea
 import { useLang } from "@/lib/i18n";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { Reveal } from "@/components/tj/Reveal";
-import { LIMITE_MENSAJE, submitForm, SUPPORT_EMAIL, type SubmitFailure } from "@/lib/forms";
+import { emailValido, LIMITE_MENSAJE, submitForm, SUPPORT_EMAIL, type SubmitFailure } from "@/lib/forms";
 import { Link } from "@/components/tj/LocaleLink";
 import { TITULAR } from "@/lib/legal/titular";
 import { fmtInt } from "@/lib/trading/format";
@@ -18,7 +18,6 @@ import { useHydrated } from "@/hooks/use-hydrated";
  * si falla, se muestra el motivo y un `mailto` de reserva.
  */
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type Status = "idle" | "sending" | "sent";
 
@@ -80,7 +79,7 @@ export function ContactForm() {
        viaja al primero que falla, como en el formulario de /beta. */
     const fallan = {
       name: !name.trim(),
-      email: !email.trim() || !EMAIL_RE.test(email.trim()),
+      email: !emailValido(email),
       message: !message.trim(),
     };
     if (fallan.name || fallan.email || fallan.message) {

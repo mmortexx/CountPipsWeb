@@ -114,6 +114,27 @@ describe("el registro rápido guarda el plan que el visitante tecleó", () => {
     expect(rota.plannedRr).toBe(sintetica.plannedRr);
   });
 
+  it("con el stop tecleado, el riesgo es distancia al stop × cantidad × multiplicador, también a la par", () => {
+    // ES vale 50 $ por punto: 2 puntos × 1 contrato × 50.
+    expect(customTradeToTrade({ ...base, exit: 100, netPnl: 0, rMultiple: 0, stop: 98 }).riskUsd).toBe(100);
+    // R guardado con dos decimales (1 / 3 → 0,33): 50 / 0,33 daría 151,52 $.
+    expect(customTradeToTrade({ ...base, exit: 101, netPnl: 50, rMultiple: 0.33, stop: 97 }).riskUsd).toBe(150);
+  });
+
+  it("registrada sin salida, el detalle enseña el riesgo que el composer anunciaba", () => {
+    monta();
+    escribe("d-entry", "100,0");
+    escribe("d-stop", "98,5");
+    escribe("d-exit", "");
+    escribe("d-qty", "2");
+    registra();
+    const guardada = getCustomTrades();
+    expect(guardada).toHaveLength(1);
+    expect(guardada[0].rMultiple).toBe(0);
+    // BTC/USDT, multiplicador 1: 1,5 × 2.
+    expect(customTradeToTrade(guardada[0]).riskUsd).toBe(3);
+  });
+
   it("una operación guardada antes de este campo conserva la síntesis de siempre", () => {
     const antigua = customTradeToTrade({
       id: 1, instrument: "ES", setup: "Breakout", direction: "long", entry: 5000, exit: 5100, qty: 1, netPnl: 100,

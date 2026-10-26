@@ -43,6 +43,35 @@ Windows (WinUI 3, en otro repositorio).
 - **Cifras que caben**: `.caja-cifra` + `.cifra-xl/-lg/-sm` (consultas de contenedor),
   nunca `clamp()` contra el ancho de la ventana.
 - **Toque**: 44 px en puntero grueso (`.toque-comodo`); campos a 16 px en móvil.
+- **Movimiento**: cuatro duraciones y dos curvas, como tokens en `globals.css`; nada
+  escribe un tiempo ni una curva a mano (`tests/movimiento-sistema.test.ts`).
+  - `--dur-pulsa` 100 ms (el control se hunde al pulsar), `--dur-estado` 150 ms
+    (pasar por encima, foco, elegido; también es el defecto de `transition-*`),
+    `--dur-abre` 220 ms (menús, ventanas, pliegues y la flecha que los acompaña),
+    `--dur-entra` 320 ms (lo que entra o recorre la pantalla; es el tope).
+  - `--ease-suave` para lo que llega y `--ease-acelera` para lo que se va; las
+    salidas bajan un peldaño de duración (abre en `--dur-abre`, cierra en
+    `--dur-estado`). `linear` solo en lo atado al scroll.
+  - Cascadas en múltiplos de `--escalon` (40 ms), sin pasar de 8 pasos (320 ms).
+  - Lo que se mueve, se mueve con transform u opacidad; un estado cambia de tono
+    (color, fondo, filete, anillo, filtro). Animar la maqueta (ancho, alto,
+    posición, filas de rejilla) solo con su porqué en `EXCEPCIONES_CSS` de la
+    prueba: pliegues, trazos SVG, recortes, barras que siguen a un valor y la
+    guía del gráfico de métricas (trasladada, su línea de 1 px salía borrosa).
+  - Un movimiento por rama: si el contenedor se desplaza, lo de dentro solo funde.
+    Un bloque cuyas piezas entran solas, o que guarda un gráfico que se dibuja,
+    aparece sin subir (`data-tj-funde`, Aparecer.tsx); `movimiento.mjs` lo vigila,
+    también como un navegador sin `animation-timeline`. Única excepción: la página
+    de la demo (`.tj-demo-entra`) entra como la del programa y sus piezas dentro
+    de ella, porque la demo imita al programa.
+  - Nada compite con la cifra: las cifras salen ya en su valor (no cuentan), nada
+    crece por encima de su tamaño y ningún fotograma intermedio se pasa para volver
+    (rebote). Lo vigilan `tests/movimiento-sistema.test.ts` en la hoja y
+    `movimiento.mjs` en el navegador.
+  - Pasar por encima solo cambia el tono (fondo, filete, color, sombra): nada sube,
+    crece, gira ni se corre. Pulsar sí hunde (`:active`, `--dur-pulsa`).
+  - Desde JavaScript, `curva()` y `duracion()` de `src/lib/motion.ts` leen los mismos
+    tokens; `usePresencia` espera `--dur-estado`, lo que dura toda salida.
 - **Afirmaciones técnicas**: sólo lo comprobado en el código del programa. Las cifras y
   listas que cita la web viven en `PROGRAMA` (`src/lib/producto.ts`) y las conexiones en
   `src/lib/conexiones.ts`; `tests/programa.test.ts` las compara con el código del programa
@@ -73,7 +102,7 @@ las pruebas que leen `out/` (con `COMPROBAR_OUT=1`, que convierte su ausencia en
 `humo`, `toque`, `alto-contraste` y `teclado`; las demás se pasan en local:
 
 ```bash
-node scripts/humo.mjs --serve out          # contraste, entradas, menú, sin JavaScript; a 320 px, desborde, miga y texto espaciado (WCAG 1.4.12), sin partir cifras entre dígitos; letra de la demo ≥ 11 px
+node scripts/humo.mjs --serve out          # contraste, entradas, menú, sin JavaScript; a 320 px, desborde, miga, pestañas que se deslizan con aviso y texto espaciado (WCAG 1.4.12), sin partir cifras entre dígitos, con las cifras de cada fila de casillas a la misma altura y, de 320 a 390 px, sin partir un rótulo de casilla a mitad de palabra; letra de la demo ≥ 11 px
 node scripts/legible.mjs --serve out       # contraste de todo el texto sobre fondo plano
 node scripts/tinta.mjs --serve out         # texto sobre fondos de color, en los dos temas
 node scripts/arranque.mjs --serve out --cpu 4  # tiempo hasta titular legible
@@ -88,7 +117,7 @@ node scripts/papel.mjs --serve out         # impresión completa
 node scripts/pesos.mjs --serve out         # grosores de la serif
 node scripts/rejillas.mjs --serve out      # alineación de fichas, columnas y cifras
 node scripts/escala.mjs --serve out        # escala tipográfica e interlineado
-node scripts/movimiento.mjs --serve out    # «reducir movimiento» respetado
+node scripts/movimiento.mjs --serve out    # «reducir movimiento» respetado; nada se desplaza dentro de algo que se desplaza
 node scripts/orden.mjs --serve out         # primera pantalla en orden de lectura; cambio de página sin solape
 node scripts/proporcion.mjs --serve out    # textos de gráficos SVG sin estirar (también dentro de la demo)
 node scripts/tema.mjs --serve out          # elección de tema, sin fogonazo blanco y barra del móvil del color del fondo

@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useLang } from "@/lib/i18n";
+import { tx, useLang } from "@/lib/i18n";
 import { withLocale } from "@/lib/locale";
 import { useTheme } from "@/lib/theme";
 import { openShortcutsHelp } from "@/lib/overlays";
-import { atajosEncendidos } from "@/lib/atajos";
+import { atajosEncendidos, pideAyuda } from "@/lib/atajos";
 import { G_NAV_MAP } from "@/lib/saltos-teclado";
 
 /**
@@ -26,7 +26,6 @@ const G_PREFIX_TIMEOUT = 1000; // ms que dura el prefijo `g`
 
 export function GlobalShortcuts() {
   const { lang, toggle: toggleLang } = useLang();
-  const es = lang === "es";
   const { toggleTheme } = useTheme();
   const router = useRouter();
   const gPrefixActive = useRef(false);
@@ -79,10 +78,7 @@ export function GlobalShortcuts() {
 
       const key = e.key;
 
-      if (
-        key === "?" ||
-        (e.shiftKey && (key === "/" || e.code === "Slash"))
-      ) {
+      if (pideAyuda(e)) {
         e.preventDefault();
         openShortcutsHelp();
         return;
@@ -143,7 +139,7 @@ export function GlobalShortcuts() {
     >
           <div className="tj-paper tj-paper-dense rounded-[4px] pl-3 pr-3.5 py-1.5 flex items-center gap-2 border border-[rgb(var(--divider)/0.15)]">
             <span className="text-[12px] text-tertiary font-medium hidden sm:inline">
-              {es ? "navegación" : "navigation"}
+              {tx(lang, { es: "navegación", en: "navigation", pt: "navegação", fr: "navigation", de: "Navigation", it: "navigazione" })}
             </span>
             <span className="hidden sm:inline w-px h-3 bg-[rgb(var(--divider)/0.2)]" aria-hidden />
             <kbd className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.06)] text-[12px] font-mono text-secondary tnum">

@@ -120,6 +120,38 @@ describe("a dónde va la solicitud de acceso anticipado", () => {
     expect(resultado).toEqual({ ok: false, reason: "rejected" });
   });
 
+  it("un correo de más de 254 caracteres no se recorta ni se envía", async () => {
+    const forms = await compilarCon({ beta: WORKER });
+    const largo = `${"a".repeat(244)}@ejemplo.com`;
+    expect(forms.emailValido(largo)).toBe(false);
+    expect(forms.emailValido(SOLICITUD.email)).toBe(true);
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+    expect(await forms.joinBetaApplication({ ...SOLICITUD, email: largo })).toEqual({ ok: false, reason: "rejected" });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  // El Worker distingue el límite por IP y la verificación anti-bot: cada uno
+  // pide al usuario algo distinto (esperar, repetir la verificación).
+  it.each([
+    [429, { ok: false, error: "rate_limited" }, "limited"],
+    [400, { ok: false, error: "bot_check_failed" }, "botcheck"],
+    [422, { ok: false, error: "invalid_email" }, "rejected"],
+    [503, { ok: false, error: "storage_unavailable" }, "rejected"],
+  ])("el Worker responde %i (%o) → %s", async (estado, cuerpo, motivo) => {
+    const forms = await compilarCon({ beta: WORKER });
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(cuerpo), { status: estado })));
+    expect(await forms.joinBetaApplication(SOLICITUD)).toEqual({ ok: false, reason: motivo });
+  });
+
+  it("cada motivo de fallo tiene su aviso, en los dos idiomas", async () => {
+    const { failureCopy } = await import("@/components/beta/BetaApplication");
+    for (const es of [true, false]) {
+      const avisos = (["network", "rejected", "limited", "botcheck"] as const).map((m) => failureCopy(m, es));
+      expect(new Set(avisos).size).toBe(avisos.length);
+    }
+  });
+
   it("sin ninguno, avisa del fallo y no envía nada", async () => {
     const forms = await compilarCon({ beta: "", waitlist: "", clave: "" });
     expect(forms.betaConfigured).toBe(false);

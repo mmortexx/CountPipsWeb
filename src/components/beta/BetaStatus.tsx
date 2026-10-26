@@ -56,7 +56,7 @@ export function ProductStatus() {
         en: "Discipline, risk and prop-firm workflows with invited users.",
         pt: "Fluxos de disciplina, risco e prop firm com usuários convidados.",
         fr: "Flux de discipline, risque et prop firm avec des utilisateurs invités.",
-        de: "Disziplin-, Risiko- und Prop-Firm-Workflows mit geladenen Nutzern.",
+        de: "Disziplin-, Risiko- und Prop-Firm-Workflows mit eingeladenen Nutzern.",
         it: "Flussi di disciplina, rischio e prop firm con utenti invitati.",
       }),
     },

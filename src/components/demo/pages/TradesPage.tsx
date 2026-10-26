@@ -2,6 +2,7 @@
 
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { usePresencia } from "@/hooks/use-presencia";
+import { curva, duracion } from "@/lib/motion";
 import { Viajero } from "../Viajero";
 import { useLang, type Lang } from "@/lib/i18n";
 import {
@@ -32,7 +33,7 @@ import {
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
-import { CountUp } from "@/components/tj/CountUp";
+import { CifraDemo } from "@/components/tj/CifraDemo";
 import { Reveal } from "@/components/tj/Reveal";
 import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
@@ -114,7 +115,7 @@ function SortHeader({
       </span>
       <span
         key={active ? `${dir}` : "idle"}
-        style={{ "--dm-s": 0.6, "--dm-r": active && dir === "asc" ? "-90deg" : "0deg", "--dm-dur": "0.18s" } as CSSProperties}
+        style={{ "--dm-s": 0.6, "--dm-r": active && dir === "asc" ? "-90deg" : "0deg", "--dm-dur": "var(--dur-estado)" } as CSSProperties}
         className={`tj-dm-entra inline-block text-[11px] leading-none transition-colors ${
           active ? "text-primary" : "text-tertiary/50 group-hover/sort:text-secondary"
         }`}
@@ -160,7 +161,7 @@ const TradeRow = memo(function TradeRow({
     <tr
       onClick={() => !isConfirming && goDetail(trade.id)}
       data-operacion={trade.id}
-      className={`group relative cursor-pointer border-b border-[rgb(var(--divider)/0.06)] last:border-b-0 transition-[background-color,box-shadow] duration-150 ${
+      className={`group relative cursor-pointer border-b border-[rgb(var(--divider)/0.06)] last:border-b-0 transition-[background-color,box-shadow] ${
         selected ? "bg-[rgb(var(--accent-base)/0.08)]" : "even:bg-[rgb(var(--divider)/0.02)] hover:bg-[rgb(var(--divider)/0.06)]"
       } hover:shadow-[inset_2px_0_0_0_rgb(var(--accent-base))] ${
         isConfirming ? "bg-pnl-neg/10" : ""
@@ -286,7 +287,7 @@ const TradeRow = memo(function TradeRow({
                 }}
                 aria-label={t("deleteTrade")}
                 title={t("deleteTrade")}
-                className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100 transition-opacity duration-150 h-6 w-6 grid place-items-center rounded text-tertiary hover:text-pnl-neg hover:bg-pnl-neg/15 border border-transparent hover:border-pnl-neg/30"
+                className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100 transition-opacity h-6 w-6 grid place-items-center rounded text-tertiary hover:text-pnl-neg hover:bg-pnl-neg/15 border border-transparent hover:border-pnl-neg/30"
               >
                 <svg
                   width="13"
@@ -335,7 +336,7 @@ const PnlCell = memo(function PnlCell({
       />
       <span
         key={value}
-        style={{ "--dm-o": 0.4, "--dm-y": "-3px", "--dm-dur": "0.25s" } as CSSProperties}
+        style={{ "--dm-o": 0.4, "--dm-y": "-3px", "--dm-dur": "var(--dur-abre)" } as CSSProperties}
         className="tj-dm-entra relative inline-block"
       >
         <Money
@@ -594,7 +595,6 @@ function BulkActionBar({
    cambia de sitio se desliza desde su posición anterior y la nueva entra 8 px
    más abajo, en cascada. Las del primer pintado no se animan. Se mide con
    `offsetTop`, que no cambia al desplazar la ventana de la demo. */
-const CURVA = "cubic-bezier(0.22, 1, 0.36, 1)";
 function useRecolocar(cuerpo: RefObject<HTMLTableSectionElement | null>, firma: string) {
   const previas = useRef<Map<string, number> | null>(null);
   useLayoutEffect(() => {
@@ -608,9 +608,9 @@ function useRecolocar(cuerpo: RefObject<HTMLTableSectionElement | null>, firma: 
     filas.forEach((f, i) => {
       const desde = antes.get(f.dataset.operacion ?? "");
       if (desde === undefined) {
-        f.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 350, delay: Math.min(i * 25, 400), easing: CURVA, fill: "backwards" });
+        f.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: duracion("--dur-entra"), delay: Math.min(i, 8) * duracion("--escalon"), easing: curva("--ease-suave"), fill: "backwards" });
       } else if (Math.abs(desde - f.offsetTop) > 0.5) {
-        f.animate([{ transform: `translateY(${desde - f.offsetTop}px)` }, { transform: "none" }], { duration: 350, easing: CURVA });
+        f.animate([{ transform: `translateY(${desde - f.offsetTop}px)` }, { transform: "none" }], { duration: duracion("--dur-entra"), easing: curva("--ease-suave") });
       }
     });
   }, [cuerpo, firma]);
@@ -627,7 +627,7 @@ export function TradesPage() {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [confirmingId, setConfirmingId] = useState<number | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
-  const barra = usePresencia(selectedIds.size > 0, 240);
+  const barra = usePresencia(selectedIds.size > 0);
   const [ultimaSeleccion, setUltimaSeleccion] = useState(0);
   if (selectedIds.size && selectedIds.size !== ultimaSeleccion) setUltimaSeleccion(selectedIds.size);
   const cuerpoTabla = useRef<HTMLTableSectionElement>(null);
@@ -897,7 +897,7 @@ export function TradesPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 w-full md:w-auto">
+          <div className="flex flex-wrap md:flex-nowrap items-center gap-2 w-full md:w-auto">
             <div className="flex items-center gap-1">
               <button
                 type="button"
@@ -923,7 +923,7 @@ export function TradesPage() {
               </button>
             </div>
 
-            <div className="relative flex-1 md:w-80">
+            <div className="relative flex-1 basis-full md:basis-auto md:w-80">
               <svg
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-tertiary pointer-events-none"
                 width="14"
@@ -1273,7 +1273,7 @@ export function TradesPage() {
         <div className="tj-fila-sigue flex items-stretch py-2 overflow-x-auto custom-scroll -mx-1 px-1">
           {/* En español el símbolo va detrás de la cifra («+5.732,24 US$»), como en la columna P&L. */}
           <KpiStripCell label={t("pnlTotal")} filterSig={filterSig} showHairline>
-            <CountUp
+            <CifraDemo
               to={pnlTira.abs}
               decimals={2}
               prefix={`${pnlTira.signo}${lang === "es" ? "" : "$"}`}
@@ -1282,14 +1282,14 @@ export function TradesPage() {
             />
           </KpiStripCell>
           <KpiStripCell label={t("winRate")} filterSig={filterSig} showHairline>
-            <CountUp to={metrics.winRate * 100} decimals={1} suffix={lang === "es" ? "\u00a0%" : "%"} />
+            <CifraDemo to={metrics.winRate * 100} decimals={1} suffix={lang === "es" ? "\u00a0%" : "%"} />
           </KpiStripCell>
           <KpiStripCell label={t("operations")} filterSig={filterSig} showHairline>
-            <CountUp to={metrics.closedCount} decimals={0} />
+            <CifraDemo to={metrics.closedCount} decimals={0} />
           </KpiStripCell>
           {/* «+0,23 R», como la columna R de la tabla: signo delante y unidad detrás. */}
           <KpiStripCell label={t("expectancyR")} filterSig={filterSig} showHairline={false}>
-            <CountUp
+            <CifraDemo
               to={ventajaTira.abs}
               decimals={2}
               prefix={ventajaTira.signo}

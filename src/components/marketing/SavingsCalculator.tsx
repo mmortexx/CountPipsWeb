@@ -322,7 +322,7 @@ function Result({ label, value, color }: { label: string; value: string; color: 
       </div>
       <div
         className="tnum mt-auto min-w-0 break-words relative pt-1"
-        style={{ fontSize: 18, fontWeight: 600, color, transition: "color 0.18s var(--ease-suave)" }}
+        style={{ fontSize: 18, fontWeight: 600, color, transition: "color var(--dur-estado) var(--ease-suave)" }}
       >
         {value}
       </div>

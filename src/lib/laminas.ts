@@ -63,7 +63,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "rendimento con le aree di drawdown ombreggiate e il saldo a linea tratteggiata, e il " +
       "calendario del mese con il risultato di ciascun giorno e il totale settimanale. Sopra, il " +
       "briefing di oggi — ciò che lo storico dice della giornata prima di operare —, gli avvisi " +
-      "di condotta e una domanda su come ti sei sentito operando oggi, registrata nei trade del giorno.",
+      "di condotta e una domanda su come ti sei sentito operando oggi, registrata nelle operazioni del giorno.",
     altEs:
       "Pantalla de resumen: arriba, el final del parte de hoy, con lo que el histórico dice " +
       "del día y una pregunta para puntuar de «muy mal» a «muy bien» cómo te has sentido " +
@@ -155,8 +155,8 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "Kontoprozentsatz auf einer Leiste von Stop bis 1 R neu, und ein Hinweis vergleicht Ihre " +
       "Positionsgröße mit Halb-Kelly. Alles andere misst genau das, was hier erfasst wird.",
     notaIt:
-      "Il modulo occupa l'intero schermo di proposito: strumento, direzione, ingresso, stop, " +
-      "target e uscita, accanto a un'ampia area in cui trascinare o incollare le catture del " +
+      "Il modulo occupa l’intero schermo di proposito: strumento, direzione, ingresso, stop, " +
+      "target e uscita, accanto a un’ampia area in cui trascinare o incollare le catture del " +
       "grafico. Mentre scrivi, il rischio viene ricalcolato in denaro e in percentuale del conto " +
       "su un righello dallo stop a 1 R, e una nota posiziona la tua taglia rispetto al mezzo Kelly. " +
       "Tutto il resto — il resto di questa schermata e le altre dieci — misura ciò che viene inserito qui.",
@@ -202,13 +202,13 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "ingresso, stop, target facoltativo e uscita aperta, rischio in dollari e in percentuale " +
       "del conto su un righello stop–ingresso–1 R, nota che confronta la taglia con il mezzo Kelly, " +
       "quantità e pulsanti per aggiungere dettagli, calcolare la taglia, salvare bozza, «Visto e non entrato» " +
-      "e registrare l'operazione. Sotto, riga con le metriche del conto.",
+      "e registrare l’operazione. Sotto, riga con le metriche del conto.",
     detalleEs: "los campos de la operación",
     detalleEn: "the trade fields",
     detallePt: "os campos da operação",
     detalleFr: "les champs de l’opération",
     detalleDe: "die Trade-Felder",
-    detalleIt: "i campi dell'operazione",
+    detalleIt: "i campi dell’operazione",
   },
 
   guardian: {
@@ -298,8 +298,8 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     notaIt:
       "Filtri per strumento, direzione, esito, rispetto del piano, setup, condotta, " +
       "commissioni e sessione. Ciò che conta non è la tabella: è la riga soprastante, " +
-      "etichettata «ciò che c'è a schermo», che si ricalcola su quanto rimane dopo il filtro. " +
-      "Chiedersi «e se togliessi i giorni in cui ho violato il mio piano?» smette di essere un'ipotesi e diventa questione di due clic.",
+      "etichettata «ciò che c’è a schermo», che si ricalcola su quanto rimane dopo il filtro. " +
+      "Chiedersi «e se togliessi i giorni in cui ho violato il mio piano?» smette di essere un’ipotesi e diventa questione di due clic.",
     altEs:
       "Pantalla de operaciones con doscientos registros: ocho filtros, un buscador, una fila " +
       "con el P&L total, el win rate y la expectancy en R calculados sobre lo filtrado, y una " +
@@ -337,7 +337,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     detallePt: "o cabeçalho do registro",
     detalleFr: "l’en-tête du journal",
     detalleDe: "der Kopfbereich des Journals",
-    detalleIt: "l'intestazione del registro",
+    detalleIt: "l’intestazione del registro",
   },
 
   analitica: {
@@ -384,9 +384,9 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "ausdrücklich: Es garantiert nicht die Zukunft, sondern belegt, dass die bisherigen Ergebnisse " +
       "nicht nach Zufall aussehen.",
     notaIt:
-      "Una tabella confronta mese, trimestre, anno e l'intero storico con gli stessi criteri, " +
+      "Una tabella confronta mese, trimestre, anno e l’intero storico con gli stessi criteri, " +
       "e nessuna riga compare senza il numero di operazioni su cui viene calcolata. In basso, il " +
-      "verdetto: se l'expectancy si distingue da zero, con il relativo valore p. E lo dichiara " +
+      "verdetto: se l’expectancy si distingue da zero, con il relativo valore p. E lo dichiara " +
       "esplicitamente: non garantisce il futuro, dimostra che quanto ottenuto finora non sembra dovuto al caso.",
     altEs:
       "Pantalla de analítica: el neto de todo el histórico en grande y una tabla por periodo " +

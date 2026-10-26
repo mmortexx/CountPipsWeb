@@ -65,7 +65,7 @@ describe("Resumen, Analítica y Operaciones dan la misma cuenta, con lo que regi
 
   it("Analítica: las operaciones y el resultado neto incluyen la registrada", () => {
     const html = pagina(() => createElement(AnalyticsPage));
-    expect(/Operaciones<\/div>.*?class="sr-only">(\d+)</.exec(html)?.[1]).toBe(String(cuantas));
+    expect(/Operaciones<\/div>.*?class="tnum[^"]*">(\d+)</.exec(html)?.[1]).toBe(String(cuantas));
     expect(sinEspacios(html)).toContain(sinEspacios(fmtMoney(total, "es", { sign: true, decimals: 0 })));
   });
 

@@ -25,7 +25,10 @@ export function Money({
   className = "",
 }: MoneyProps) {
   const { lang } = useLang();
-  const text = fmtMoney(value, lang, { sign, decimals, compact });
+  // Con tono de pérdida, una magnitud positiva (media perdedora, drawdown) se
+  // firma con menos: «+126 $» en rojo se contradecía.
+  const mostrado = sign && forcedTone === "neg" && value > 0 ? -value : value;
+  const text = fmtMoney(mostrado, lang, { sign, decimals, compact });
   const tone = forcedTone ?? pnlTone(value);
 
   if (colorizeSign || forcedTone) {

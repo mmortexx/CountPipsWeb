@@ -30,7 +30,7 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
   const mando = useTeclaMando();
   const caja = useRef<HTMLDivElement>(null);
   const cerrarRef = useRef<HTMLButtonElement>(null);
-  const { montado, saliendo } = usePresencia(open, 180);
+  const { montado, saliendo } = usePresencia(open);
 
   /* Con `?` la esquina anclada puede quedar fuera de la pantalla (a 1440×900,
      94 px bajo el borde): se desplaza lo justo para enseñarla entera. */
@@ -78,7 +78,7 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
   }, [open, onClose]);
 
   // `/` solo existe donde está el buscador; en otras páginas se oculta para no mentir.
-  const showSearch = page === "trades" || page === "detail";
+  const showSearch = page === "trades";
 
   const shortcuts: {
     keys: ReactNode;

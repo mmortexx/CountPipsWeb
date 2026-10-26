@@ -1974,6 +1974,7 @@ if (SERVIR) {
 // lector: los titulares que el borde corta se miran aparte.
 const ANCHO_ESTRECHO = 320;
 let estrechasMedidas = 0;
+let pestanasDeslizadas = 0;
 let espaciadosMedidos = 0;
 {
   const compiladas = async (carpeta, rel = "") => {
@@ -2050,6 +2051,34 @@ let espaciadosMedidos = 0;
           if (r.sobra > 1) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el contenido se sale ${r.sobra} px por «${r.texto}»`);
           else for (const c of r.cortados) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el borde corta el titular ${c}`);
           if (r.migaLineas > 1) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px la miga de pan ocupa ${r.migaLineas} líneas`);
+          // Una fila de pestañas que no cabe se desliza, y lo dice: la última
+          // pestaña cortada a media palabra («Analytiq») sin aviso parece un
+          // fallo. El aviso vela el canto que esconde pestañas: el derecho al
+          // principio y el izquierdo al final.
+          const filas = await pagina.evaluate(async () => {
+            const marco = () => new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok)));
+            const aviso = (l, lado = "--tj-sigue") => (l.classList.contains("tj-fila-sigue") ? 48 : parseFloat(getComputedStyle(l).getPropertyValue(lado)) || 0);
+            const mal = [];
+            let medidas = 0;
+            for (const l of document.querySelectorAll("main [role=tablist]")) {
+              if (!l.getClientRects().length || !/auto|scroll/.test(getComputedStyle(l).overflowX)) continue;
+              if (l.scrollWidth - l.clientWidth < 2) continue;
+              medidas++;
+              const nombre = `[${[...l.querySelectorAll("[role=tab]")].map((t) => t.textContent.trim()).join(" | ").slice(0, 60)}]`;
+              l.scrollLeft = 0;
+              await marco();
+              if (aviso(l) < 24) mal.push(`${nombre} se corta sin aviso de que sigue`);
+              if (l.classList.contains("tj-fila-sigue")) continue;
+              l.scrollLeft = l.scrollWidth;
+              await marco();
+              if (aviso(l) > 1) mal.push(`${nombre} sigue velando la última pestaña al final del recorrido (${aviso(l)} px)`);
+              if (aviso(l, "--tj-antes") < 24) mal.push(`${nombre} corta la primera pestaña al final del recorrido sin aviso`);
+              l.scrollLeft = 0;
+            }
+            return { mal, medidas };
+          });
+          pestanasDeslizadas += filas.medidas;
+          for (const m of filas.mal) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px la fila de pestañas ${m}`);
           // Con el espaciado de texto de WCAG 1.4.12 (o la letra grande del
           // móvil), titulares, botones, pestañas y cifras de matriz siguen
           // enteros: lo que no cabe parte línea o se desliza, no se recorta.
@@ -2103,6 +2132,9 @@ let espaciadosMedidos = 0;
     }),
   );
   if (!estrechasMedidas) fallos.push("estrecho: no se midió ninguna página");
+  // La portada en seis idiomas, Funciones y Métricas desbordan a 320 px: sin
+  // ninguna fila medida, la comprobación de pestañas no miró nada.
+  if (SERVIR && pestanasDeslizadas < 6) fallos.push(`estrecho: solo ${pestanasDeslizadas} filas de pestañas deslizables medidas`);
   if (espaciadosMedidos < estrechasMedidas) fallos.push(`estrecho: texto espaciado medido en ${espaciadosMedidos} de ${estrechasMedidas} páginas`);
 }
 
@@ -2113,13 +2145,44 @@ let espaciadosMedidos = 0;
 // recorrido no llega a una cifra de cuatro caracteres, no ha medido el caso
 // difícil y eso también es un fallo.
 const cifrasPercentil = [];
+const desalineadas = new Set();
+let rotulosMedidos = 0;
 {
   const ctx = await navegador.newContext({ viewport: { width: ANCHO_ESTRECHO, height: 640 }, reducedMotion: "reduce" });
   const pagina = await ctx.newPage();
   for (const ruta of ["/features/disciplina/", "/en/features/disciplina/"]) {
+    desalineadas.clear();
     try {
       await pagina.goto(`${BASE}${ruta}`, { waitUntil: "load", timeout: 30000 });
       await pagina.addStyleTag({ content: ".cv-auto{content-visibility:visible!important}" });
+      // Con el espaciado normal, ningún rótulo de casilla se parte dentro de
+      // una palabra («Media-na») en los anchos de móvil.
+      for (const ancho of [ANCHO_ESTRECHO, 360, 390]) {
+        await pagina.setViewportSize({ width: ancho, height: 640 });
+        const rotos = await pagina.evaluate(async () => {
+          await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok)));
+          const rotos = [];
+          for (const celda of document.querySelectorAll("main .tj-matriz > .caja-cifra")) {
+            for (const rotulo of [...celda.children].slice(0, -1)) {
+              const t = rotulo.firstChild;
+              if (rotulo.childNodes.length !== 1 || t?.nodeType !== Node.TEXT_NODE) continue;
+              let antes = null;
+              for (let i = 0; i < t.length; i++) {
+                const rango = document.createRange();
+                rango.setStart(t, i);
+                rango.setEnd(t, i + 1);
+                const arriba = Math.round(rango.getClientRects()[0]?.top ?? NaN);
+                if (antes !== null && arriba !== antes && /\p{L}/u.test(t.textContent[i]) && /\p{L}/u.test(t.textContent[i - 1])) rotos.push(t.textContent);
+                antes = arriba;
+              }
+            }
+          }
+          return rotos;
+        });
+        for (const t of new Set(rotos)) fallos.push(`percentiles ${ruta}: a ${ancho} px el rótulo «${t}» se parte dentro de una palabra`);
+        rotulosMedidos++;
+      }
+      await pagina.setViewportSize({ width: ANCHO_ESTRECHO, height: 640 });
       await pagina.addStyleTag({
         content: "*{line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important}p{margin-bottom:2em!important}",
       });
@@ -2155,22 +2218,31 @@ const cifrasPercentil = [];
             for (let i = 1; i < letras.length; i++) {
               if (letras[i].arriba !== letras[i - 1].arriba && numero.test(letras[i].c) && numero.test(letras[i - 1].c)) parte = true;
             }
-            return { texto: (cifra.textContent || "").trim(), parte };
+            const caja = celda.getBoundingClientRect();
+            return { texto: (cifra.textContent || "").trim(), parte, fila: `${[...document.querySelectorAll("main .tj-matriz")].indexOf(celda.parentElement)}:${Math.round(caja.top)}`, abajo: Math.round(cifra.getBoundingClientRect().bottom) };
           });
         });
+        const filas = new Map();
         for (const c of celdas) {
           cifrasPercentil.push(c.texto);
           if (c.parte) partidas.add(c.texto);
+          filas.set(c.fila, [...(filas.get(c.fila) ?? []), c]);
+        }
+        for (const fila of filas.values()) {
+          const bajos = fila.map((c) => c.abajo);
+          if (Math.max(...bajos) - Math.min(...bajos) > 1) desalineadas.add(fila.map((c) => c.texto).join(" | "));
         }
         await pagina.keyboard.press("ArrowRight");
       }
       for (const t of partidas) fallos.push(`percentiles ${ruta}: a ${ANCHO_ESTRECHO} px con el texto espaciado «${t}» se parte entre dígitos`);
+      for (const t of desalineadas) fallos.push(`percentiles ${ruta}: a ${ANCHO_ESTRECHO} px con el texto espaciado las cifras de una fila no caen a la misma altura (${t})`);
     } catch (e) {
       fallos.push(`percentiles ${ruta}: ${String(e).split("\n")[0]}`);
     }
   }
   await ctx.close();
   if (!cifrasPercentil.some((t) => /\d[\d.,]{3}/.test(t))) fallos.push("percentiles: el recorrido no llegó a ninguna cifra de cuatro caracteres");
+  if (rotulosMedidos < 6) fallos.push(`percentiles: rótulos medidos en ${rotulosMedidos} pasadas (ruta × ancho), mínimo 6`);
 }
 
 await navegador.close();
@@ -2234,7 +2306,7 @@ console.log(
 if (subirMedidos) {
   console.log(`[humo] botón de subir — ${subirMedidos} finales de página medidos en 3 anchos sin tapar el pie`);
 }
-console.log(`[humo] estrecho — ${estrechasMedidas} páginas medidas a ${ANCHO_ESTRECHO} px`);
+console.log(`[humo] estrecho — ${estrechasMedidas} páginas medidas a ${ANCHO_ESTRECHO} px, ${pestanasDeslizadas} filas de pestañas deslizables con su aviso`);
 if (elementosMirados && !desenfoquesVistos) {
   console.log(`[humo] desenfoque — ${elementosMirados} elementos recorridos en 5 rutas, ninguno desenfoca su fondo`);
 }

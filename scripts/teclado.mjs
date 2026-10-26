@@ -172,7 +172,7 @@ const DIALOGOS = [
     ruta: "/",
     ancho: 390,
     abrir: async (p) => {
-      const b = p.locator('button[aria-controls="mobile-nav-drawer"]').first();
+      const b = p.locator("button[data-menu-movil]").first();
       if (!(await b.count())) return false;
       await b.focus();
       await p.keyboard.press("Enter");
@@ -522,6 +522,67 @@ for (const idioma of ["es", "en"]) {
   }
   await ctx.close();
 }
+// (e2) el campo que recibe el foco por un error se ve con su etiqueta, no bajo la cabecera fija
+{
+  let medidos = 0;
+  for (const ancho of [1280, 390]) {
+    const { ctx, p } = await nueva("/faq/", { ancho });
+    if (!(await p.locator("#cf-name").count())) {
+      fallos.push({ ruta: "/faq/", detalle: "no encontré el formulario de contacto (#cf-name)" });
+    } else {
+      /* El nombre asomando bajo la cabecera, como queda tras pulsar Enviar en una
+         pantalla baja: el navegador solo lo baja hasta `scroll-padding-top`, y si
+         nada reserva sitio para la etiqueta, esta se queda tapada. */
+      await p.evaluate(() => {
+        const nombre = document.getElementById("cf-name");
+        window.scrollTo({ top: scrollY + nombre.getBoundingClientRect().top - 40, behavior: "instant" });
+        document.querySelector("form:has(#cf-email) button[type=submit]").focus({ preventScroll: true });
+      });
+      await p.keyboard.press("Enter");
+      await p.waitForTimeout(500);
+      const r = await p.evaluate(() => {
+        const campo = document.activeElement;
+        const etiqueta = campo?.id ? document.querySelector(`label[for="${campo.id}"]`) : null;
+        return {
+          id: campo?.id ?? "",
+          etiqueta: etiqueta ? Math.round(etiqueta.getBoundingClientRect().top) : null,
+          cabecera: Math.round(document.querySelector("header")?.getBoundingClientRect().bottom ?? 0),
+        };
+      });
+      if (r.id !== "cf-name" || r.etiqueta === null) fallos.push({ ruta: "/faq/", detalle: `a ${ancho}px el envío vacío no deja el foco en el nombre con su etiqueta (foco en «${r.id}»)` });
+      else if (r.etiqueta < r.cabecera) fallos.push({ ruta: "/faq/", detalle: `a ${ancho}px la etiqueta del campo con error queda bajo la cabecera fija (empieza en ${r.etiqueta}px; la cabecera acaba en ${r.cabecera}px)` });
+      else medidos++;
+    }
+    await ctx.close();
+  }
+  if (medidos === 2) recorridos++;
+}
+// (e3) el panel de idiomas del cajón móvil se ve entero al abrirse, no bajo la botonera fija
+{
+  const { ctx, p } = await nueva("/", { ancho: 390 });
+  await p.setViewportSize({ width: 390, height: 844 });
+  await p.locator("button[data-menu-movil]").click();
+  await p.waitForTimeout(600);
+  const boton = p.locator("#mobile-nav-drawer button[aria-label='Cambiar idioma']");
+  if (!(await boton.count())) {
+    fallos.push({ ruta: "/", detalle: "no encontré el selector de idioma dentro del cajón móvil" });
+  } else {
+    await boton.click();
+    await p.waitForTimeout(500);
+    const r = await p.evaluate(() => {
+      const panel = document.querySelector("#mobile-nav-drawer [data-panel-idiomas]");
+      const lista = document.querySelector("#mobile-nav-drawer .tj-cajon-lista");
+      if (!panel || !lista) return null;
+      const a = panel.getBoundingClientRect();
+      const b = lista.getBoundingClientRect();
+      return { panel: [Math.round(a.top), Math.round(a.bottom)], lista: [Math.round(b.top), Math.round(b.bottom)] };
+    });
+    if (!r) fallos.push({ ruta: "/", detalle: "al pulsar el idioma del cajón no apareció su panel" });
+    else if (r.panel[0] < r.lista[0] || r.panel[1] > r.lista[1]) fallos.push({ ruta: "/", detalle: `el panel de idiomas del cajón se sale de la parte visible de la lista (panel ${r.panel.join("–")} px, lista ${r.lista.join("–")} px)` });
+    else recorridos++;
+  }
+  await ctx.close();
+}
 // (f) al enviarse, el foco va a la confirmación
 /* El `<form>` se desmonta al enviarse y el foco debe pasar a la confirmación,
    no caer al `<body>`. El servicio de envío se sustituye por un éxito simulado;
@@ -652,9 +713,9 @@ for (const idioma of ["es", "en"]) {
   if (!problemas.length) recorridos++;
   await ctx.close();
 }
-console.log(`  capas, glosario, megamenú, formulario, índice y atajos: ${recorridos} de 12 recorridos completos`);
-if (recorridos < 12 && !fallos.length) {
-  fallos.push({ ruta: "—", detalle: `solo ${recorridos} de 12 recorridos llegaron a medirse` });
+console.log(`  capas, glosario, megamenú, formulario, índice y atajos: ${recorridos} de 14 recorridos completos`);
+if (recorridos < 14 && !fallos.length) {
+  fallos.push({ ruta: "—", detalle: `solo ${recorridos} de 14 recorridos llegaron a medirse` });
 }
 
 await navegador.close();

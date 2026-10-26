@@ -24,6 +24,20 @@ export function siguienteSemilla(semilla: number): number {
   return (semilla % SEMILLA_MAX) + 1;
 }
 
+/**
+ * ¿Acaba perdiendo un camino que termina con `final` en cuenta? Lo retirado
+ * cuenta como ganado. Un camino que no llega a cero cobra todos los retiros;
+ * uno que llega a cero se queda ahí y pierde.
+ */
+export function terminaPerdiendo(
+  final: number,
+  p: Pick<ParametrosMonteCarlo, "startBalance" | "trades" | "monthlyWithdrawal">,
+): boolean {
+  if (final <= 0) return true;
+  const retirado = p.monthlyWithdrawal * Math.floor(p.trades / OPERACIONES_POR_MES);
+  return final + retirado < p.startBalance;
+}
+
 export function simulaMonteCarlo({
   caminos,
   startBalance,

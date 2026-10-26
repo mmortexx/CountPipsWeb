@@ -277,7 +277,7 @@ export function DashboardPage() {
                 key={`risk-${riskUsdLive.toFixed(2)}`}
                 /* En la tira apilada: 22 px y sin margen, comparte línea con el rótulo. */
                 className="tj-dm-entra text-[22px] font-semibold leading-none tnum text-primary sm:mt-1 sm:text-[28px]"
-                style={{ "--dm-o": 0.55, "--dm-y": "3px", "--dm-dur": "0.35s" } as CSSProperties}
+                style={{ "--dm-o": 0.55, "--dm-y": "3px" } as CSSProperties}
               >
                 <Money value={riskUsdLive} />
               </div>
@@ -455,7 +455,7 @@ export function DashboardPage() {
                                     // navegadores tiñen de gris el degradado.
                                     : "0 0 0px 0px rgb(var(--sombra) / 0)",
                                 }}
-                                className={`inline-block w-2 h-2 rounded-[1px] motion-safe:transition-[transform,box-shadow] motion-safe:duration-[250ms] ${
+                                className={`inline-block w-2 h-2 rounded-[1px] motion-safe:transition-[transform,box-shadow] ${
                                   d === "long" ? "bg-pnl-pos" : "bg-pnl-neg"
                                 }`}
                                 aria-hidden="true"
@@ -665,8 +665,8 @@ export function DashboardPage() {
                       } peer-focus-visible:ring-2 peer-focus-visible:ring-[rgb(var(--accent-base)/0.5)]`}
                     >
                       <span
-                        className={`absolute top-[3px] w-3.5 h-3.5 rounded-[2px] transition-[left] ${
-                          advanced ? "left-[19px] bg-[rgb(var(--accent-ink))]" : "left-[3px] bg-[rgb(var(--txt-secondary))]"
+                        className={`absolute top-[3px] left-[3px] w-3.5 h-3.5 rounded-[2px] transition-[translate] ${
+                          advanced ? "translate-x-4 bg-[rgb(var(--accent-ink))]" : "bg-[rgb(var(--txt-secondary))]"
                         }`}
                       />
                     </span>
@@ -692,7 +692,7 @@ export function DashboardPage() {
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
-                    className="tj-dm-alza tj-dm-pulsa h-11 px-4 rounded-[2px] bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] text-secondary font-medium text-sm flex items-center gap-2 hover:bg-[rgb(var(--divider)/0.08)] hover:text-primary transition-colors"
+                    className="tj-dm-realce tj-dm-pulsa h-11 px-4 rounded-[2px] bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] text-secondary font-medium text-sm flex items-center gap-2 hover:bg-[rgb(var(--divider)/0.08)] hover:text-primary transition-colors"
                   >
                     <svg
                       width="14"
@@ -713,7 +713,7 @@ export function DashboardPage() {
                   <button
                     type="submit"
                     title={`${mando}+Enter`}
-                    className="tj-dm-alza tj-dm-pulsa group h-11 min-w-[200px] px-4 rounded-[2px] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[rgb(var(--accent-hover))] transition-colors shadow-[0_2px_8px_rgb(var(--sombra)/0.18)]"
+                    className="tj-dm-realce tj-dm-pulsa group h-11 min-w-[200px] px-4 rounded-[2px] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[rgb(var(--accent-hover))] transition-colors shadow-[0_2px_8px_rgb(var(--sombra)/0.18)]"
                   >
                     <svg
                       width="14"
@@ -816,7 +816,7 @@ export function DashboardPage() {
             <KpiCell
               label={t("currentDd")}
               value={
-                <span className="text-lg font-semibold tnum text-pnl-neg">
+                <span className={`text-lg font-semibold tnum ${metrics.currentDrawdownPct >= 0.0005 ? "text-pnl-neg" : "text-primary"}`} /* lo que se lee «0,0 %» no es una caída */>
                   {fmtPct(metrics.currentDrawdownPct, lang, 1)}
                 </span>
               }
@@ -969,7 +969,7 @@ export function DashboardPage() {
                     key={tr.id}
                     type="button"
                     onClick={() => goDetail(tr.id)}
-                    style={{ "--dm-y": "4px", "--dm-dur": "0.3s", "--dm-retardo": `${Math.min(i * 0.04, 0.24)}s` } as CSSProperties}
+                    style={{ "--dm-y": "4px", "--dm-retardo": `calc(var(--escalon) * ${Math.min(i, 6)})` } as CSSProperties}
                     /* `flex-wrap` en móvil: las cinco celdas son `shrink-0` y a 390 px
                        sumaban 319 en 207 útiles, con el P&L cortado. Envolver no
                        pierde datos (truncar devolvía «XAU/U…»); en sm+ vuelve a una
@@ -1012,7 +1012,7 @@ export function DashboardPage() {
                       />
                     </div>
                     <svg
-                      className="hidden md:block text-tertiary opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-[opacity,transform] shrink-0"
+                      className="hidden md:block text-tertiary opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                       width="12"
                       height="12"
                       viewBox="0 0 16 16"

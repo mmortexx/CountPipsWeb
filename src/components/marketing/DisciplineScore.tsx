@@ -31,7 +31,7 @@ type Dim = {
   tipEn: string;
 };
 
-const DIMS: Dim[] = [
+export const DIMS: Dim[] = [
   {
     id: "riesgo",
     es: "Riesgo",
@@ -93,6 +93,41 @@ const MAX_OPT = 3;
 /** Desde aquí, el eje más bajo ya no es un punto flaco sino uno que vigilar. */
 const UMBRAL_SIN_PUNTO_FLACO = 85;
 
+/** Puntuación por eje y cifra global (0-100) de unas respuestas, completas o no. */
+export function puntuar(answers: (number | null)[]) {
+  /* Por eje: media ponderada de sus preguntas. Las no respondidas no cuentan,
+     así que el perfil ya dice algo antes de terminar. */
+  const acc: Record<DimId, { got: number; max: number }> = {
+    riesgo: { got: 0, max: 0 },
+    plan: { got: 0, max: 0 },
+    registro: { got: 0, max: 0 },
+    temple: { got: 0, max: 0 },
+    constancia: { got: 0, max: 0 },
+  };
+  QUESTIONS.forEach((q, i) => {
+    const a = answers[i];
+    if (a === null || a === undefined) return;
+    acc[q.dim].got += a * q.weight;
+    acc[q.dim].max += MAX_OPT * q.weight;
+  });
+  const perDim = DIMS.map((d) => ({
+    dim: d,
+    pct: acc[d.id].max > 0 ? Math.round((acc[d.id].got / acc[d.id].max) * 100) : 0,
+    respondidas: acc[d.id].max > 0,
+  }));
+  /* Global: media de los ejes respondidos ponderada por el peso del eje, no el
+     porcentaje de aciertos. Con la fracción sin redondear de cada eje. */
+  let suma = 0;
+  let pesos = 0;
+  for (const d of DIMS) {
+    const { got, max } = acc[d.id];
+    if (max === 0) continue;
+    suma += d.weight * (got / max);
+    pesos += d.weight;
+  }
+  return { perDim, score: pesos > 0 ? Math.round((suma / pesos) * 100) : 0 };
+}
+
 /** Dónde se recuerdan las respuestas (solo en el navegador de quien responde). */
 const CLAVE_GUARDADO = "tj-test-disciplina-v1";
 
@@ -144,44 +179,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
   const answeredCount = answers.filter((a) => a !== null).length;
   const allAnswered = answeredCount === QUESTIONS.length;
 
-  /* Puntuación por eje: media ponderada de sus preguntas, en 0-100. Las no
-     respondidas no cuentan, así que el perfil ya dice algo antes de terminar. */
-  const perDim = useMemo(() => {
-    const acc: Record<DimId, { got: number; max: number }> = {
-      riesgo: { got: 0, max: 0 },
-      plan: { got: 0, max: 0 },
-      registro: { got: 0, max: 0 },
-      temple: { got: 0, max: 0 },
-      constancia: { got: 0, max: 0 },
-    };
-    QUESTIONS.forEach((q, i) => {
-      const a = answers[i];
-      if (a === null) return;
-      acc[q.dim].got += a * q.weight;
-      acc[q.dim].max += MAX_OPT * q.weight;
-    });
-    return DIMS.map((d) => ({
-      dim: d,
-      pct: acc[d.id].max > 0 ? Math.round((acc[d.id].got / acc[d.id].max) * 100) : 0,
-      respondidas: acc[d.id].max > 0,
-    }));
-  }, [answers]);
-
-  /* Cifra global: media de los ejes ponderada por su peso, no el porcentaje
-     de aciertos. */
-  const score = useMemo(() => {
-    let got = 0;
-    let max = 0;
-    QUESTIONS.forEach((q, i) => {
-      const a = answers[i];
-      if (a === null) return;
-      const dim = DIMS.find((d) => d.id === q.dim);
-      const w = q.weight * (dim ? dim.weight : 1);
-      got += a * w;
-      max += MAX_OPT * w;
-    });
-    return max > 0 ? Math.round((got / max) * 100) : 0;
-  }, [answers]);
+  const { perDim, score } = useMemo(() => puntuar(answers), [answers]);
 
   const level = useMemo(() => {
     if (!allAnswered) return null;
@@ -365,7 +363,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                   style={{
                     width: `${(answeredCount / QUESTIONS.length) * 100}%`,
                     background: "rgb(var(--accent-base))",
-                    transition: "width 0.22s var(--ease-suave)",
+                    transition: "width var(--dur-abre) var(--ease-suave)",
                   }}
                 />
               </div>
@@ -424,7 +422,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                             tabIndex={enfocable ? 0 : -1}
                             onClick={() => setAnswer(qi, oi)}
                             onKeyDown={(e) => moverConFlechas(e, oi, (d) => setAnswer(qi, d))}
-                            className={`text-left rounded-[4px] transition-[background-color,color,box-shadow] duration-200 ${
+                            className={`text-left rounded-[4px] transition-[background-color,color,box-shadow] ${
                               activa
                                 ? "bg-[var(--ink)] text-[var(--bg)]"
                                 : "text-[var(--ink-2)] shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)] hover:text-[var(--ink)] hover:shadow-[inset_0_0_0_1px_var(--line-2)]"
@@ -456,7 +454,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                 type="button"
                 onClick={() => irA(actual - 1)}
                 disabled={actual === 0}
-                className="order-2 inline-flex items-center gap-2 rounded-[4px] transition-colors duration-200 disabled:opacity-35 disabled:cursor-not-allowed sm:order-none"
+                className="order-2 inline-flex items-center gap-2 rounded-[4px] transition-colors disabled:opacity-35 disabled:cursor-not-allowed sm:order-none"
                 style={{ minHeight: 44, padding: "10px 16px", fontSize: 14, cursor: "pointer",
                          color: "var(--ink-2)", border: "1px solid transparent" }}
               >
@@ -529,7 +527,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                   className="tj-cifra"
                   style={{
                     color: level ? level.color : "var(--ink-3)",
-                    transition: "color 0.25s ease",
+                    transition: "color var(--dur-estado) var(--ease-suave)",
                   }}
                 >
                   {/* Sin respuestas no hay cifra: un «0» se leería como nota. */}
@@ -589,7 +587,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                         style={{
                           width: `${respondidas ? pct : 0}%`,
                           background: barColor(pct),
-                          transition: "width 0.3s var(--ease-suave), background-color 0.3s ease",
+                          transition: "width var(--dur-abre) var(--ease-suave), background-color var(--dur-abre) var(--ease-suave)",
                         }}
                       />
                     </div>

@@ -37,6 +37,21 @@ import { nombreTermino } from "@/lib/trading/nombre-termino";
 const RECENT_KEY = "tj-glossary-recent";
 const RECENT_MAX = 3;
 
+/** Título y entradilla del diálogo: describen cómo se nombran los términos de `GLOSSARY`. */
+export function cabeceraGlosario(es: boolean): { titulo: string; descripcion: string } {
+  return es
+    ? {
+        titulo: "Términos de trading, en llano",
+        descripcion:
+          "Casi todos se quedan en inglés, que es como se dicen en los mercados; los que tienen nombre propio en español aparecen con él. La definición, siempre en tu idioma.",
+      }
+    : {
+        titulo: "Trading terms, in plain words",
+        descripcion:
+          "Every term the app uses, defined the way someone who trades uses it rather than the way a dictionary does.",
+      };
+}
+
 /** `id` estable de cada opción del listbox, para `aria-activedescendant`.
  *  Función pura, para probarla contra todo `GLOSSARY` sin renderizar. */
 export function idOpcionGlosario(term: string): string {
@@ -103,6 +118,7 @@ export function GlossaryModal({
 }) {
   const { lang } = useLang();
   const es = lang === "es";
+  const cabecera = cabeceraGlosario(es);
 
   const [internalOpen, setInternalOpen] = React.useState(false);
   const isControlled = openProp !== undefined;
@@ -231,15 +247,9 @@ export function GlossaryModal({
           <div className="flex justify-start">
             <Eyebrow>{es ? "Glosario" : "Glossary"}</Eyebrow>
           </div>
-          <DialogTitle className="t-h3 mt-3 text-primary">
-            {es
-              ? "Términos de trading, sin traducir"
-              : "Trading terms, in plain words"}
-          </DialogTitle>
+          <DialogTitle className="t-h3 mt-3 text-primary">{cabecera.titulo}</DialogTitle>
           <DialogDescription className="text-sm text-secondary leading-relaxed">
-            {es
-              ? "Los términos se mantienen en inglés aunque la app esté en español: es la lengua franca de los mercados. Solo la definición cambia de idioma."
-              : "Every term the app uses, defined the way someone who trades uses it rather than the way a dictionary does."}
+            {cabecera.descripcion}
           </DialogDescription>
         </DialogHeader>
 
@@ -395,7 +405,7 @@ export function GlossaryModal({
                       <div className="flex items-center gap-1.5 min-w-0">
                         <ChevronDown
                           className={[
-                            "size-3.5 text-tertiary shrink-0 transition-transform duration-200",
+                            "size-3.5 text-tertiary shrink-0 transition-transform duration-(--dur-abre)",
                             isExpanded ? "rotate-180" : "",
                           ].join(" ")}
                           aria-hidden="true"

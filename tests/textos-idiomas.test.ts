@@ -27,6 +27,7 @@ import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { Comparison } from "@/components/marketing/Comparison";
 import { pricingFaq } from "@/lib/faq";
 import { LAMINAS_PRODUCTO } from "@/lib/laminas";
+import { SALTOS_TECLADO } from "@/lib/saltos-teclado";
 
 /** Texto visible de un componente pintado en el servidor en un idioma. */
 function texto(lang: Lang, el: ReactElement): string {
@@ -110,6 +111,17 @@ describe("cada idioma nombra las cosas de una sola forma", () => {
     expect(lamina.notaFr).not.toMatch(/vue d.ensemble/);
     expect(lamina.notaPt).not.toMatch(/visão geral/);
     expect(Object.values(LAMINAS_PRODUCTO).map((l) => l.tituloIt ?? "").filter((t) => t.includes("'"))).toEqual([]);
+  });
+
+  it("italiano: ningún texto de las láminas lleva apóstrofo recto", () => {
+    const rectos = Object.values(LAMINAS_PRODUCTO).flatMap((l) =>
+      Object.entries(l).filter(([k, v]) => k.endsWith("It") && typeof v === "string" && /\p{L}'\p{L}/u.test(v)).map(([k]) => k),
+    );
+    expect(rectos).toEqual([]);
+  });
+
+  it("alemán: «Vorabzugang» también en la ayuda de atajos", () => {
+    expect(SALTOS_TECLADO.find((s) => s.ruta === "/beta")?.de).toMatch(/^Vorabzugang/);
   });
 });
 

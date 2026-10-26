@@ -85,8 +85,11 @@ function boundedString(value, maxLength) {
   return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
 }
 
+// Sin recortar: un correo de más de 254 caracteres recortado puede seguir
+// pareciendo válido y se guardaría una dirección que no es la de nadie.
 function normalizeEmail(value) {
-  return boundedString(value, 254).toLowerCase();
+  const email = typeof value === "string" ? value.trim().toLowerCase() : "";
+  return email.length <= 254 ? email : "";
 }
 
 function asBoolean(value) {
@@ -472,8 +475,20 @@ async function route(request, env) {
   if (url.pathname === "/v1/applications" && request.method === "POST") return createApplication(request, env);
   if (url.pathname === "/v1/applications" && request.method === "GET") return listApplications(request, env);
   const match = url.pathname.match(/^\/v1\/applications\/([^/]+)$/);
-  if (match && request.method === "PATCH") return updateApplication(request, env, decodeURIComponent(match[1]));
+  if (match && request.method === "PATCH") {
+    const id = decodificar(match[1]);
+    if (id !== null) return updateApplication(request, env, id);
+  }
   return errorResponse("not_found", 404, request, env);
+}
+
+/** `decodeURIComponent` lanza con un `%` mal formado: ese id no existe. */
+function decodificar(segmento) {
+  try {
+    return decodeURIComponent(segmento);
+  } catch {
+    return null;
+  }
 }
 
 const worker = {

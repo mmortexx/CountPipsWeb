@@ -4,17 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { useLang } from "@/lib/i18n";
+import { pideAyuda } from "@/lib/atajos";
 import { DemoProvider, useDemo, type DemoPage } from "./DemoContext";
 import { WindowChrome } from "./WindowChrome";
 import { TopNav } from "./TopNav";
 import { StatusBar } from "./StatusBar";
 import { DemoCommandPalette } from "./DemoCommandPalette";
 import { DemoShortcutsHint } from "./DemoShortcutsHint";
+import { PESTANAS_DEMO } from "./pestanas";
 import { DashboardPage } from "./pages/DashboardPage";
-import { TradesPage } from "./pages/TradesPage";
-import { TradeDetailPage } from "./pages/TradeDetailPage";
-import { AnalyticsPage } from "./pages/AnalyticsPage";
-import { JournalPage } from "./pages/JournalPage";
+import { paginaCargada, precargaPaginas } from "./cargaPaginas";
 
 /**
  * La demo: recreación interactiva de la app nativa dentro de una ventana.
@@ -29,6 +28,13 @@ export function AppDemo({ hideHeader = false }: { hideHeader?: boolean } = {}) {
       <AppDemoInner hideHeader={hideHeader} />
     </DemoProvider>
   );
+}
+
+/** `DemoContext` solo pasa a una página diferida cuando ya ha llegado. */
+function PaginaDiferida({ pagina }: { pagina: Exclude<DemoPage, "dashboard"> }) {
+  const Pagina = paginaCargada(pagina);
+  // eslint-disable-next-line react-hooks/static-components -- no se crea aquí: es el componente del módulo ya cargado, el mismo en cada render, y su estado no se reinicia.
+  return Pagina ? <Pagina /> : null;
 }
 
 function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
@@ -61,6 +67,17 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
           | "pageTrades"
           | "pageAnalytics"
           | "pageJournal");
+
+  // Las otras cuatro páginas se piden cuando el Resumen ya está pintado y el
+  // navegador queda libre (ver cargaPaginas.ts); Safari no tiene requestIdleCallback.
+  useEffect(() => {
+    if (typeof requestIdleCallback === "function") {
+      const id = requestIdleCallback(() => void precargaPaginas(), { timeout: 3000 });
+      return () => cancelIdleCallback(id);
+    }
+    const id = window.setTimeout(() => void precargaPaginas(), 1500);
+    return () => window.clearTimeout(id);
+  }, []);
 
   // Escape sale de pantalla completa. El setState va en el manejador, no en el
   // cuerpo del efecto (regla set-state-in-effect).
@@ -127,6 +144,13 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
       if (e.key.toLowerCase() === "f") {
         e.preventDefault();
         setFullscreen(!fullscreen);
+      } else if (e.key === "/") {
+        // Solo Operaciones tiene buscador; en las demás páginas la tecla no hace nada.
+        const buscador = target.closest("[data-demo-raiz]")?.querySelector<HTMLInputElement>("input[type='search']");
+        if (buscador) {
+          e.preventDefault();
+          buscador.focus();
+        }
       }
     };
     window.addEventListener("keydown", onKey);
@@ -141,7 +165,7 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
     const onKey = (e: KeyboardEvent) => {
       const root = demoRootRef.current;
       if (!root) return;
-      if (!root.matches(":hover, :focus-within")) return;
+      if (!root.contains(document.activeElement) && !root.matches(":hover")) return;
       const target = e.target as HTMLElement | null;
       if (target) {
         const tag = target.tagName;
@@ -167,10 +191,7 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
       ) {
         return;
       }
-      if (
-        e.key === "?" ||
-        (e.shiftKey && (e.key === "/" || e.code === "Slash"))
-      ) {
+      if (pideAyuda(e)) {
         e.preventDefault();
         e.stopPropagation();
         setShortcutsOpen(true);
@@ -184,12 +205,7 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
   // detalle (que cuelga de operaciones), derecha vuelve a la lista e izquierda va a
   // análisis. Umbral de 50 px con eje dominante horizontal, para no pisar el scroll
   // vertical; se ignora si empieza en un control interactivo.
-  const PAGES_ORDER: readonly DemoPage[] = [
-    "dashboard",
-    "trades",
-    "analytics",
-    "journal",
-  ] as const;
+  const PAGES_ORDER: readonly DemoPage[] = PESTANAS_DEMO;
   const SWIPE_THRESHOLD = 50;
   const touchStart = useRef<{ x: number; y: number } | null>(null);
 
@@ -273,7 +289,7 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
         role={fullscreen ? "dialog" : undefined}
         aria-modal={fullscreen || undefined}
         aria-label={fullscreen ? t("demoFullDialog") : undefined}
-        className={`relative mx-auto transition-[transform,border-radius,box-shadow,opacity] duration-500 ease-[var(--ease-suave)] ${
+        className={`relative mx-auto transition-[transform,opacity] duration-(--dur-entra) ${
           fullscreen ? "fixed inset-3 z-[100] rounded-[2px]" : "rounded-[2px]"
         }`}
       >
@@ -306,11 +322,7 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
                   deceleración de WinUI y abrir una operación es un «drill-in».
                   Sin salida animada, la página nueva empieza a entrar al pulsar. */}
               <div key={page} className={`min-h-full ${!haCambiado ? "" : page === "detail" ? "tj-demo-fondo" : "tj-demo-entra"}`}>
-                {page === "dashboard" && <DashboardPage />}
-                {page === "trades" && <TradesPage />}
-                {page === "detail" && <TradeDetailPage />}
-                {page === "analytics" && <AnalyticsPage />}
-                {page === "journal" && <JournalPage />}
+                {page === "dashboard" ? <DashboardPage /> : <PaginaDiferida pagina={page} />}
               </div>
             </div>
             <div

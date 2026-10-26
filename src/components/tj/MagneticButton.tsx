@@ -20,8 +20,8 @@ interface MagneticButtonProps {
 }
 
 /**
- * Botón o enlace con un realce sobrio en CSS (`.tj-realza`): sube 2 px al pasar
- * y se hunde al pulsar. Conserva el nombre y la firma por sus llamadas;
+ * Botón o enlace con un realce sobrio en CSS (`.tj-realza`): al pasar cambia
+ * de tono (sus clases de fondo) y al pulsar se hunde. Conserva el nombre y la firma por sus llamadas;
  * `touchAction: manipulation` quita el retardo de 300 ms del doble toque.
  */
 export function MagneticButton({

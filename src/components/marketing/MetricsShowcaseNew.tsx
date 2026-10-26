@@ -309,7 +309,7 @@ function Distribucion({ g, lang, enfoque }: { g: Grafico; lang: Lang; enfoque: E
     : {
         rotulo: tx(lang, { es: "Expectancy por operación", en: "Expectancy per trade", pt: "Expectancy por operação", fr: "Expectancy par opération", de: "Expectancy pro Trade", it: "Expectancy per operazione" }),
         cifra: fmtR(METRICS.expectancyR, lang, 2),
-        detalle: `${tx(lang, { es: "Moda de", en: "Mode", pt: "Moda de", fr: "Mode", de: "Modalwert", it: "Moda" })} ${MODA >= 0 ? rango(BINS[MODA]) : "—"} · ${ops(TOTAL_BINS)}`,
+        detalle: `${tx(lang, { es: "Moda de", en: "Mode", pt: "Moda de", fr: "Mode", de: "Modus", it: "Moda" })} ${MODA >= 0 ? rango(BINS[MODA]) : "—"} · ${ops(TOTAL_BINS)}`,
         tono: undefined,
       };
 
@@ -480,7 +480,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
               <p className="m-0 mt-2 text-[14px] leading-[1.6] text-secondary">
                 {tx(lang, { es: "Ratios con su muestra, no gráficos bonitos. ", en: "Ratios with the sample size behind them, not pretty charts. ", pt: "Ratios com sua amostra, não gráficos bonitos. ", fr: "Des ratios fondés sur un échantillon, pas de simples graphiques. ", de: "Kennzahlen mit Stichprobengröße, keine bloßen Grafiken. ", it: "Rapporti con la dimensione del campione, non semplici grafici. " })}
                 <span className="[@media(hover:none)]:hidden">
-                  {tx(lang, { es: "Toca o pasa el puntero por la curva, las barras o las cifras.", en: "Tap or hover the curve, the bars or the figures.", pt: "Toque ou passe o ponteiro pela curva, barras ou números.", fr: "Touchez ou survolez la courbe, les barres ou les chiffres.", de: "Tippen oder überfahren Sie die Kurve, Balken oder Zahlen.", it: "Tocca o passa il puntatore su curva, barre o numeri." })}
+                  {tx(lang, { es: "Toca o pasa el puntero por la curva, las barras o las cifras.", en: "Tap or hover the curve, the bars or the figures.", pt: "Toque ou passe o ponteiro pela curva, barras ou números.", fr: "Touchez ou survolez la courbe, les barres ou les chiffres.", de: "Tippen oder überfahren Sie die Kurve, die Balken oder die Zahlen.", it: "Tocca o passa il puntatore sulla curva, sulle barre o sui numeri." })}
                 </span>
                 <span className="hidden [@media(hover:none)]:inline">
                   {tx(lang, { es: "Desliza el dedo por la curva o toca las barras.", en: "Slide a finger along the curve or tap the bars.", pt: "Deslize o dedo pela curva ou toque nas barras.", fr: "Glissez le doigt sur la courbe ou touchez les barres.", de: "Wischen Sie über die Kurve oder tippen Sie auf die Balken.", it: "Scorri il dito sulla curva o tocca le barre." })}

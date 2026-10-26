@@ -127,38 +127,60 @@ export interface Trade {
   closeNote: string;
 }
 
-type Nota = { es: string; en: string };
+/** Lo que una nota puede afirmar de su operación. */
+export type ContextoNota = {
+  r: number;
+  plannedRr: number;
+  setup: SetupName;
+  direction: Direction;
+  session: Session;
+  compliance: Compliance;
+};
+/** `encaja`: la nota solo vale si no contradice la operación (una pérdida no
+ *  «sale en objetivo», un corto no «deja correr hasta resistencia»). Sin él, vale siempre. */
+type Nota = { es: string; en: string; encaja?: (c: ContextoNota) => boolean };
 
-const NOTAS_ENTRADA: readonly Nota[] = [
-  { es: "Entrada limpia en rotura del nivel, volumen confirmando.", en: "Clean entry on the level breakout, volume confirming." },
-  { es: "Pullback a la media de 50, esperé el cierre.", en: "Pullback to the 50 moving average; waited for the close." },
-  { es: "Reversión en zona de oferta, P&L ajustado.", en: "Reversal at a supply zone, tight P&L." },
-  { es: "Seguí la tendencia, añadí en el retroceso.", en: "Followed the trend, added on the pullback." },
-  { es: "Rango lateral, falsa rotura — salí rápido.", en: "Sideways range, false breakout — got out fast." },
-  { es: "Buena gestión, moví el stop a punto muerto.", en: "Good management, moved the stop to breakeven." },
-  { es: "Entré tarde, el movimiento ya estaba hecho.", en: "Got in late; the move had already happened." },
-  { es: "Plan cumplido, objetivo alcanzado.", en: "Plan followed, target reached." },
-  { es: "Estructura rota en M15, esperé el retest.", en: "Structure broke on M15; waited for the retest." },
+const enObjetivo = (c: ContextoNota) => c.r >= c.plannedRr - 0.05;
+
+export const NOTAS_ENTRADA: readonly Nota[] = [
+  { es: "Entrada limpia en rotura del nivel, volumen confirmando.", en: "Clean entry on the level breakout, volume confirming.", encaja: (c) => c.setup === "Breakout" },
+  { es: "Pullback a la media de 50, esperé el cierre.", en: "Pullback to the 50 moving average; waited for the close.", encaja: (c) => c.setup === "Pullback" },
+  { es: "Reversión en zona de oferta, P&L ajustado.", en: "Reversal at a supply zone, tight P&L.", encaja: (c) => c.setup === "Reversal" && c.direction === "short" },
+  { es: "Seguí la tendencia, añadí en el retroceso.", en: "Followed the trend, added on the pullback.", encaja: (c) => c.setup === "Trend" || c.setup === "Pullback" },
+  { es: "Rango lateral, falsa rotura — salí rápido.", en: "Sideways range, false breakout — got out fast.", encaja: (c) => c.setup === "Range" && c.r < 0 },
+  { es: "Buena gestión, moví el stop a punto muerto.", en: "Good management, moved the stop to breakeven.", encaja: (c) => c.r > 0 },
+  { es: "Entré tarde, el movimiento ya estaba hecho.", en: "Got in late; the move had already happened.", encaja: (c) => c.r < 0 },
+  { es: "Plan cumplido, objetivo alcanzado.", en: "Plan followed, target reached.", encaja: (c) => enObjetivo(c) && c.compliance === "yes" },
+  { es: "Estructura rota en M15, esperé el retest.", en: "Structure broke on M15; waited for the retest.", encaja: (c) => c.setup === "Breakout" || c.setup === "Pullback" },
   { es: "Confluencia de nivel + Fibonacci + VWAP.", en: "Confluence of level + Fibonacci + VWAP." },
-  { es: "Vela envolvente alcista en soporte diagonal.", en: "Bullish engulfing candle at diagonal support." },
-  { es: "Falsa ruptura en H1, entré en sentido contrario.", en: "False breakout on H1; traded the other way." },
-  { es: "Esperé el primer cierre fuera del rango antes de entrar.", en: "Waited for the first close outside the range before entering." },
-  { es: "Tendencia clara en H4, entrada en M5 con el flujo.", en: "Clear trend on H4, M5 entry with the flow." },
-  { es: "Doble suelo visible, volumen decreciente en la corrección.", en: "Visible double bottom, falling volume on the pullback." },
+  { es: "Vela envolvente alcista en soporte diagonal.", en: "Bullish engulfing candle at diagonal support.", encaja: (c) => c.direction === "long" },
+  { es: "Falsa ruptura en H1, entré en sentido contrario.", en: "False breakout on H1; traded the other way.", encaja: (c) => c.setup === "Reversal" || c.setup === "Range" },
+  { es: "Esperé el primer cierre fuera del rango antes de entrar.", en: "Waited for the first close outside the range before entering.", encaja: (c) => c.setup === "Breakout" || c.setup === "Range" },
+  { es: "Tendencia clara en H4, entrada en M5 con el flujo.", en: "Clear trend on H4, M5 entry with the flow.", encaja: (c) => c.setup === "Trend" },
+  { es: "Doble suelo visible, volumen decreciente en la corrección.", en: "Visible double bottom, falling volume on the pullback.", encaja: (c) => c.direction === "long" },
   { es: "Imbalance sin rellenar, entré al retest.", en: "Unfilled imbalance; entered on the retest." },
 ];
-const NOTAS_CIERRE: readonly Nota[] = [
-  { es: "Salí en objetivo por scalping.", en: "Scalp: took profit at the target." },
-  { es: "Stop cazado antes de reaccionar.", en: "Stopped out before it could react." },
-  { es: "Cerré parcial en +1R, resto al objetivo.", en: "Took a partial at +1R, rest to target." },
-  { es: "Reversión no funcionó, corté pérdidas.", en: "The reversal didn’t work; cut the loss." },
-  { es: "Dejé correr hasta resistencia.", en: "Let it run to resistance." },
-  { es: "Salí por trailing stop al cerrar sesión NY.", en: "Trailing stop hit at the New York close." },
+export const NOTAS_CIERRE: readonly Nota[] = [
+  { es: "Salí en objetivo por scalping.", en: "Scalp: took profit at the target.", encaja: enObjetivo },
+  { es: "Stop cazado antes de reaccionar.", en: "Stopped out before it could react.", encaja: (c) => c.r < 0 },
+  { es: "Cerré parcial en +1R, resto al objetivo.", en: "Took a partial at +1R, rest to target.", encaja: (c) => c.r > 1 && c.r <= c.plannedRr + 0.05 },
+  { es: "Reversión no funcionó, corté pérdidas.", en: "The reversal didn’t work; cut the loss.", encaja: (c) => c.r < 0 && c.setup === "Reversal" },
+  { es: "Dejé correr hasta resistencia.", en: "Let it run to resistance.", encaja: (c) => c.r > 0 && c.direction === "long" },
+  { es: "Salí por trailing stop al cerrar sesión NY.", en: "Trailing stop hit at the New York close.", encaja: (c) => c.r > 0 && c.session === "NY" },
   { es: "Cierre manual antes de noticias macro.", en: "Closed by hand before macro news." },
-  { es: "Objetivo tocado, salí en market.", en: "Target touched; exited at market." },
-  { es: "Stop mental en rotura de estructura menor.", en: "Mental stop on a minor structure break." },
-  { es: "Cerré en breakeven tras ver falta de seguimiento.", en: "Closed at breakeven after seeing no follow-through." },
+  { es: "Objetivo tocado, salí en market.", en: "Target touched; exited at market.", encaja: enObjetivo },
+  { es: "Stop mental en rotura de estructura menor.", en: "Mental stop on a minor structure break.", encaja: (c) => c.r < 0 },
+  { es: "Cerré en breakeven tras ver falta de seguimiento.", en: "Closed at breakeven after seeing no follow-through.", encaja: (c) => Math.abs(c.r) < 0.1 },
 ];
+
+/** Nota para la operación a partir de un sorteo sobre la lista entera: el
+ *  generador gasta el mismo número que antes y las cifras de la muestra no se
+ *  mueven; solo cambia qué nota se lee. Las notas sin `encaja` aseguran que
+ *  siempre queda alguna. */
+function eligeNota(notas: readonly Nota[], sorteo: number, c: ContextoNota): string {
+  const validas = notas.filter((n) => !n.encaja || n.encaja(c));
+  return validas[sorteo % validas.length].es;
+}
 
 const NOTA_EN = new Map([...NOTAS_ENTRADA, ...NOTAS_CIERRE].map((n) => [n.es, n.en]));
 
@@ -264,6 +286,9 @@ function buildTrades(): Trade[] {
     // Nota del día 1–5: el mismo sorteo, desplazado un punto hacia el resultado.
     const sorteo = 1 + Math.floor(rnd() * 5);
     const dayScore = isWin ? Math.min(5, sorteo + (sorteo < 4 ? 1 : 0)) : Math.max(1, sorteo - (sorteo > 2 ? 1 : 0));
+    const contexto: ContextoNota = { r, plannedRr, setup, direction, session, compliance };
+    const entryNote = eligeNota(NOTAS_ENTRADA, Math.floor(rnd() * NOTAS_ENTRADA.length), contexto);
+    const closeNote = eligeNota(NOTAS_CIERRE, Math.floor(rnd() * NOTAS_CIERRE.length), contexto);
 
     trades.push({
       id: id++,
@@ -289,8 +314,8 @@ function buildTrades(): Trade[] {
       closedAt,
       durationMin,
       dayScore,
-      entryNote: NOTAS_ENTRADA[Math.floor(rnd() * NOTAS_ENTRADA.length)].es,
-      closeNote: NOTAS_CIERRE[Math.floor(rnd() * NOTAS_CIERRE.length)].es,
+      entryNote,
+      closeNote,
     });
   }
 

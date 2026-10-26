@@ -100,11 +100,22 @@ async function servir(raiz) {
 
 /** Lo que se ejecuta dentro de la página. */
 function auditar() {
+  // `color-mix()` llega calculado como `oklab(…)` o `color(srgb …)`: sin
+  // traducirlo, la capa se saltaba en silencio y se medía contra lo de detrás.
+  const lienzo = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
   const rgba = (c) => {
-    const m = c.match(/rgba?\(([^)]+)\)/);
-    if (!m) return null;
-    const p = m[1].split(/[,/]/).map((x) => parseFloat(x));
-    return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 };
+    const m = c.match(/^rgba?\(([^)]+)\)$/);
+    if (m) {
+      const p = m[1].split(/[,/]/).map((x) => parseFloat(x));
+      return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 };
+    }
+    if (!c || c === "transparent") return null;
+    lienzo.clearRect(0, 0, 1, 1);
+    lienzo.fillStyle = "rgba(0, 0, 0, 0)";
+    lienzo.fillStyle = c;
+    lienzo.fillRect(0, 0, 1, 1);
+    const [r, g, b, a] = lienzo.getImageData(0, 0, 1, 1).data;
+    return { r, g, b, a: a / 255 };
   };
   const canal = (v) => {
     const s = v / 255;
