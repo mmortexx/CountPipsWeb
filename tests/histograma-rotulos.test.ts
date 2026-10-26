@@ -13,7 +13,7 @@ import { Histogram } from "@/components/charts/Histogram";
 describe("Histogram con rótulos alternos", () => {
   const data = Array.from({ length: 10 }, (_, i) => ({ x: i - 5, count: i + 1 }));
   const html = renderToString(createElement(LanguageProvider, null, createElement(Histogram, { data, colorize: "pos-neg" })));
-  const rotulos = [...html.matchAll(/<div class="mt-1 [^"]*"/g)].map((m) => m[0]);
+  const rotulos = [...html.matchAll(/<div data-rotulo="true" class="mt-1 [^"]*"/g)].map((m) => m[0]);
 
   it("pinta un rótulo por barra", () => {
     expect(rotulos).toHaveLength(data.length);

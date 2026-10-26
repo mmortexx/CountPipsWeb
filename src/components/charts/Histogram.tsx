@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { useLang } from "@/lib/i18n";
 
 interface HistogramProps {
@@ -9,6 +9,28 @@ interface HistogramProps {
   colorize?: "pos-neg" | "accent";
   className?: string;
   formatX?: (x: number | string) => string;
+}
+
+const HUECO_BARRAS = 4; // `gap-1` de la fila de barras
+const AIRE_ROTULOS = 8;
+
+/**
+ * Cada cuántas columnas se pinta un rótulo del eje para que entre dos visibles
+ * queden al menos 8 px. Los del centro van centrados en su columna; el primero
+ * y el último, anclados a su canto, piden algo más de sitio a su vecino.
+ */
+export function saltoRotulos(n: number, anchoFila: number, rotuloMax: number): number {
+  if (n < 2 || anchoFila <= 0 || rotuloMax <= 0) return 1;
+  const paso = (anchoFila - HUECO_BARRAS * (n - 1)) / n + HUECO_BARRAS;
+  const centrados = Math.ceil((rotuloMax + AIRE_ROTULOS) / paso);
+  const juntoAlCanto = Math.ceil((1.5 * rotuloMax + AIRE_ROTULOS + HUECO_BARRAS / 2) / paso - 0.5);
+  return Math.max(1, centrados, juntoAlCanto);
+}
+
+/** El primero y el último se pintan siempre: el eje dice dónde empieza y acaba. */
+export function rotuloCallado(i: number, n: number, salto: number): boolean {
+  if (i === 0 || i === n - 1) return false;
+  return i % salto !== 0 || n - 1 - i < salto;
 }
 
 /** Histograma de barras genérico y animado. */
@@ -23,16 +45,39 @@ export const Histogram = memo(function Histogram({
 
   const maxCount = useMemo(() => Math.max(...data.map((d) => d.count), 1), [data]);
 
-  /* Con muchas barras, un rótulo sí y otro no (solo por debajo de `sm`): truncar
-     todos los dejaría ilegibles. El salto depende del rótulo más largo: hasta
-     seis caracteres, uno de cada dos; por encima, uno de cada cuatro. El último
-     se pinta siempre para que el eje diga dónde acaba. */
+  /* Truncar los rótulos los dejaría ilegibles: se callan los que no caben. Con
+     la fila medida, el salto sale de su ancho y del rótulo más largo
+     (`saltoRotulos`); antes de medir (lo que pinta el servidor), uno de cada dos
+     o de cada cuatro según los caracteres, solo por debajo de `sm`. */
   const denso = data.length > 8;
   const largoMax = useMemo(
     () => Math.max(...data.map((d) => formatX(d.x).length), 0),
     [data, formatX]
   );
-  const salto = denso ? (largoMax > 6 ? 4 : 2) : 1;
+  const filaRef = useRef<HTMLDivElement>(null);
+  const [medida, setMedida] = useState<{ ancho: number; rotulo: number } | null>(null);
+  useEffect(() => {
+    const fila = filaRef.current;
+    if (!fila || typeof ResizeObserver === "undefined") return;
+    const medir = () => {
+      let rotulo = 0;
+      for (const r of fila.querySelectorAll("[data-rotulo]")) {
+        const rango = document.createRange();
+        rango.selectNodeContents(r);
+        rotulo = Math.max(rotulo, rango.getBoundingClientRect().width);
+      }
+      const ancho = fila.clientWidth;
+      if (ancho > 0 && rotulo > 0)
+        setMedida((m) => (m && Math.abs(m.ancho - ancho) < 0.5 && Math.abs(m.rotulo - rotulo) < 0.5 ? m : { ancho, rotulo }));
+    };
+    const ro = new ResizeObserver(medir);
+    ro.observe(fila);
+    document.fonts?.ready.then(medir);
+    return () => ro.disconnect();
+  }, [data, largoMax, lang]);
+  const salto = medida ? saltoRotulos(data.length, medida.ancho, medida.rotulo) : denso ? (largoMax > 6 ? 4 : 2) : 1;
+  const callado = (i: number) =>
+    medida ? rotuloCallado(i, data.length, salto) : salto > 1 && i % salto !== 0 && i !== data.length - 1;
 
   const containerRef = useRef<HTMLDivElement>(null);
   // Barra señalada: índice y punto de anclaje (px, relativo al contenedor).
@@ -41,7 +86,7 @@ export const Histogram = memo(function Histogram({
   return (
     <div
       data-entra
-      className={`tj-realce relative tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] ${className}`}
+      className={`tj-realce relative tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] px-2 pt-2 pb-1 ${className}`}
       ref={containerRef}
       role="img"
       aria-label={lang === "es"
@@ -49,7 +94,7 @@ export const Histogram = memo(function Histogram({
         : `Histogram with ${data.length} categories`}
       style={{ transformOrigin: "center" }}
     >
-      <div className="flex items-end gap-1" style={{ height }}>
+      <div ref={filaRef} className="flex items-end gap-1" style={{ height }}>
         {data.map((d, i) => {
           const h = (d.count / maxCount) * (height - 24);
           const isNeg = typeof d.x === "number" && d.x < 0;
@@ -90,6 +135,7 @@ export const Histogram = memo(function Histogram({
                   columna y en la última sobresale de la tarjeta (`overflow-hidden`);
                   `text-align` no lo arregla si el texto es más ancho que su caja. */}
               <div
+                data-rotulo
                 className={`mt-1 whitespace-nowrap text-[11px] tnum text-tertiary ${
                   i === 0
                     ? "w-max self-start"
@@ -99,9 +145,7 @@ export const Histogram = memo(function Histogram({
                 } ${
                   // Invisible y no fuera del flujo: sin su renglón, la barra bajaba
                   // hasta el fondo y cruzaba los rótulos de las vecinas.
-                  salto > 1 && i % salto !== 0 && i !== data.length - 1
-                    ? "invisible sm:visible"
-                    : ""
+                  callado(i) ? (medida ? "invisible" : "invisible sm:visible") : ""
                 }`}
               >
                 {formatX(d.x)}
