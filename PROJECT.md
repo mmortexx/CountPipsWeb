@@ -61,7 +61,9 @@ Windows (WinUI 3, en otro repositorio).
   - Un movimiento por rama: si el contenedor se desplaza, lo de dentro solo funde.
     Un bloque cuyas piezas entran solas, o que guarda un gráfico que se dibuja,
     aparece sin subir (`data-tj-funde`, Aparecer.tsx); `movimiento.mjs` lo vigila,
-    también como un navegador sin `animation-timeline`.
+    también como un navegador sin `animation-timeline`. Única excepción: la página
+    de la demo (`.tj-demo-entra`) entra como la del programa y sus piezas dentro
+    de ella, porque la demo imita al programa.
   - Nada compite con la cifra: las cifras salen ya en su valor (no cuentan), nada
     crece por encima de su tamaño y ningún fotograma intermedio se pasa para volver
     (rebote). Lo vigilan `tests/movimiento-sistema.test.ts` en la hoja y
@@ -78,9 +80,6 @@ Windows (WinUI 3, en otro repositorio).
 ## Pendiente de decidir por el dueño
 
 - Las capturas del programa sólo existen en español.
-- La demo (`/demo/`) entra como la página de la app de escritorio y sus piezas
-  entran dentro de ella: dos desplazamientos a la vez. Imita al programa, así que
-  `movimiento.mjs` la exime; ¿se queda así o la página solo funde?
 
 ## Puertas
 

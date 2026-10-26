@@ -120,8 +120,8 @@ window.__nidos = new Map();
     for (const [el, nombre] of mueve) {
       for (let p = el.parentElement; p; p = p.parentElement) {
         if (!mueve.has(p)) continue;
-        // La demo imita la entrada de página de la app de escritorio y sus
-        // piezas entran dentro de ella: pendiente de decidir (PROJECT.md).
+        // La demo imita la entrada de página del programa, con sus piezas
+        // entrando dentro: excepción decidida (PROJECT.md, «Movimiento»).
         if (p.matches(".tj-demo-entra")) break;
         const k = desc(p) + " [" + mueve.get(p) + "] > " + desc(el) + " [" + nombre + "]";
         window.__nidos.set(k, (window.__nidos.get(k) || 0) + 1);
