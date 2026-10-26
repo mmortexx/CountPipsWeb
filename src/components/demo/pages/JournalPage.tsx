@@ -1397,11 +1397,11 @@ export function JournalPage() {
 
           <div className="mt-4 flex items-center justify-center gap-4 text-[11px] text-tertiary uppercase tracking-[0.14em]">
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-[2px] bg-pnl-pos/70" />
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-pnl-pos/80" />
               {L("Positivo", "Positive")}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-[2px] bg-pnl-neg/70" />
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-pnl-neg/80" />
               {L("Negativo", "Negative")}
             </span>
           </div>

@@ -557,17 +557,17 @@ function HistogramLegend({
         {kind === "pos-neg" ? (
           <>
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-[2px] bg-pnl-neg/70" />
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-pnl-neg/90" />
               {lang === "es" ? "Negativo" : "Negative"} {symbol}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-[2px] bg-pnl-pos/70" />
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-pnl-pos/90" />
               {lang === "es" ? "Positivo" : "Positive"} {symbol}
             </span>
           </>
         ) : (
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-[2px] bg-[rgb(var(--accent-base)/0.7)]" />
+            <span className="w-2.5 h-2.5 rounded-[2px] bg-[rgb(var(--accent-base)/0.9)]" />
             {lang === "es" ? "Frecuencia" : "Frequency"}
           </span>
         )}
