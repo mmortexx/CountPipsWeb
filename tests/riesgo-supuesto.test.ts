@@ -35,6 +35,23 @@ describe("calculadora de riesgo: ruina y medio Kelly dicen de qué win rate sale
   });
 });
 
+/* La barra riesgo/beneficio ponía a la izquierda el riesgo sin fricción
+   (100,00 $) frente al beneficio con la fricción ya restada, bajo una ficha
+   «Riesgo total 100,30 $»; y el porcentaje del centro no decía de qué era. */
+describe("calculadora de riesgo: el pie de la barra cuadra con las fichas", () => {
+  it("el riesgo de la barra es el riesgo total, con fricción", () => {
+    const t = textoDe("/");
+    expect(t).toContain("Riesgo total 100,30 $");
+    expect(t.match(/100,30 \$/g)?.length).toBe(2);
+    expect(t).not.toContain("100,00 $");
+  });
+
+  it("el porcentaje del centro es el del objetivo", () => {
+    expect(textoDe("/")).toContain("objetivo +3,0 % del balance");
+    expect(textoDe("/en/")).toContain("target +3.0% of balance");
+  });
+});
+
 /* `valorPip` es lo que mueve la posición un escalón de precio: un pip en forex,
    un tick en futuros y un céntimo en acciones. El rótulo nombra ese escalón. */
 describe("calculadora de riesgo: el valor por escalón dice qué escalón es", () => {

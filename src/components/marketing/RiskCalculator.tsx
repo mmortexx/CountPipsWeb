@@ -155,7 +155,7 @@ export function RiskCalculator() {
     [lang],
   );
 
-  const tramos = c.valid ? tramosRiesgoBeneficio(c.riesgoReal, Math.max(0, c.beneficioNeto)) : { riesgo: 0, beneficio: 0 };
+  const tramos = c.valid ? tramosRiesgoBeneficio(c.riesgoTotal, Math.max(0, c.beneficioNeto)) : { riesgo: 0, beneficio: 0 };
   /* Sin plan válido no se enseña lo que depende de él. El VaR sí, porque solo
      depende del balance y del %. */
   const siPlan = (s: string) => (c.valid ? s : "—");
@@ -738,8 +738,12 @@ export function RiskCalculator() {
               />
             </div>
             <div className="mt-2 flex items-center justify-between tnum text-[12px] text-secondary">
-              <span>{siPlan(fmtUsd(c.riesgoReal))}</span>
-              <span className="text-tertiary">{siPlan(fmtPct(c.profitPct / 100, lang, 1))} {es ? "del balance" : "of balance"}</span>
+              {/* Las dos puntas con la fricción dentro, como las fichas de arriba:
+                  el riesgo total frente al beneficio neto. */}
+              <span>{siPlan(fmtUsd(c.riesgoTotal))}</span>
+              <span className="text-tertiary">
+                {es ? "objetivo" : "target"} {siPlan(`${c.profitPct > 0 ? "+" : ""}${fmtPct(c.profitPct / 100, lang, 1)}`)} {es ? "del balance" : "of balance"}
+              </span>
               <span>{siPlan(fmtUsd(c.beneficioNeto))}</span>
             </div>
           </div>
