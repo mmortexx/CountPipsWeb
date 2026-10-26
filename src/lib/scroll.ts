@@ -26,6 +26,16 @@ function sinMovimiento(): boolean {
 /** La animación en curso, para que dos clics seguidos no se peleen. */
 let animacion = 0;
 
+/** Quita las escuchas de gesto de la animación en curso. */
+let soltarGestos = () => {};
+
+/** Detiene la animación en curso con sus escuchas; si no, quedarían colgadas
+ *  hasta el siguiente gesto (`tests/limpieza-escuchas.test.ts`). */
+function parar(): void {
+  cancelAnimationFrame(animacion);
+  soltarGestos();
+}
+
 /**
  * Anima el tramo corto a mano. No vale `behavior: "smooth"`: encadenado tras
  * el salto, Chrome trata los dos desplazamientos como uno, descarta el
@@ -37,19 +47,17 @@ function animarHasta(destino: number): void {
   const salto = destino - inicio;
   const t0 = performance.now();
 
-  cancelAnimationFrame(animacion);
+  parar();
 
   // Si el visitante toca la rueda, la pantalla o el teclado, se abandona donde esté.
-  const rendirse = () => {
-    cancelAnimationFrame(animacion);
-    quitar();
-  };
+  const rendirse = () => parar();
   const opts = { passive: true, once: true } as const;
   const quitar = () => {
     window.removeEventListener("wheel", rendirse);
     window.removeEventListener("touchstart", rendirse);
     window.removeEventListener("keydown", rendirse);
   };
+  soltarGestos = quitar;
   window.addEventListener("wheel", rendirse, opts);
   window.addEventListener("touchstart", rendirse, opts);
   window.addEventListener("keydown", rendirse, { once: true });
@@ -81,7 +89,7 @@ export function irA(top: number): void {
   if (distancia <= 4) return;
 
   if (sinMovimiento()) {
-    cancelAnimationFrame(animacion);
+    parar();
     window.scrollTo(0, destino);
     return;
   }
@@ -94,7 +102,7 @@ export function irA(top: number): void {
       Math.max(0, destino + sentido * ATERRIZAJE_PX),
       maximo,
     );
-    cancelAnimationFrame(animacion);
+    parar();
     window.scrollTo(0, intermedio);
   }
 
