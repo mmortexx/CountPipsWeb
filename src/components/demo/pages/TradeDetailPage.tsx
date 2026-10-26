@@ -32,7 +32,7 @@ import { useDemo } from "@/components/demo/DemoContext";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
-import { CountUp } from "@/components/tj/CountUp";
+import { CifraDemo } from "@/components/tj/CifraDemo";
 import { MagneticButton } from "@/components/tj/MagneticButton";
 import { TradeCandleChart } from "@/components/charts/TradeCandleChart";
 
@@ -605,7 +605,7 @@ export function TradeDetailPage() {
           <div className="flex flex-wrap items-center gap-x-10 gap-y-5 @3xl:gap-x-2">
             <HeroStat label={lang === "es" ? "P&L neto" : "Net P&L"}>
               <div className="flex items-baseline gap-2">
-                <CountUp
+                <CifraDemo
                   key={trade.id}
                   to={Math.abs(trade.netPnl)}
                   decimals={2}

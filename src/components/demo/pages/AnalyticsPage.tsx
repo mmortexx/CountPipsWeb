@@ -31,7 +31,7 @@ import { useAllTrades } from "@/lib/trading/demoStore";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
-import { CountUp } from "@/components/tj/CountUp";
+import { CifraDemo } from "@/components/tj/CifraDemo";
 import { Reveal } from "@/components/tj/Reveal";
 import { Histogram } from "@/components/charts/Histogram";
 import { Heatmap } from "@/components/charts/Heatmap";
@@ -179,7 +179,7 @@ function WinnersDonut({
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <div className="text-2xl font-semibold tnum text-pnl-pos leading-none">
-          <CountUp
+          <CifraDemo
             key={`donut-pct-${reKey}`}
             to={winFrac * 100}
             decimals={1}
@@ -1237,7 +1237,7 @@ export function AnalyticsPage() {
                 showHairline
                 reKey={`count-${filterSig}`}
               >
-                <CountUp to={m.closedCount} decimals={0} />
+                <CifraDemo to={m.closedCount} decimals={0} />
               </KpiStripCell>
               <KpiStripCell
                 label={t("pnlTotal")}
@@ -1251,7 +1251,7 @@ export function AnalyticsPage() {
                 showHairline
                 reKey={`wr-${filterSig}`}
               >
-                <CountUp to={m.winRate * 100} decimals={1} suffix={pctSep(lang)} />
+                <CifraDemo to={m.winRate * 100} decimals={1} suffix={pctSep(lang)} />
               </KpiStripCell>
               <KpiStripCell
                 label={t("expectancy")}
@@ -1265,7 +1265,7 @@ export function AnalyticsPage() {
                 showHairline={false}
                 reKey={`pf-${filterSig}`}
               >
-                <CountUp to={m.profitFactor} decimals={2} />
+                <CifraDemo to={m.profitFactor} decimals={2} />
               </KpiStripCell>
             </div>
           </div>

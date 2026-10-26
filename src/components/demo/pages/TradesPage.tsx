@@ -33,7 +33,7 @@ import {
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
-import { CountUp } from "@/components/tj/CountUp";
+import { CifraDemo } from "@/components/tj/CifraDemo";
 import { Reveal } from "@/components/tj/Reveal";
 import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
@@ -1273,7 +1273,7 @@ export function TradesPage() {
         <div className="tj-fila-sigue flex items-stretch py-2 overflow-x-auto custom-scroll -mx-1 px-1">
           {/* En español el símbolo va detrás de la cifra («+5.732,24 US$»), como en la columna P&L. */}
           <KpiStripCell label={t("pnlTotal")} filterSig={filterSig} showHairline>
-            <CountUp
+            <CifraDemo
               to={pnlTira.abs}
               decimals={2}
               prefix={`${pnlTira.signo}${lang === "es" ? "" : "$"}`}
@@ -1282,14 +1282,14 @@ export function TradesPage() {
             />
           </KpiStripCell>
           <KpiStripCell label={t("winRate")} filterSig={filterSig} showHairline>
-            <CountUp to={metrics.winRate * 100} decimals={1} suffix={lang === "es" ? "\u00a0%" : "%"} />
+            <CifraDemo to={metrics.winRate * 100} decimals={1} suffix={lang === "es" ? "\u00a0%" : "%"} />
           </KpiStripCell>
           <KpiStripCell label={t("operations")} filterSig={filterSig} showHairline>
-            <CountUp to={metrics.closedCount} decimals={0} />
+            <CifraDemo to={metrics.closedCount} decimals={0} />
           </KpiStripCell>
           {/* «+0,23 R», como la columna R de la tabla: signo delante y unidad detrás. */}
           <KpiStripCell label={t("expectancyR")} filterSig={filterSig} showHairline={false}>
-            <CountUp
+            <CifraDemo
               to={ventajaTira.abs}
               decimals={2}
               prefix={ventajaTira.signo}

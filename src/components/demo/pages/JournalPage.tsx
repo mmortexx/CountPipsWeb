@@ -19,7 +19,7 @@ import { fmtInt, fmtNum, fmtDate, fmtOperaciones, fmtPct, pctSep, LOCALE_FECHA }
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
-import { CountUp } from "@/components/tj/CountUp";
+import { CifraDemo } from "@/components/tj/CifraDemo";
 import { Reveal } from "@/components/tj/Reveal";
 import { moverConFlechas } from "@/lib/flechas";
 
@@ -334,7 +334,7 @@ function ComplianceRing({ pct, label }: { pct: number; label: string }) {
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <div className={`text-3xl md:text-4xl font-semibold tnum ${toneClass} leading-none`}>
-          <CountUp to={pct * 100} decimals={0} suffix={pctSep(lang)} />
+          <CifraDemo to={pct * 100} decimals={0} suffix={pctSep(lang)} />
         </div>
         <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary mt-1.5 text-center">
           {label}
@@ -1186,7 +1186,7 @@ export function JournalPage() {
                   className={`tj-dm-entra relative font-semibold tracking-tight text-4xl md:text-5xl tnum ${headlineTone}`}
                   style={{ textShadow: headlineShadow, "--dm-o": 0.55, "--dm-s": 0.94, "--dm-retardo": "var(--escalon)" } as CSSProperties}
                 >
-                  <CountUp
+                  <CifraDemo
                     to={headlineValue}
                     decimals={0}
                     prefix={headlinePrefix}
