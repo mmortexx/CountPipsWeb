@@ -746,21 +746,21 @@ export function RiskCalculator() {
 
           {/* Criterio de Kelly (Medio Kelly institucional), plegado al final. */}
           <div className="mt-6 border-t border-[var(--ficha-division)] pt-3">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-3">
               <button
                 type="button"
                 onClick={() => setShowKelly((v) => !v)}
                 aria-expanded={showKelly}
-                className="toque-comodo text-[13px] text-secondary hover:text-primary flex items-center gap-2 transition-colors"
+                className="toque-comodo shrink-0 whitespace-nowrap text-[13px] text-secondary hover:text-primary flex items-center gap-2 transition-colors"
               >
                 <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden className={`transition-transform duration-150 ${showKelly ? "rotate-90" : ""}`}>
                   <path d="M3.5 2l3 3-3 3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 <span>{es ? "Criterio de Kelly" : "Kelly criterion"}</span>
               </button>
-              <span className="text-[12px] tnum text-tertiary">
+              <span className="min-w-0 text-right text-[12px] tnum text-tertiary">
                 {es ? `Medio Kelly ${conAciertos}: ` : `Half-Kelly ${conAciertos}: `}
-                <strong className="text-primary font-semibold">{kellyTxt(c.kelly?.medio)}</strong>
+                <strong className="text-primary font-semibold whitespace-nowrap">{kellyTxt(c.kelly?.medio)}</strong>
               </span>
             </div>
 
