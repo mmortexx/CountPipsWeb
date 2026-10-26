@@ -938,7 +938,10 @@ function FilterSelect({
   minWidth?: number;
 }) {
   return (
-    <div className="flex flex-col gap-1" style={{ minWidth }}>
+    <div
+      className="flex flex-col gap-1 min-w-0 sm:min-w-[var(--filtro-min)]"
+      style={{ "--filtro-min": minWidth ? `${minWidth}px` : "0px" } as CSSProperties}
+    >
       <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
         {header}
       </span>
@@ -1055,7 +1058,9 @@ export function AnalyticsPage() {
       />
 
       <div className="space-y-2">
-        <div className="flex flex-wrap items-end gap-3">
+        {/* En móvil, dos columnas iguales: con el ancho de cada uno, uno por
+            renglón, quedaban cuatro cajas de cuatro anchos. */}
+        <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-end">
           <FilterSelect
             header={t("colInstrument")}
             value={filters.instrument}
