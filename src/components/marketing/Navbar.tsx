@@ -992,7 +992,7 @@ export function Navbar() {
                   {/* Se cierra antes de navegar, como con los enlaces: si no,
                       al cerrarse tras la navegación devolvería la página nueva
                       a la altura de la anterior. */}
-                  <LanguagePicker size="md" alElegir={() => setMobileOpen(false)} />
+                  <LanguagePicker size="md" hacia="arriba" alElegir={() => setMobileOpen(false)} />
                   <button
                     type="button"
                     onClick={toggleTheme}
@@ -1078,7 +1078,16 @@ function IconButton({
  * idioma activo. No es un `listbox` porque no tiene navegación con flechas.
  * Escape o clic fuera cierran.
  */
-function LanguagePicker({ size = "sm", alElegir }: { size?: "sm" | "md"; alElegir?: () => void }) {
+function LanguagePicker({
+  size = "sm",
+  hacia = "abajo",
+  alElegir,
+}: {
+  size?: "sm" | "md";
+  /** En el cajón el selector va al pie de la lista: abajo el panel caía bajo la botonera fija. */
+  hacia?: "abajo" | "arriba";
+  alElegir?: () => void;
+}) {
   const { lang, setLang } = useLang();
   const pathname = usePathname();
   const disponibles = useMemo(() => idiomasDeRuta(pathname), [pathname]);
@@ -1092,6 +1101,8 @@ function LanguagePicker({ size = "sm", alElegir }: { size?: "sm" | "md"; alElegi
 
   useEffect(() => {
     if (!open) return;
+    // Dentro de una lista que se desplaza, el panel puede abrirse a medias fuera de vista.
+    popRef.current?.scrollIntoView?.({ block: "nearest" });
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setOpen(false);
@@ -1149,8 +1160,8 @@ function LanguagePicker({ size = "sm", alElegir }: { size?: "sm" | "md"; alElegi
             role="group"
             aria-label={tx(lang, { es: "Idiomas", en: "Languages", pt: "Idiomas", fr: "Langues", de: "Sprachen", it: "Lingue" })}
             // Mismo material que el menú «Producto».
-            className="tj-cae tj-cristal tj-cristal--denso tj-cristal--menu absolute right-0 z-50 min-w-[168px] rounded-[6px] p-1"
-            style={{ position: "absolute", top: "calc(100% + 8px)" }}
+            className={`tj-cae tj-cristal tj-cristal--denso tj-cristal--menu absolute z-50 min-w-[168px] rounded-[6px] p-1 ${hacia === "arriba" ? "left-0" : "right-0"}`}
+            style={{ position: "absolute", ...(hacia === "arriba" ? { bottom: "calc(100% + 8px)" } : { top: "calc(100% + 8px)" }) }}
           >
             {disponibles.map((l) => {
               const activo = l.codigo === lang;

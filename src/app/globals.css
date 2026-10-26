@@ -313,6 +313,12 @@
     scroll-padding-top: 5rem;
     -webkit-text-size-adjust: 100%;
   }
+  /* Un campo que recibe el foco (un error al enviar, Mayús+Tab) baja lo justo
+     para librar la cabecera fija; este margen deja también a la vista su
+     etiqueta, que va encima. */
+  :is(input, select, textarea):not([data-demo-raiz] *) {
+    scroll-margin-top: 2.5rem;
+  }
   /* La negrita de la casa es 600 (el navegador pone 700). La demo imita la
      app y se queda como está. */
   :is(strong, b):not([data-demo-raiz] *) {
