@@ -172,7 +172,7 @@ const DIALOGOS = [
     ruta: "/",
     ancho: 390,
     abrir: async (p) => {
-      const b = p.locator('button[aria-controls="mobile-nav-drawer"]').first();
+      const b = p.locator("button[data-menu-movil]").first();
       if (!(await b.count())) return false;
       await b.focus();
       await p.keyboard.press("Enter");

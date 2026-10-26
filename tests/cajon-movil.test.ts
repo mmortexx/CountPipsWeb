@@ -24,7 +24,8 @@ let escritorio = false;
 const oyentes = new Set<(e: { matches: boolean }) => void>();
 
 const fotogramas = () => act(async () => { await new Promise((r) => setTimeout(r, 60)); });
-const botonMenu = () => cont.querySelector<HTMLButtonElement>("button[aria-haspopup='dialog']")!;
+// El mismo selector que `scripts/teclado.mjs`: si el botón lo pierde, falla aquí antes que en la CI.
+const botonMenu = () => cont.querySelector<HTMLButtonElement>("button[data-menu-movil]")!;
 const cajon = () => cont.querySelector<HTMLElement>("#mobile-nav-drawer");
 const abierto = () => document.body.dataset.drawerOpen === "true";
 

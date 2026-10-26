@@ -860,6 +860,8 @@ export function Navbar() {
               aria-expanded={mobileOpen}
               aria-haspopup="dialog"
               aria-controls={cajonMontado ? "mobile-nav-drawer" : undefined}
+              // Lo busca `scripts/teclado.mjs`; `aria-controls` no existe hasta montar el cajón.
+              data-menu-movil=""
             >
               {mobileOpen ? (
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
