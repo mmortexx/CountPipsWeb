@@ -816,7 +816,7 @@ export function DashboardPage() {
             <KpiCell
               label={t("currentDd")}
               value={
-                <span className="text-lg font-semibold tnum text-pnl-neg">
+                <span className={`text-lg font-semibold tnum ${metrics.currentDrawdownPct >= 0.0005 ? "text-pnl-neg" : "text-primary"}`} /* lo que se lee «0,0 %» no es una caída */>
                   {fmtPct(metrics.currentDrawdownPct, lang, 1)}
                 </span>
               }

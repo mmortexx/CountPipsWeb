@@ -1596,7 +1596,8 @@ export function AnalyticsPage() {
               className="lg:col-span-2"
             >
               <ROverTimeChart trades={filteredTrades} />
-              <div className="flex items-center justify-between mt-2 text-[11px] text-tertiary">
+              {/* Cada leyenda entera en su renglón: en móvil se partían las dos por dentro. */}
+              <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 mt-2 text-[11px] text-tertiary [&>span]:whitespace-nowrap">
                 <span>
                   {lang === "es" ? "Primera operación" : "First trade"} →{" "}
                   {lang === "es" ? "Última" : "Last"}
