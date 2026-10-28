@@ -132,7 +132,7 @@ node scripts/deslizadores.mjs --serve out  # relleno, marcas y alturas de los de
 node scripts/viudas.mjs --serve out        # titulares sin palabra sola al final
 node scripts/teclado.mjs --serve out       # todo el sitio sin ratón; los atajos de una tecla se apagan
 node scripts/toque.mjs --serve out         # zona que recoge el dedo, medida en móvil táctil: 44 px de alto
-node scripts/cabeceras.mjs --serve out     # nada bloqueado por la CSP de `_headers` ni la de cada página, en los dos temas y con la demo; Turnstile solo si la compilación lleva clave y hay red
+node scripts/cabeceras.mjs --serve out     # nada bloqueado por la CSP de `_headers` ni la de cada página, en los dos temas y con la demo; con clave de Turnstile, falla si el widget no carga en /beta (necesita red)
 node scripts/corrobora-menus.mjs --base <url>  # menús; contra `npx serve out` (sin -s)
 node scripts/barrido-rueda.mjs --base <url>    # ningún recuadro atrapa la rueda del ratón; mismo servidor
 ```

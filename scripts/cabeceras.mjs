@@ -12,8 +12,10 @@
  * la vez la política de cabecera (dominio propio) y la de la `<meta>` de cada
  * página (la única que tiene GitHub Pages): el navegador aplica las dos. Si la
  * compilación lleva clave de Turnstile, empieza a rellenar /beta para que se
- * cargue el widget. Falla si `_headers` no declara una CSP o si alguna página
- * dispara un bloqueo.
+ * cargue el widget, y falla si no llega a cargar (necesita red). Falla si
+ * `_headers` no declara una CSP o si alguna página dispara un bloqueo o un
+ * aviso de consola de la CSP o de `Permissions-Policy`: el Chromium de Linux
+ * del CI es la referencia.
  *
  * Uso:  node scripts/cabeceras.mjs --serve out
  */
@@ -142,10 +144,17 @@ await Promise.all(
       if (TURNSTILE && /^\/beta\/$/.test(ruta)) {
         // El widget solo se carga al empezar a rellenar el formulario.
         await pagina.focus("form input:not([type=hidden])").catch(() => errores.push("/beta sin campos que enfocar"));
-        turnstileCargado ||= await pagina
-          .waitForSelector('iframe[src*="challenges.cloudflare.com"]', { state: "attached", timeout: 15000 })
-          .then(() => pagina.waitForTimeout(2000))
+        // El iframe va dentro de una shadow root cerrada: ningún selector lo
+        // ve, la lista de marcos de la página sí.
+        const marcoDeTurnstile = () => pagina.frames().some((f) => /^https:\/\/challenges\.cloudflare\.com\//.test(f.url()));
+        const api = await pagina
+          .waitForFunction(() => typeof window.turnstile?.render === "function", null, { timeout: 20000 })
           .then(() => true, () => false);
+        for (let t = 0; api && !marcoDeTurnstile() && t < 60; t++) await pagina.waitForTimeout(250);
+        if (api && marcoDeTurnstile()) {
+          await pagina.waitForTimeout(2000);
+          turnstileCargado = true;
+        }
       }
       if (/\/demo\/$/.test(ruta)) {
         // La demo monta sus pestañas al hidratar; sin ellas no se ha recorrido nada.
@@ -181,12 +190,11 @@ servidor.close();
 console.log(
   `[cabeceras] ${paginas.length} páginas × ${TEMAS.length} temas con ${Object.keys(CABECERAS).length} cabeceras de _headers y la política de cada página; ${demoRecorrida} pestañas de la demo abiertas`,
 );
-if (TURNSTILE) {
-  console.log(
-    turnstileCargado
-      ? "[cabeceras] Turnstile cargado en /beta y medido"
-      : "[cabeceras] aviso — Turnstile no llegó a cargar en /beta (¿sin red?): no queda medido",
-  );
+// Con clave, un widget que no carga es un fallo: si solo avisara, la parte de
+// la política que abre Cloudflare quedaría sin medir y en verde para siempre.
+if (TURNSTILE && turnstileCargado) console.log("[cabeceras] Turnstile cargado en /beta y medido");
+if (TURNSTILE && !turnstileCargado) {
+  bloqueos.push("(/beta)  la compilación lleva clave de Turnstile y el widget no llegó a cargar al enfocar el formulario (¿sin red?): esa parte de la política queda sin medir");
 }
 if (demoRecorrida === 0) bloqueos.push("(demo)  no se abrió ninguna pestaña de la demo");
 if (bloqueos.length) {
