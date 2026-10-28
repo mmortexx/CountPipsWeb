@@ -114,7 +114,7 @@ export const HERRAMIENTAS: Herramienta[] = [
     subtituloEn:
       "A 50% drawdown is not undone by a 50% gain: it takes 100%. Enter your drawdown, your risk per trade, your win rate and your payoff, and see how much you need to make and how many trades the typical path takes to get back.",
     resumenEs: "Lo que hay que ganar para volver al máximo, y cuántas operaciones tarda.",
-    resumenEn: "What it takes to get back to the peak, and how many trades it takes.",
+    resumenEn: "What you need to gain to get back to the peak, and how many trades that takes.",
     entregaEs: "Ganancia y operaciones",
     entregaEn: "Gain and trades",
     descripcionEs:
@@ -193,8 +193,8 @@ export const HERRAMIENTAS: Herramienta[] = [
       "Asia, Londres y Nueva York en una misma banda de veinticuatro horas, en hora real. Lo que importa no es cuándo abre cada plaza, sino dónde se solapan: ahí hay dos mercados despiertos a la vez.",
     subtituloEn:
       "Asia, London and New York on a single twenty-four-hour band, in real time. What matters is not when each opens, but where they overlap: that is when two markets are awake at once.",
-    resumenEs: "Asia, Londres y Nueva York en hora real, con sus solapes.",
-    resumenEn: "Asia, London and New York in real time, with their overlaps.",
+    resumenEs: "Qué plaza está abierta ahora, en tu hora, y cuándo coinciden dos.",
+    resumenEn: "Which market is open now, in your time, and when two overlap.",
     entregaEs: "Sesiones y solapes",
     entregaEn: "Sessions and overlaps",
     descripcionEs:
