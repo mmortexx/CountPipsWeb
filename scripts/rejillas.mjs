@@ -22,6 +22,8 @@
  *   - Rótulo y valor (`dt`/`dd`) lado a lado y del mismo cuerpo de letra que
  *     no comparten línea base.
  *   - Precios (`data-precio`) de tarjetas vecinas a distinta altura.
+ *   - Matriz de cifras (`.tj-matriz`) sin ficha ni fondo alrededor cuya
+ *     primera columna no arranca al filo, donde empieza el texto de encima.
  * No mira flexbox, donde el reparto solo ocurre si alguien lo pide.
  *
  * Uso:  node scripts/rejillas.mjs --serve out
@@ -92,6 +94,7 @@ const navegador = await chromium.launch();
 const fallos = new Map();
 let rejillas = 0;
 let columnadasTotal = 0;
+let matricesSueltasTotal = 0;
 let filetesTotal = 0;
 let filasCifraTotal = 0;
 let fichasGlosario = 0;
@@ -337,7 +340,31 @@ async function medir(pag, ruta, ancho) {
         }
       }
     }
-    return { vistos, n, descompases, columnadas, dobles, nf: filetes.length, sueltos, nt: tonos.size, descolgadas, filasCifra, desiguales, colgados, listasDobles, desnivelados, paresRotulo, preciosDesparejos, paresPrecio };
+    // Matriz de cifras suelta en la sección, sin ficha ni fondo que la enmarque:
+    // la primera celda de cada fila arranca al filo, como el texto de encima.
+    const sangradas = [];
+    let matricesSueltas = 0;
+    const enmarcada = (m) => {
+      for (let p = m; p && p !== document.body && !p.classList.contains("tj-container"); p = p.parentElement) {
+        const s = getComputedStyle(p);
+        if (parseFloat(s.borderLeftWidth) > 0 || !/^(transparent|rgba\(0, 0, 0, 0\))$/.test(s.backgroundColor)) return true;
+      }
+      return false;
+    };
+    for (const m of document.querySelectorAll("main .tj-matriz")) {
+      if (!m.getClientRects().length || enmarcada(m)) continue;
+      matricesSueltas++;
+      const filo = m.getBoundingClientRect().left;
+      for (const c of m.children) {
+        if (Math.abs(c.getBoundingClientRect().left - filo) > 1) continue;
+        const sangria = parseFloat(getComputedStyle(c).paddingLeft);
+        if (sangria > tol) {
+          sangradas.push({ texto: (c.textContent || "").trim().slice(0, 36), sangria: Math.round(sangria) });
+          break;
+        }
+      }
+    }
+    return { vistos, n, descompases, columnadas, dobles, nf: filetes.length, sueltos, nt: tonos.size, descolgadas, filasCifra, desiguales, colgados, listasDobles, desnivelados, paresRotulo, preciosDesparejos, paresPrecio, sangradas, matricesSueltas };
   }, TOLERANCIA_PX);
   paresPrecioTotal += r.paresPrecio;
   for (const d of r.preciosDesparejos) {
@@ -398,6 +425,12 @@ async function medir(pag, ruta, ancho) {
   }
   rejillas += r.n;
   columnadasTotal += r.columnadas;
+  matricesSueltasTotal += r.matricesSueltas;
+  for (const d of r.sangradas) {
+    const k = "matriz suelta con la primera columna sangrada";
+    if (!fallos.has(k)) fallos.set(k, []);
+    fallos.get(k).push(`${ancho} ${ruta}  «${d.texto}» a ${d.sangria} px del filo`);
+  }
   for (const v of r.vistos) {
     if (!fallos.has(v.clase)) fallos.set(v.clase, []);
     fallos.get(v.clase).push(`${ancho} ${ruta}  «${v.texto}» baja ${v.mov} px`);
@@ -474,6 +507,11 @@ if (filetesTotal < 1000) {
   console.log(`[rejillas] solo ${filetesTotal} filetes: el doble filete no está mirando`);
   process.exit(1);
 }
+// Las de /traders (prop firms y operativa manual, en los dos idiomas y anchos).
+if (matricesSueltasTotal < 8) {
+  console.log(`[rejillas] solo ${matricesSueltasTotal} matrices sueltas: su filo no se está mirando`);
+  process.exit(1);
+}
 if (columnadasTotal < 20) {
   console.log(`[rejillas] solo ${columnadasTotal} rejillas de tres columnas: el compás no está mirando`);
   process.exit(1);
@@ -489,6 +527,10 @@ if (fallos.size) {
   const doble = fallos.has("doble filete sin nada entre medias") ? 1 : 0;
   const cifra = fallos.has("cifra descolgada de su fila") ? 1 : 0;
   const segmento = fallos.has("segmentados vecinos de distinto alto") ? 1 : 0;
+  const filo = fallos.has("matriz suelta con la primera columna sangrada") ? 1 : 0;
+  if (filo) {
+    console.log("[rejillas] una matriz sin ficha alrededor sangra su primera columna: relleno izquierdo solo en las celdas que llevan filete a su izquierda");
+  }
   if (cifra) {
     console.log("[rejillas] una cifra cae más abajo que sus vecinas porque su rótulo ocupa dos líneas: celda `flex flex-col` y cifra con `mt-auto`");
   }
@@ -516,8 +558,8 @@ if (fallos.size) {
   if (lista) {
     console.log("[rejillas] una lista a dos columnas no cierra igual en las dos: usa `.tj-lista-filetes` (filete sobre cada entrada, sin filete propio)");
   }
-  if (fallos.size - compas - doble - tono - cifra - segmento - lista - rotulo - precio) {
-    console.log(`[rejillas] ${fallos.size - compas - doble - tono - cifra - segmento - lista - rotulo} rejilla(s) reparten el alto sobrante entre sus filas`);
+  if (fallos.size - compas - doble - tono - cifra - segmento - lista - rotulo - precio - filo) {
+    console.log(`[rejillas] ${fallos.size - compas - doble - tono - cifra - segmento - lista - rotulo - precio - filo} rejilla(s) reparten el alto sobrante entre sus filas`);
     console.log("[rejillas] si la ficha debe ir arriba, `content-start` (align-content: start) en ella");
   }
   if (compas) {
