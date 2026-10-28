@@ -389,15 +389,22 @@ describe("el logotipo y su generador dibujan lo mismo", () => {
 
 describe("el menú cuenta lo que hay", () => {
   // El menú es de cliente y no importa los datos (no viajan al navegador): la cifra va escrita y aquí se ata.
-  const NUMEROS: Record<string, number> = { siete: 7, ocho: 8, nueve: 9, diez: 10, seven: 7, eight: 8, nine: 9, ten: 10 };
+  const NUMEROS: Record<string, number> = {
+    siete: 7, ocho: 8, nueve: 9, diez: 10,
+    seven: 7, eight: 8, nine: 9, ten: 10,
+    sete: 7, oito: 8, nove: 9, dez: 10,
+    sept: 7, huit: 8, neuf: 9, dix: 10,
+    sieben: 7, acht: 8, neun: 9, zehn: 10,
+    sette: 7, otto: 8, dieci: 10,
+  };
   const navbar = leer("src/components/marketing/Navbar.tsx");
   const cifra = (re: RegExp) =>
     [...navbar.matchAll(re)].map((m) => (/^\d+$/.test(m[1]) ? Number(m[1]) : NUMEROS[m[1].toLowerCase()]));
 
-  it("calculadoras", async () => {
+  it("calculadoras, en los seis idiomas", async () => {
     const { HERRAMIENTAS } = await import("@/lib/herramientas");
-    const vistas = cifra(/"(\w+) (?:calculadoras|calculators)\b/g);
-    expect(vistas.length).toBe(2);
+    const vistas = cifra(/"(\w+) (?:calculadoras|calculators|ferramentas|calculateurs|Rechner|calcolatori)\b/g);
+    expect(vistas.length).toBe(6);
     for (const n of vistas) expect(n).toBe(HERRAMIENTAS.length);
   });
 
@@ -428,6 +435,48 @@ describe("el menú cuenta lo que hay", () => {
     expect(TERMINOS_GLOSARIO).toBe(TERMINOS.length);
     const vistas = [...navbar.matchAll(/\$\{TERMINOS_GLOSARIO\} (?:términos|terms)\b/g)];
     expect(vistas.length).toBe(2);
+  });
+});
+
+describe("los recuentos en letra cuentan lo que hay", () => {
+  // «Quince preguntas» y «siete pantallas» van en letra; si cambia el recuento, falla hasta reescribirlos.
+  const LETRA = [
+    "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez",
+    "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve", "veinte",
+    "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+    "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty",
+  ];
+  const valor = (p: string) => (/^\d+$/.test(p) ? Number(p) : (LETRA.indexOf(p.toLowerCase()) % 20) + 1);
+  const fuentes: string[] = [];
+  const recorrer = (dir: string) => {
+    for (const entrada of readdirSync(join(RAIZ, dir))) {
+      const rel = `${dir}/${entrada}`;
+      if (statSync(join(RAIZ, rel)).isDirectory()) recorrer(rel);
+      else if (/\.(ts|tsx)$/.test(entrada)) fuentes.push(rel);
+    }
+  };
+  recorrer("src");
+  const recuentos = (sustantivos: string) => {
+    const re = new RegExp(`\\b(${LETRA.join("|")}|\\d+)\\s+(?:${sustantivos})\\b`, "giu");
+    return fuentes.flatMap((rel) => [...leerCodigo(rel).matchAll(re)].map((m) => ({ donde: `${rel}: ${m[0]}`, n: valor(m[1]) })));
+  };
+
+  it("recorre todo src/", () => {
+    expect(fuentes.length).toBeGreaterThan(100);
+  });
+
+  it("las preguntas del test de disciplina", async () => {
+    const { QUESTIONS } = await import("@/lib/trading/disciplineQuestions");
+    const vistos = recuentos("preguntas|questions");
+    expect(vistos.length).toBeGreaterThanOrEqual(10);
+    expect(vistos.filter((v) => v.n !== QUESTIONS.length).map((v) => v.donde)).toEqual([]);
+  });
+
+  it("las pantallas de la galería", async () => {
+    const { ORDEN_LAMINAS } = await import("@/lib/laminas");
+    const vistos = recuentos("pantallas|screens");
+    expect(vistos.length).toBeGreaterThanOrEqual(2);
+    expect(vistos.filter((v) => v.n !== ORDEN_LAMINAS.length).map((v) => v.donde)).toEqual([]);
   });
 });
 
