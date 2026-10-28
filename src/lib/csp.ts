@@ -81,13 +81,18 @@ export function politica(e: Entorno, scripts: readonly string[] | "en-linea"): s
 
 const huella = (s: string) => `'sha256-${createHash("sha256").update(s, "utf8").digest("base64")}'`;
 
+/* Los `type` con los que el navegador ejecuta un script (HTML, «JavaScript MIME type»). */
+const TIPOS_JS =
+  /^(module|(application|text)\/(x-)?(java|ecma)script|text\/javascript1\.[0-5]|text\/(jscript|livescript))$/;
+
 /** Huellas de los scripts en línea que el navegador ejecuta (los `ld+json` son datos). */
 export function huellasDeScripts(html: string): string[] {
   const huellas: string[] = [];
-  for (const [, attrs, cuerpo] of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
-    if (/\bsrc=/i.test(attrs)) continue;
-    const tipo = attrs.match(/\btype="([^"]*)"/i)?.[1]?.toLowerCase();
-    if (tipo && tipo !== "module" && !/^(text|application)\/(java|ecma)script$/.test(tipo)) continue;
+  for (const [, attrs, cuerpo] of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)) {
+    if (/(^|\s)src\s*=/i.test(attrs)) continue;
+    const tipo = attrs.match(/(?:^|\s)type\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
+    const valor = (tipo?.[1] ?? tipo?.[2] ?? tipo?.[3] ?? "").trim().toLowerCase();
+    if (valor && !TIPOS_JS.test(valor)) continue;
     huellas.push(huella(cuerpo));
   }
   return [...new Set(huellas)];

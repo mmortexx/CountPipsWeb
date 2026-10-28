@@ -137,6 +137,8 @@ await Promise.all(
         if (/Content.Security.Policy|Refused to|Permissions.Policy/i.test(m.text())) errores.push(`consola: ${m.text().slice(0, 160)}`);
       });
       await pagina.goto(BASE + ruta, { waitUntil: "networkidle" });
+      const temaPintado = await pagina.evaluate(() => document.documentElement.dataset.theme);
+      if (temaPintado !== tema) errores.push(`se pidió el tema ${tema} y la página pinta ${temaPintado}`);
       if (TURNSTILE && /^\/beta\/$/.test(ruta)) {
         // El widget solo se carga al empezar a rellenar el formulario.
         await pagina.focus("form input:not([type=hidden])").catch(() => errores.push("/beta sin campos que enfocar"));

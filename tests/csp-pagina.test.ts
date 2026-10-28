@@ -21,14 +21,12 @@ const metaCsp = (html: string) =>
   [...html.matchAll(/<meta\s+http-equiv="Content-Security-Policy"\s+content="([^"]*)"\s*\/?>/gi)].map((m) => m[1]);
 const directiva = (csp: string, nombre: string) =>
   csp.split(";").map((d) => d.trim().split(/\s+/)).find((d) => d[0] === nombre)?.slice(1) ?? null;
-/** Scripts en línea que el navegador ejecuta (los `application/ld+json` son datos y no cuentan). */
+/** Todo script sin `src` que no sea JSON-LD cuenta como ejecutable: más estricto que
+ *  `csp.ts` a propósito, para no repetir su criterio (un bloque de datos nuevo pediría huella). */
 const enLinea = (html: string) =>
-  [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)]
-    .filter(([, attrs]) => !/\bsrc=/i.test(attrs))
-    .filter(([, attrs]) => {
-      const tipo = attrs.match(/\btype="([^"]*)"/i)?.[1]?.toLowerCase();
-      return !tipo || tipo === "module" || /^(text|application)\/(java|ecma)script$/.test(tipo);
-    })
+  [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)]
+    .filter(([, attrs]) => !/(^|\s)src\s*=/i.test(attrs))
+    .filter(([, attrs]) => !/(^|\s)type\s*=\s*["']?\s*application\/ld\+json/i.test(attrs))
     .map(([, , cuerpo]) => cuerpo);
 const huella = (s: string) => `'sha256-${createHash("sha256").update(s, "utf8").digest("base64")}'`;
 
@@ -41,6 +39,18 @@ describe.skipIf(!existsSync(OUT) && process.env.COMPROBAR_OUT !== "1")("polític
 
   it("hay páginas que mirar", () => {
     expect(html.length).toBeGreaterThan(50);
+  });
+
+  // Si `postbuild` no la escribe, queda el marcador de `public/_headers`: el navegador
+  // ignora la política inválida, la de cada página sigue y nadie lo ve, pero en el
+  // dominio propio se pierde `frame-ancestors`.
+  it("out/_headers lleva la política de verdad, con frame-ancestors", () => {
+    const lineas = readFileSync(join(OUT, "_headers"), "utf8").match(/^[ \t]+Content-Security-Policy:[^\r\n]*/gm) ?? [];
+    expect(lineas).toHaveLength(1);
+    const csp = (lineas[0] ?? "").replace(/^\s+Content-Security-Policy:\s*/, "");
+    expect(directiva(csp, "default-src")).toEqual(["'self'"]);
+    expect(directiva(csp, "frame-ancestors")).toEqual(["'none'"]);
+    expect(directiva(csp, "object-src")).toEqual(["'none'"]);
   });
 
   it("cada página lleva una sola, antes de cualquier script, hoja o estilo", () => {

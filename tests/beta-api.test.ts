@@ -229,6 +229,9 @@ describe("CORS y rutas", () => {
     }
     const largo = await worker.fetch(peticion("/v1/applications", "GET", { Origin: ORIGEN, Authorization: `Bearer ${TOKEN_ADMIN}` }), entorno());
     expect(largo.status).not.toBe(401); // pasa la puerta (la D1 falsa no sabe listar)
+    const justo = "y".repeat(32);
+    const limite = await worker.fetch(peticion("/v1/applications", "GET", { Origin: ORIGEN, Authorization: `Bearer ${justo}` }), entorno({ ADMIN_TOKEN: justo }));
+    expect(limite.status).not.toBe(401);
   });
 
   it("/health responde sin datos y el listado exige token", async () => {

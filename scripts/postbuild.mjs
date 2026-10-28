@@ -8,6 +8,7 @@
 import { readdir, readFile, writeFile, copyFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { TABLA_IDIOMAS } from "../src/lib/locale.ts";
+import nextEnv from "@next/env";
 import { cabecerasConPolitica, conPoliticaEnMeta, entornoDeCompilacion, politica } from "../src/lib/csp.ts";
 
 const OUT = "out";
@@ -268,6 +269,9 @@ console.log(
    `_headers` para el dominio propio. Solo abre los destinos que esta
    compilación usa. Va al final: cualquier retoque posterior del HTML cambiaría
    las huellas. */
+// Los mismos `.env*` que leyó `next build` (este es otro proceso): sin esto, una
+// dirección puesta solo en `.env.local` viajaría en el JS y la política la bloquearía.
+nextEnv.loadEnvConfig(process.cwd());
 const entorno = entornoDeCompilacion(process.env);
 const rutaCabeceras = join(OUT, "_headers");
 await writeFile(rutaCabeceras, cabecerasConPolitica(await readFile(rutaCabeceras, "utf8"), entorno));

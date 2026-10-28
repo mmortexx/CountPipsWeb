@@ -75,7 +75,9 @@ jobs:
         run: bun install --frozen-lockfile
 
       # Lo que viaja a la web (dependencias, no las de desarrollo) sin avisos de
-      # seguridad graves. Si uno aparece, se actualiza antes de publicar.
+      # seguridad graves. Si uno aparece, se actualiza antes de publicar; si aún
+      # no tiene arreglo y no afecta a un sitio estático, `--ignore=<GHSA-…>`
+      # aquí y en comprobar.yml, con su porqué.
       - name: Dependencias sin avisos graves
         run: bun audit --prod --audit-level=high
 
@@ -107,7 +109,8 @@ jobs:
         # sitio estático en ./out/, que es lo que Pages sirve.
         # `postbuild.mjs` retoca ese `out/` (el `lang` de las páginas
         # traducidas, los ficheros de precarga, las tarjetas sociales y la
-        # CSP de `_headers`) y rompe la compilación si algo no sale bien.
+        # política de contenido de cada página y de `_headers`) y rompe la
+        # compilación si algo no sale bien.
         run: bun run build
         env:
           # PREFIJO DE RUTAS — solo para GitHub Pages.

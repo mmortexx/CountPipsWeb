@@ -72,6 +72,8 @@
  *
  *  SEGURIDAD
  *  · Honeypot, deduplicación, bloqueo transaccional y límite por email.
+ *  · Sin el consentimiento de privacidad no se guarda nada, y ningún texto
+ *    llega a la hoja como fórmula (`texto()`).
  *  · Turnstile es la protección contra bots; se valida si configuras su
  *    secreto.
  *  · La lista de orígenes es solo un filtro de cortesía: el origen lo

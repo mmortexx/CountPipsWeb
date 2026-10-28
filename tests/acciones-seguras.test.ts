@@ -34,18 +34,35 @@ describe("flujos de GitHub Actions", () => {
     }
   });
 
+  /** Cada orden `run:`, con sus líneas si es un bloque (`run: |`). */
+  const ordenes = (yml: string) => {
+    const lineas = yml.split(/\r?\n/);
+    const out: string[] = [];
+    lineas.forEach((l, i) => {
+      const m = l.match(/^(\s*)(?:-\s*)?run:\s*(.*)$/);
+      if (!m) return;
+      if (!/^[|>]/.test(m[2])) return void out.push(m[2]);
+      const sangria = m[1].length;
+      const bloque: string[] = [];
+      for (const s of lineas.slice(i + 1)) {
+        if (s.trim() && s.search(/\S/) <= sangria) break;
+        bloque.push(s);
+      }
+      out.push(bloque.join("\n"));
+    });
+    return out;
+  };
+
   it("ningún `run:` mete datos del evento en la orden (inyección de órdenes)", () => {
-    const mal = flujos.flatMap(([n, t]) =>
-      [...t.matchAll(/^\s*(?:-\s*)?run:\s*(.+)$/gm)]
-        .filter(([, orden]) => /\$\{\{\s*(github\.event|github\.head_ref|inputs\.|steps\.[^}]*outputs)/.test(orden))
-        .map(([, orden]) => `${n}: ${orden}`),
-    );
+    const peligroso = /\$\{\{\s*(github\.event|github\.head_ref|inputs\.|steps\.[^}]*outputs)/;
+    expect(ordenes("steps:\n  - run: |\n      echo ok\n      echo ${{ github.event.issue.title }}\n  - run: echo fin").filter((o) => peligroso.test(o))).toHaveLength(1);
+    const mal = flujos.flatMap(([n, t]) => ordenes(t).filter((o) => peligroso.test(o)).map((o) => `${n}: ${o}`));
     expect(mal).toEqual([]);
   });
 
   it("antes de publicar, las dependencias de la web no tienen avisos graves", () => {
     const despliegue = flujos.find(([n]) => n === "deploy.yml")![1];
-    const auditoria = despliegue.search(/run:\s*bun audit --prod --audit-level=high\s*$/m);
+    const auditoria = despliegue.search(/^\s+run:\s*bun audit --prod --audit-level=high\s*$/m);
     expect(auditoria).toBeGreaterThan(0);
     expect(auditoria).toBeLessThan(despliegue.search(/run:\s*bun run build/));
   });

@@ -104,6 +104,20 @@ describe("política en la página", () => {
     expect(huellasDeScripts(PAGINA)).toHaveLength(2);
   });
 
+  it("también los que se escriben de forma rara, que el navegador igual ejecuta", () => {
+    const raros = [
+      '<script data-src="x">a()</script>',
+      '<script type="application/x-javascript">b()</script>',
+      '<script type=" module ">c()</script>',
+      "<script type='TEXT/JavaScript'>d()</script>",
+      "<script type=text/jscript>e()</script>",
+      "<script>f()</script >",
+    ];
+    for (const s of raros) expect(huellasDeScripts(s), s).toHaveLength(1);
+    expect(huellasDeScripts(raros.join(""))).toHaveLength(raros.length);
+    expect(huellasDeScripts('<script type="text/plain">no()</script><script src = "/x.js"></script>')).toEqual([]);
+  });
+
   it("va justo tras el charset, antes de cualquier script", () => {
     const html = conPoliticaEnMeta(PAGINA, {});
     expect(html.indexOf("Content-Security-Policy")).toBeLessThan(html.indexOf("<script"));
