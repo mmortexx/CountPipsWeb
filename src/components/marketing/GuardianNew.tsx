@@ -165,7 +165,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                   en: "Skipping it costs a reason",
                   pt: "Pular a regra exige um motivo",
                   fr: "Passer outre exige une raison",
-                  de: "Überstimmen erfordert Begründung",
+                  de: "Übergehen erfordert eine Begründung",
                   it: "Ignorarlo richiede una motivazione",
                 }),
                 d: tx(lang, {
