@@ -71,7 +71,7 @@ export function HowItWorks() {
                   {s.kbd}
                 </kbd>
               </div>
-              <h3 className="mt-10 t-h3 text-primary">{s.title}</h3>
+              <h3 className="mt-3 md:mt-10 t-h3 text-primary">{s.title}</h3>
               <p className="mt-2 text-[15px] text-secondary leading-[1.7]">{s.desc}</p>
             </li>
           ))}
