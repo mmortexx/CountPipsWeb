@@ -679,7 +679,9 @@ export function EquityProjector() {
                 </div>
 
                 {/* Fricción */}
-                <div className="pt-2 border-t border-[var(--ficha-division)] flex items-center justify-between">
+                {/* Con `flex-wrap`, si rótulo y botones no caben en una fila los
+                    botones bajan enteros; antes partían «0,02 R» en dos líneas. */}
+                <div className="pt-2 border-t border-[var(--ficha-division)] flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
                   <span id={idCostes} className="tj-deslizador-etiqueta">
                     {es ? "Costes por operación" : "Costs per trade"}
                   </span>

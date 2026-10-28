@@ -119,7 +119,7 @@ export function NotFoundClient() {
               onChange={(e) => setQ(e.target.value)}
               placeholder={
                 es
-                  ? "Métrica o pregunta…"
+                  ? "Métrica o duda…"
                   : "Metric or question…"
               }
               aria-label={es ? "Buscar" : "Search"}

@@ -102,7 +102,7 @@ las pruebas que leen `out/` (con `COMPROBAR_OUT=1`, que convierte su ausencia en
 `humo`, `toque`, `alto-contraste` y `teclado`; las demás se pasan en local:
 
 ```bash
-node scripts/humo.mjs --serve out          # contraste, entradas, menú, sin JavaScript; a 320 px, desborde, miga, pestañas que se deslizan con aviso y texto espaciado (WCAG 1.4.12), sin partir cifras entre dígitos, con las cifras de cada fila de casillas a la misma altura y, de 320 a 390 px, sin partir un rótulo de casilla a mitad de palabra; letra de la demo ≥ 11 px
+node scripts/humo.mjs --serve out          # contraste, entradas, menú, sin JavaScript; a 320 px, desborde, miga, pestañas que se deslizan con aviso y texto espaciado (WCAG 1.4.12), sin partir cifras entre dígitos, con las cifras de cada fila de casillas a la misma altura y, de 320 a 390 px, sin partir un rótulo de casilla a mitad de palabra, y sin cortar el texto de ejemplo de un campo; letra de la demo ≥ 11 px
 node scripts/legible.mjs --serve out       # contraste de todo el texto sobre fondo plano
 node scripts/tinta.mjs --serve out         # texto sobre fondos de color, en los dos temas
 node scripts/arranque.mjs --serve out --cpu 4  # tiempo hasta titular legible
@@ -115,7 +115,7 @@ node scripts/copiado.mjs --serve out       # texto de los botones «Copiar»
 node scripts/medida.mjs --serve out        # caracteres por línea
 node scripts/papel.mjs --serve out         # impresión completa
 node scripts/pesos.mjs --serve out         # grosores de la serif
-node scripts/rejillas.mjs --serve out      # alineación de fichas, columnas y cifras
+node scripts/rejillas.mjs --serve out      # alineación de fichas, columnas y cifras; matriz sin ficha, al filo
 node scripts/escala.mjs --serve out        # escala tipográfica e interlineado
 node scripts/movimiento.mjs --serve out    # «reducir movimiento» respetado; nada se desplaza dentro de algo que se desplaza
 node scripts/orden.mjs --serve out         # primera pantalla en orden de lectura; cambio de página sin solape

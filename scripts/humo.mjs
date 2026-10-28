@@ -1983,6 +1983,9 @@ const ANCHO_ESTRECHO = 320;
 let estrechasMedidas = 0;
 let pestanasDeslizadas = 0;
 let espaciadosMedidos = 0;
+let ejemplosMedidos = 0;
+let demosMontadas = 0;
+const RUTA_DEMO = /^\/(en\/)?demo\/$/;
 {
   const compiladas = async (carpeta, rel = "") => {
     const rutas = [];
@@ -2003,6 +2006,12 @@ let espaciadosMedidos = 0;
         const ruta = cola.pop();
         try {
           await pagina.goto(`${BASE}${ruta}`, { waitUntil: "load", timeout: 30000 });
+          // La demo se carga aparte y monta su fila de pestañas después de
+          // `load`: sin esperarla, la fila se medía unas veces sí y otras no.
+          if (RUTA_DEMO.test(ruta)) {
+            if (await pagina.waitForSelector("#demo-tablist", { timeout: 20000 }).catch(() => null)) demosMontadas++;
+            else fallos.push(`estrecho ${ruta}: la demo no montó su fila de pestañas en 20 s`);
+          }
           await pagina.addStyleTag({ content: ".cv-auto{content-visibility:visible!important}" });
           const r = await pagina.evaluate(async () => {
             await document.fonts.ready;
@@ -2052,9 +2061,25 @@ let espaciadosMedidos = 0;
             const migaLineas = miga
               ? Math.round(miga.getBoundingClientRect().height / (parseFloat(estilo.lineHeight) || parseFloat(estilo.fontSize) * 1.5))
               : 0;
-            return { sobra, texto: peor ? peor.texto : "", cortados, migaLineas };
+            // El texto de ejemplo de un campo no parte línea: si no cabe, se
+            // corta a media palabra («Busca por nombre o por lo que significa»).
+            const lienzo = document.createElement("canvas").getContext("2d");
+            const ejemplos = [];
+            let ejemplosMedidos = 0;
+            for (const c of document.querySelectorAll("main input[placeholder]")) {
+              if (!c.getClientRects().length || !c.placeholder.trim()) continue;
+              const s = getComputedStyle(c);
+              lienzo.font = `${s.fontStyle} ${s.fontWeight} ${s.fontSize} ${s.fontFamily}`;
+              const pide = lienzo.measureText(c.placeholder).width;
+              const deja = c.clientWidth - parseFloat(s.paddingLeft) - parseFloat(s.paddingRight);
+              ejemplosMedidos++;
+              if (pide > deja + 1) ejemplos.push(`«${c.placeholder}» pide ${Math.round(pide)} px y la caja deja ${Math.round(deja)}`);
+            }
+            return { sobra, texto: peor ? peor.texto : "", cortados, migaLineas, ejemplos, ejemplosMedidos };
           });
           estrechasMedidas++;
+          ejemplosMedidos += r.ejemplosMedidos;
+          for (const e of r.ejemplos) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px se corta el texto de ejemplo ${e}`);
           if (r.sobra > 1) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el contenido se sale ${r.sobra} px por «${r.texto}»`);
           else for (const c of r.cortados) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el borde corta el titular ${c}`);
           if (r.migaLineas > 1) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px la miga de pan ocupa ${r.migaLineas} líneas`);
@@ -2143,6 +2168,9 @@ let espaciadosMedidos = 0;
   // ninguna fila medida, la comprobación de pestañas no miró nada.
   if (SERVIR && pestanasDeslizadas < 6) fallos.push(`estrecho: solo ${pestanasDeslizadas} filas de pestañas deslizables medidas`);
   if (espaciadosMedidos < estrechasMedidas) fallos.push(`estrecho: texto espaciado medido en ${espaciadosMedidos} de ${estrechasMedidas} páginas`);
+  // Glosario, FAQ y calculadoras llevan buscador o campos con ejemplo.
+  if (SERVIR && ejemplosMedidos < 10) fallos.push(`estrecho: solo ${ejemplosMedidos} textos de ejemplo de campos medidos`);
+  if (SERVIR && demosMontadas < 2) fallos.push(`estrecho: la demo se midió montada en ${demosMontadas} de 2 idiomas`);
 }
 
 // Las cinco cifras de percentil del simulador de rachas, a 320 px con el texto
@@ -2313,7 +2341,7 @@ console.log(
 if (subirMedidos) {
   console.log(`[humo] botón de subir — ${subirMedidos} finales de página medidos en 3 anchos sin tapar el pie`);
 }
-console.log(`[humo] estrecho — ${estrechasMedidas} páginas medidas a ${ANCHO_ESTRECHO} px, ${pestanasDeslizadas} filas de pestañas deslizables con su aviso`);
+console.log(`[humo] estrecho — ${estrechasMedidas} páginas medidas a ${ANCHO_ESTRECHO} px, ${pestanasDeslizadas} filas de pestañas deslizables con su aviso, ${ejemplosMedidos} textos de ejemplo de campos, ${demosMontadas} demos montadas`);
 if (elementosMirados && !desenfoquesVistos) {
   console.log(`[humo] desenfoque — ${elementosMirados} elementos recorridos en 5 rutas, ninguno desenfoca su fondo`);
 }

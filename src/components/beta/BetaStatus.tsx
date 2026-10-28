@@ -49,7 +49,7 @@ export function ProductStatus() {
         pt: "Piloto privado",
         fr: "Pilote privé",
         de: "Privates Pilotprojekt",
-        it: "Pilota privato",
+        it: "Progetto pilota privato",
       }),
       text: tx(lang, {
         es: "Flujos de disciplina, riesgo y prop firm con usuarios invitados.",

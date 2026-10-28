@@ -2171,7 +2171,9 @@ textarea:focus-visible,
    `tj-fila-sigue`, pero como máscara: el `::after` ya es el subrayado. Se
    retira al llegar al final con `scroll()`, y al dejar atrás el principio
    vela el canto izquierdo; sin líneas de tiempo queda fijo a la derecha y
-   la fila reserva su ancho para que al final vele hueco, no una pestaña. */
+   la fila reserva su ancho para que al final vele hueco, no una pestaña.
+   `tj-pestanas-velo` es solo el aviso, para filas con su propio estilo de
+   pestaña y su propio subrayado (la barra de la demo). */
 @property --tj-sigue {
   syntax: "<length>";
   inherits: false;
@@ -2182,7 +2184,8 @@ textarea:focus-visible,
   inherits: false;
   initial-value: 0px;
 }
-.tj-pestanas {
+.tj-pestanas,
+.tj-pestanas-velo {
   mask-image: linear-gradient(
     to right,
     transparent,
@@ -2192,17 +2195,32 @@ textarea:focus-visible,
   );
 }
 @supports (animation-timeline: scroll()) {
-  .tj-pestanas {
+  .tj-pestanas,
+  .tj-pestanas-velo {
     animation: tj-pestanas-sigue linear both;
     animation-timeline: scroll(self inline);
   }
 }
 @supports not (animation-timeline: scroll()) {
-  .tj-pestanas {
+  .tj-pestanas,
+  .tj-pestanas-velo {
     --tj-sigue: 3rem;
   }
-  .tj-pestanas > :last-child {
+  .tj-pestanas > :last-child,
+  .tj-pestanas-velo > :last-child {
     margin-right: 3rem;
+  }
+}
+/* La barra de la demo solo se desliza en móvil, donde las pestañas son
+   iconos; desde `sm` lleva rótulos centrados que caben, y la reserva sin
+   líneas de tiempo los descentraría. */
+@media (width >= 40rem) {
+  .tj-pestanas-velo {
+    mask-image: none;
+    animation: none;
+  }
+  .tj-pestanas-velo > :last-child {
+    margin-right: 0;
   }
 }
 @keyframes tj-pestanas-sigue {

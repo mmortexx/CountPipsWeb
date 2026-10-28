@@ -279,8 +279,8 @@ export function BetaApplication() {
           <h2 className="t-h3 text-primary">{es ? "Cuéntanos cómo operas." : "Tell us how you trade."}</h2>
           <p className="mt-3 max-w-md text-secondary leading-[1.7]">
             {es
-              ? "Buscamos un piloto pequeño y útil. No hace falta que tengas una cuenta ni que compartas resultados o datos financieros."
-              : "We are building a small, useful private pilot. You won’t need an account, and you won’t be asked for performance or financial data."}
+              ? "Buscamos un piloto pequeño y útil. Con lo que nos cuentes aquí vemos si encaja; no hace falta que tengas una cuenta."
+              : "We are building a small, useful private pilot. What you tell us here is how we see whether it fits; you don’t need an account."}
           </p>
           <ul className="mt-6 space-y-2 p-0 text-sm text-secondary">
             {[es ? "Piloto privado, por invitación." : "Private pilot, invite only.", es ? "Tus operaciones, en tu equipo." : "Your trades, on your machine.", es ? "Sin spam ni boletines por defecto." : "No spam or newsletter by default."].map((item) => (

@@ -123,7 +123,7 @@ export function TopNav() {
         role="tablist"
         aria-label={t("demoTitle")}
         onKeyDown={onKeyDown}
-        className="flex items-center gap-0.5 sm:gap-1 min-w-0 overflow-x-auto no-scrollbar overscroll-x-contain"
+        className="tj-pestanas-velo flex items-center gap-0.5 sm:gap-1 min-w-0 overflow-x-auto no-scrollbar overscroll-x-contain"
       >
         {NAV_ITEMS.map((item) => {
           const active =

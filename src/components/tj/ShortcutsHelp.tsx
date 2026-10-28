@@ -208,7 +208,7 @@ export function ShortcutsHelp({
                     pt: "Navegue mais rápido pelo site.",
                     fr: "Parcourez le site plus vite.",
                     de: "Schneller durch die Website.",
-                    it: "Muoviti più veloce nel sito.",
+                    it: "Muoviti più velocemente nel sito.",
                   })}
                 </p>
                 {/* Solo en papel: la hoja impresa necesita decir de qué marca es. */}

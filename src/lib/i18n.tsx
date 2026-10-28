@@ -175,7 +175,7 @@ export const STR = {
   },
   sizeNoFitsDesc: {
     es: "Con el riesgo por defecto y este stop no cabe ni una acción ni un contrato entero. Acerca el stop o cambia de instrumento.",
-    en: "At the default risk and this stop, not even one whole share or contract fits. Tighten the stop or switch instrument.",
+    en: "At the default risk and this stop, not even one whole share or contract fits. Tighten the stop or switch instruments.",
   },
   tradeDeleted: { es: "Operación eliminada", en: "Trade deleted" },
   deleteTrade: { es: "Eliminar operación", en: "Delete trade" },
