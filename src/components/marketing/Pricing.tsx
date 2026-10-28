@@ -76,7 +76,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
       tagline: tx(lang, {
         es: "Para prop firms, varias cuentas, fiscalidad y análisis avanzado.",
         en: "For prop firms, multiple accounts, tax and advanced analysis.",
-        pt: "Para prop firms, várias contas, fiscalidade e análise avançada.",
+        pt: "Para prop firms, várias contas, tributação e análise avançada.",
         fr: "Pour les prop firms, les comptes multiples, la fiscalité et l’analyse avancée.",
         de: "Für Prop-Firms, mehrere Konten, Steuern und erweiterte Analysen.",
         it: "Per prop firm, conti multipli, fiscalità e analisi avanzata.",

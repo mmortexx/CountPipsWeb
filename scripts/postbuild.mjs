@@ -168,6 +168,22 @@ async function tarjetaDeSeccion(relativa) {
   return null;
 }
 
+/* El texto alternativo de una tarjeta es el que Next puso en la página que la
+   genera (`glosario/opengraph-image.png` → `glosario/index.html`); ya viene escapado. */
+const altes = new Map();
+async function altDeTarjeta(tarjeta) {
+  if (!altes.has(tarjeta)) {
+    const duena = join(OUT, tarjeta.replace(/^\//, "").replace(/opengraph-image\.png$/, "index.html"));
+    const alt = (await readFile(duena, "utf8")).match(/<meta property="og:image:alt" content="([^"]*)"/)?.[1];
+    if (!alt) {
+      console.error(`[postbuild] ${duena} genera la tarjeta ${tarjeta} sin texto alternativo que heredar`);
+      process.exit(1);
+    }
+    altes.set(tarjeta, alt);
+  }
+  return altes.get(tarjeta);
+}
+
 // Si falta una de las dos, el reparto de abajo daría un 404 a decenas de páginas.
 for (const [idioma, rutaImagen] of Object.entries(IMAGEN_POR_IDIOMA)) {
   const enDisco = join(OUT, rutaImagen.replace(/^\//, ""));
@@ -205,11 +221,13 @@ for (const ruta of htmls) {
       console.error(`[postbuild] ${relativa} no trae imagen social ni un canonical del que sacar la raíz del sitio`);
       process.exit(1);
     }
-    const imagen = `${raiz}${(await tarjetaDeSeccion(relativa)) ?? IMAGEN_POR_IDIOMA[esInternacional ? "en" : "es"]}`;
+    const tarjeta = (await tarjetaDeSeccion(relativa)) ?? IMAGEN_POR_IDIOMA[esInternacional ? "en" : "es"];
+    const imagen = `${raiz}${tarjeta}`;
+    const alt = await altDeTarjeta(tarjeta);
     const etiquetas =
       (faltaOg
-        ? `<meta property="og:image" content="${imagen}"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/>`
-        : "") + (faltaTw ? `<meta name="twitter:image" content="${imagen}"/>` : "");
+        ? `<meta property="og:image" content="${imagen}"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image:alt" content="${alt}"/>`
+        : "") + (faltaTw ? `<meta name="twitter:image" content="${imagen}"/><meta name="twitter:image:alt" content="${alt}"/>` : "");
     html = html.replace("</head>", `${etiquetas}</head>`);
     conImagenAnadida += 1;
   }
@@ -228,6 +246,8 @@ for (const ruta of htmls) {
     sinImagen.push(`${ruta} — referencia sin extensión`);
   } else if (!/property="og:image"/.test(html) || !/name="twitter:image"/.test(html)) {
     sinImagen.push(`${ruta} — sin og:image o sin twitter:image`);
+  } else if (!/property="og:image:alt" content="[^"]/.test(html) || !/name="twitter:image:alt" content="[^"]/.test(html)) {
+    sinImagen.push(`${ruta} — imagen social sin texto alternativo`);
   } else if (/(og:image|twitter:image)" content="\//.test(html)) {
     // Relativa: las redes la descartan.
     sinImagen.push(`${ruta} — imagen social con URL relativa`);

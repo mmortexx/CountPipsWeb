@@ -52,9 +52,9 @@ export function PricingFAQ() {
             es: "Cuatro respuestas rápidas sobre la demo, el alcance y el acceso anticipado.",
             en: "Four quick answers about the demo, scope and early access.",
             pt: "Quatro respostas rápidas sobre a demo, o escopo e o acesso antecipado.",
-            fr: "Quatre réponses rapides sur la démo, la portée et l’accès anticipé.",
+            fr: "Quatre réponses rapides sur la démo, le périmètre et l’accès anticipé.",
             de: "Vier schnelle Antworten zur Demo, zum Umfang und zum Vorabzugang.",
-            it: "Quattro risposte rapide su demo, ambito e accesso anticipato.",
+            it: "Quattro risposte rapide su demo, funzionalità e accesso anticipato.",
           })}
         />
 

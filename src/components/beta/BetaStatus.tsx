@@ -30,7 +30,7 @@ export function ProductStatus() {
         pt: "Demo navegável, métricas e diário local.",
         fr: "Démo interactive, métriques et journal local.",
         de: "Klickbare Demo, Kennzahlen und lokales Journal.",
-        it: "Demo interattiva, metriche e journal locale.",
+        it: "Demo interattiva, metriche e diario locale.",
       }),
     },
     {

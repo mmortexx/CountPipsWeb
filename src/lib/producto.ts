@@ -30,6 +30,8 @@ export const PROGRAMA = {
   plantillasProp: ["FTMO", "Topstep", "The5ers", "FundedNext", "Apex"],
   /** `BrokerTemplates`, con el nombre que se enseña en la web. */
   plantillasCsv: ["Interactive Brokers", "MetaTrader 4/5", "TradingView", "Binance", "Bybit"],
+  /** Idiomas de la interfaz del programa (la web tiene más). */
+  idiomas: ["es", "en"],
 } as const;
 
 /** «40+»: así lo cita la web; `cifras-a-mano.test.ts` no deja escribirlo a mano. */

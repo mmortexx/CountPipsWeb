@@ -154,7 +154,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                   es: "Al tocar tu pérdida diaria, una racha o tu caída máxima, deja de admitir operaciones nuevas durante las horas que elijas.",
                   en: "When you hit your daily loss, a losing streak or your max drawdown, it stops accepting new trades for the hours you choose.",
                   pt: "Ao atingir sua perda diária, sequência de perdas ou drawdown máximo, para de aceitar novas operações pelas horas que escolher.",
-                  fr: "Lorsque vous touchez votre perte max, une série noire ou votre drawdown, il refuse les nouveaux trades pendant la durée choisie.",
+                  fr: "Lorsque vous atteignez votre perte quotidienne, une série noire ou votre drawdown max, il refuse les nouveaux trades pendant la durée choisie.",
                   de: "Beim Erreichen des Tagesverlusts, einer Verlustserie oder des maximalen Drawdowns stoppt er neue Trades für die gewählte Zeit.",
                   it: "Al raggiungimento della perdita giornaliera, di una serie negativa o del drawdown massimo, blocca le nuove operazioni per le ore che decidi.",
                 }),
@@ -165,7 +165,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                   en: "Skipping it costs a reason",
                   pt: "Pular a regra exige um motivo",
                   fr: "Passer outre exige une raison",
-                  de: "Überstimmen erfordert Begründung",
+                  de: "Übergehen erfordert eine Begründung",
                   it: "Ignorarlo richiede una motivazione",
                 }),
                 d: tx(lang, {

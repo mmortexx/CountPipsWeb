@@ -15,6 +15,7 @@ import { CAMINOS_FONDEO, HERRAMIENTAS } from "@/lib/herramientas";
 import { PropChallengeSimulator } from "@/components/marketing/PropChallengeSimulator";
 import { MetricsShowcaseNew } from "@/components/marketing/MetricsShowcaseNew";
 import { Pricing } from "@/components/marketing/Pricing";
+import { PricingFAQ } from "@/components/marketing/PricingFAQ";
 import { GuardianNew } from "@/components/marketing/GuardianNew";
 import { ProductShowcase } from "@/components/marketing/ProductShowcase";
 import { Hero } from "@/components/marketing/Hero";
@@ -25,6 +26,7 @@ import { ThemeProvider } from "@/lib/theme";
 import { ProfileSelector } from "@/components/marketing/ProfileSelector";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { Comparison } from "@/components/marketing/Comparison";
+import { BetaStatus } from "@/components/beta/BetaStatus";
 import { pricingFaq } from "@/lib/faq";
 import { LAMINAS_PRODUCTO } from "@/lib/laminas";
 import { SALTOS_TECLADO } from "@/lib/saltos-teclado";
@@ -96,9 +98,23 @@ describe("cada idioma nombra las cosas de una sola forma", () => {
     expect(cierre).not.toMatch(/\bLaunch\b/);
   });
 
-  it("italiano: «diario di trading», no «trading journal», en la portada y la comparativa", () => {
+  it("italiano: «diario di trading», no «trading journal», en la portada, la comparativa, el estado y las preguntas de precios", () => {
     expect(texto("it", createElement(Hero))).not.toMatch(/\bjournal\b/i);
     expect(texto("it", createElement(Comparison))).not.toMatch(/\bjournal\b/i);
+    expect(texto("it", createElement(BetaStatus))).not.toMatch(/\bjournal\b/i);
+    for (const { q, a } of pricingFaq("it")) expect(`${q} ${a}`).not.toMatch(/\bjournal\b/i);
+  });
+
+  it.each([
+    ["fr", /\bpérimètre\b/, /\bportée\b/],
+    ["it", /\bfunzionalità/, /\b(perimetro|ambito)\b/],
+  ] as const)("el «alcance» de los planes se dice igual en el menú, en precios y en sus preguntas (%s)", (lang, termino, otros) => {
+    const faq = PRODUCT_ITEMS.find((i) => i.href === "/faq")!;
+    const clave = `desc${lang[0].toUpperCase()}${lang[1]}` as "descFr" | "descIt";
+    for (const t of [faq[clave]!, texto(lang, createElement(Pricing)), texto(lang, createElement(PricingFAQ))]) {
+      expect(t).toMatch(termino);
+      expect(t).not.toMatch(otros);
+    }
   });
 
   it("italiano: la respuesta del precio lleva sus artículos", () => {
