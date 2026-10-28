@@ -88,11 +88,14 @@ function kvFalso() {
   };
 }
 
+/** Como lo pide el README: `openssl rand -hex 32`. */
+const TOKEN_ADMIN = "a".repeat(64);
+
 function entorno(extra: Record<string, unknown> = {}) {
   return {
     ALLOWED_ORIGINS: "https://mmortexx.github.io, https://countpips.com/",
     TURNSTILE_SECRET: "secreto-turnstile",
-    ADMIN_TOKEN: "token-admin",
+    ADMIN_TOKEN: TOKEN_ADMIN,
     RATE_LIMIT_SECONDS: "60",
     RATE_LIMIT_DAILY: "20",
     IP_HASH_SECRET: SECRETO_IP,
@@ -207,11 +210,25 @@ describe("CORS y rutas", () => {
   });
 
   it("un PATCH con el id mal codificado da 404, no un 500", async () => {
-    const cabeceras = { Origin: ORIGEN, Authorization: "Bearer token-admin" };
+    const cabeceras = { Origin: ORIGEN, Authorization: `Bearer ${TOKEN_ADMIN}` };
     const res = await worker.fetch(peticion("/v1/applications/%E0%A4%A", "PATCH", cabeceras), entorno());
     expect(res.status).toBe(404);
     conCors(res);
     expect(await res.json()).toEqual({ ok: false, error: "not_found" });
+  });
+
+  // Sin límite de intentos, un token corto se adivina probando: por debajo de 32
+  // caracteres el portal no se abre, ni con el token correcto.
+  it("un ADMIN_TOKEN corto no abre el portal ni con el token correcto", async () => {
+    for (const corto of ["token-admin", "x".repeat(31)]) {
+      const env = entorno({ ADMIN_TOKEN: corto });
+      const api = await worker.fetch(peticion("/v1/applications", "GET", { Origin: ORIGEN, Authorization: `Bearer ${corto}` }), env);
+      expect(api.status, corto).toBe(401);
+      const panel = await worker.fetch(peticion("/admin", "GET", { Authorization: `Basic ${btoa(`x:${corto}`)}` }), env);
+      expect(panel.status, corto).toBe(401);
+    }
+    const largo = await worker.fetch(peticion("/v1/applications", "GET", { Origin: ORIGEN, Authorization: `Bearer ${TOKEN_ADMIN}` }), entorno());
+    expect(largo.status).not.toBe(401); // pasa la puerta (la D1 falsa no sabe listar)
   });
 
   it("/health responde sin datos y el listado exige token", async () => {

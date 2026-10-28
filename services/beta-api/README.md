@@ -26,6 +26,8 @@ Servicio aislado para recibir solicitudes de beta y operar el portal interno. La
    npx wrangler secret put IP_HASH_SECRET
    ```
 
+   `ADMIN_TOKEN` también se genera con `openssl rand -hex 32`: las rutas de administración no limitan intentos, así que con menos de 32 caracteres el Worker no abre ni el portal ni `/admin`.
+
    `IP_HASH_SECRET` es una cadena larga y aleatoria (por ejemplo, la salida de `openssl rand -hex 32`) que no se usa para nada más. Con ella el Worker guarda de cada IP solo una huella (HMAC-SHA-256) en la columna `ip_hash` y en las claves del límite de peticiones. Sin el secreto, esa huella sería un simple sha256 y bastaría probar todas las IPv4 para saber a quién corresponde.
 
    Si falta, la IP no se guarda (`ip_hash` queda vacío), pero el límite por IP no puede funcionar y el alta responde `503 service_misconfigured`, igual que si faltara el KV. En local, `RATE_LIMIT_OPTIONAL=1` en `.dev.vars` permite probar sin él. Cambiar el secreto hace que las huellas nuevas no coincidan con las anteriores; no rompe nada más.

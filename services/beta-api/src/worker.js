@@ -156,8 +156,18 @@ async function constantTimeEqual(left, right) {
   return difference === 0;
 }
 
+/* Las rutas de administración no limitan intentos: un token corto se adivina
+   probando. Por debajo de 32 caracteres (`openssl rand -hex 32` da 64) no se
+   abren ni con el token correcto. */
+const MIN_ADMIN_TOKEN = 32;
+
+function adminToken(env) {
+  const token = String(env.ADMIN_TOKEN || "");
+  return token.length >= MIN_ADMIN_TOKEN ? token : "";
+}
+
 async function isAdmin(request, env) {
-  const expected = String(env.ADMIN_TOKEN || "");
+  const expected = adminToken(env);
   const authorization = request.headers.get("Authorization") || "";
   const token = authorization.startsWith("Bearer ") ? authorization.slice(7).trim() : "";
   return Boolean(expected && token && (await constantTimeEqual(token, expected)));
@@ -177,7 +187,7 @@ function parseBasicAuth(request) {
 }
 
 async function isAdminPanelAuthorized(request, env) {
-  const expected = String(env.ADMIN_TOKEN || "");
+  const expected = adminToken(env);
   if (!expected) return false;
   const credentials = parseBasicAuth(request);
   return Boolean(credentials && (await constantTimeEqual(credentials.pass, expected)));
