@@ -197,8 +197,10 @@ export function TraderProfileBody({ profile, terminos }: { profile: TraderProfil
               </div>
             </div>
 
-            <div className="tj-matriz grid-cols-1 border-b border-[var(--ficha-division)] sm:grid-cols-2 lg:grid-cols-4">
-              <div className="caja-cifra p-5">
+            {/* Sin ficha alrededor: la primera celda de cada fila va al filo de la
+                columna, como la barra del colchón de encima. */}
+            <div className="tj-matriz grid-cols-1 border-b border-[var(--ficha-division)] sm:grid-cols-2 lg:grid-cols-4 [&>*]:pl-0 sm:[&>*:nth-child(even)]:pl-5 lg:[&>*]:pl-5 lg:[&>*:nth-child(4n+1)]:pl-0">
+              <div className="caja-cifra py-5 pr-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs text-tertiary [&>span]:min-w-0">
                   <span>{es ? `Límite diario (${firm.dailyPct}\u00a0%)` : `Daily limit (${firm.dailyPct}%)`}</span>
                 </div>
@@ -210,7 +212,7 @@ export function TraderProfileBody({ profile, terminos }: { profile: TraderProfil
                 </p>
               </div>
 
-              <div className="caja-cifra p-5">
+              <div className="caja-cifra py-5 pr-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs text-tertiary [&>span]:min-w-0">
                   <span>{es ? `Drawdown máximo (${firm.maxDDPct}\u00a0%)` : `Max drawdown (${firm.maxDDPct}%)`}</span>
                 </div>
@@ -224,7 +226,7 @@ export function TraderProfileBody({ profile, terminos }: { profile: TraderProfil
                 </p>
               </div>
 
-              <div className="caja-cifra p-5">
+              <div className="caja-cifra py-5 pr-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs text-tertiary [&>span]:min-w-0">
                   <span>{es ? `Fase 1 (+${firm.phase1Pct}\u00a0%) ${firm.phase2Pct > 0 ? `/ F2 (+${firm.phase2Pct}\u00a0%)` : ""}` : `Phase 1 (+${firm.phase1Pct}%) ${firm.phase2Pct > 0 ? `/ P2 (+${firm.phase2Pct}%)` : ""}`}</span>
                 </div>
@@ -241,7 +243,7 @@ export function TraderProfileBody({ profile, terminos }: { profile: TraderProfil
                 </p>
               </div>
 
-              <div className="caja-cifra p-5">
+              <div className="caja-cifra py-5 pr-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs text-tertiary [&>span]:min-w-0">
                   <span>{es ? "Riesgo por operación" : "Risk per trade"} ({fmtPct(RIESGO_PCT / 100, lang, 2)})</span>
                 </div>
@@ -297,11 +299,10 @@ export function TraderProfileBody({ profile, terminos }: { profile: TraderProfil
               ))}
             </div>
 
-            <div className="tj-matriz grid-cols-1 border-b border-[var(--ficha-division)] md:grid-cols-3">
-              <div className="caja-cifra p-5">
+            <div className="tj-matriz grid-cols-1 border-b border-[var(--ficha-division)] md:grid-cols-3 [&>*]:pl-0 md:[&>*]:pl-5 md:[&>*:nth-child(3n+1)]:pl-0">
+              <div className="caja-cifra py-5 pr-5">
                 <span className="text-xs text-tertiary block mb-2">{es ? "Expectancy en R" : "Expectancy in R"}</span>
-                <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
-                  className="whitespace-nowrap font-semibold text-[rgb(var(--pnl-pos))] tnum">
+                <span className="cifra-xl whitespace-nowrap font-semibold text-[rgb(var(--pnl-pos))] tnum">
                   {es
                     ? (manualSetup === "breakout" ? "+0,84 R" : manualSetup === "sweep" ? "+0,97 R" : "+0,40 R")
                     : (manualSetup === "breakout" ? "+0.84 R" : manualSetup === "sweep" ? "+0.97 R" : "+0.40 R")}
@@ -315,10 +316,9 @@ export function TraderProfileBody({ profile, terminos }: { profile: TraderProfil
                 </span>
               </div>
 
-              <div className="caja-cifra p-5">
+              <div className="caja-cifra py-5 pr-5">
                 <span className="text-xs text-tertiary block mb-2">{es ? "Acierto y payoff" : "Win rate & payoff"}</span>
-                <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
-                  className="whitespace-nowrap font-semibold text-primary tnum">
+                <span className="cifra-xl whitespace-nowrap font-semibold text-primary tnum">
                   {es
                     ? (manualSetup === "breakout" ? "54\u00a0% · 1:2,4 R:R" : manualSetup === "sweep" ? "48\u00a0% · 1:3,1 R:R" : "61\u00a0% · 1:1,3 R:R")
                     : (manualSetup === "breakout" ? "54% · 1:2.4 R:R" : manualSetup === "sweep" ? "48% · 1:3.1 R:R" : "61% · 1:1.3 R:R")}
@@ -330,10 +330,9 @@ export function TraderProfileBody({ profile, terminos }: { profile: TraderProfil
                 </span>
               </div>
 
-              <div className="caja-cifra p-5">
+              <div className="caja-cifra py-5 pr-5">
                 <span className="text-xs text-tertiary block mb-2">{es ? "Cumplimiento de plan" : "Plan compliance"}</span>
-                <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
-                  className="whitespace-nowrap font-semibold text-primary tnum">
+                <span className="cifra-xl whitespace-nowrap font-semibold text-primary tnum">
                   {(manualSetup === "breakout" ? "92" : manualSetup === "sweep" ? "86" : "74") + (es ? "\u00a0%" : "%")}
                 </span>
                 {/* El color sigue al mensaje y va en la familia del semáforo, no
