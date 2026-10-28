@@ -97,6 +97,23 @@ describe.skipIf(!existsSync(OUT) && process.env.COMPROBAR_OUT !== "1")("polític
     expect(mal).toEqual([]);
   });
 
+  // Los datos estructurados van con `JSON.stringify` dentro de un <script>, que no
+  // escapa `<`: un texto con `</script>` cerraría el bloque y lo que siguiera sería HTML.
+  it("los datos estructurados son JSON válido y no pueden cerrar su <script>", () => {
+    const mal = html.flatMap(([ruta, h]) =>
+      [...h.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/gi)].flatMap(([, json]) => {
+        if (/</.test(json)) return [`${ruta}: lleva «<»`];
+        try {
+          JSON.parse(json);
+          return [];
+        } catch {
+          return [`${ruta}: no es JSON`];
+        }
+      }),
+    );
+    expect(mal).toEqual([]);
+  });
+
   it("al salir hacia otro sitio solo viaja el origen, nunca la ruta", () => {
     const mal = html
       .filter(([, h]) => !/<meta\s+name="referrer"\s+content="strict-origin-when-cross-origin"\s*\/?>/i.test(h))
