@@ -2009,8 +2009,15 @@ const RUTA_DEMO = /^\/(en\/)?demo\/$/;
           // La demo se carga aparte y monta su fila de pestañas después de
           // `load`: sin esperarla, la fila se medía unas veces sí y otras no.
           if (RUTA_DEMO.test(ruta)) {
-            if (await pagina.waitForSelector("#demo-tablist", { timeout: 20000 }).catch(() => null)) demosMontadas++;
-            else fallos.push(`estrecho ${ruta}: la demo no montó su fila de pestañas en 20 s`);
+            const fila = await pagina.waitForSelector("#demo-tablist", { timeout: 20000 }).catch(() => null);
+            if (!fila) fallos.push(`estrecho ${ruta}: la demo no montó su fila de pestañas en 20 s`);
+            else {
+              demosMontadas++;
+              // Son cuatro iconos de 44 px: caben. Si sobran unos píxeles, el
+              // difuminado de «sigue» cae entero sobre el último y parece apagado.
+              const sobra = await fila.evaluate((l) => l.scrollWidth - l.clientWidth);
+              if (sobra >= 2) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px las pestañas de la demo no caben por ${sobra} px y el difuminado vela la última`);
+            }
           }
           await pagina.addStyleTag({ content: ".cv-auto{content-visibility:visible!important}" });
           const r = await pagina.evaluate(async () => {
