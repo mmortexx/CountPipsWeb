@@ -63,8 +63,8 @@ export function GlosarioIndice() {
               onChange={(e) => setQ(e.target.value)}
               placeholder={
                 es
-                  ? "Busca por nombre o por lo que significa…"
-                  : "Search by name or by what it means…"
+                  ? "Busca un término o una idea…"
+                  : "Search a term or an idea…"
               }
               className="h-12 w-full tj-campo px-5 text-base sm:text-[15px] text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[var(--line-2)] focus:bg-[var(--bg)]"
             />

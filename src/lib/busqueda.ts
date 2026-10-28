@@ -26,7 +26,7 @@ export function coincide(consulta: string, ...textos: string[]): boolean {
 type VozBuscable = { term: string; nombreEs?: string; slug: string };
 
 /**
- * Adónde lleva la caja de la página 404 («Métrica o pregunta…»): a la voz del
+ * Adónde lleva la caja de la página 404 («Métrica o duda…»): a la voz del
  * glosario si la consulta es su nombre en cualquier idioma, su sigla o lo que
  * va entre paréntesis («MAE (Maximum Adverse Excursion)»), o si es parte del
  * nombre de una sola voz («sharpe»); si no, a la FAQ filtrada. Recibe los

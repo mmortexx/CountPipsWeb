@@ -3,7 +3,7 @@ import { destinoDeBusqueda } from "@/lib/busqueda";
 import { TERMINOS } from "@/lib/glosario";
 
 /**
- * La caja de la página 404 dice «Métrica o pregunta…»: una métrica tiene que
+ * La caja de la página 404 dice «Métrica o duda…»: una métrica tiene que
  * llevar a su voz del glosario, y el resto a la FAQ filtrada.
  */
 describe("destinoDeBusqueda", () => {
