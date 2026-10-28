@@ -43,6 +43,13 @@ describe("flujos de GitHub Actions", () => {
     expect(mal).toEqual([]);
   });
 
+  it("antes de publicar, las dependencias de la web no tienen avisos graves", () => {
+    const despliegue = flujos.find(([n]) => n === "deploy.yml")![1];
+    const auditoria = despliegue.search(/run:\s*bun audit --prod --audit-level=high\s*$/m);
+    expect(auditoria).toBeGreaterThan(0);
+    expect(auditoria).toBeLessThan(despliegue.search(/run:\s*bun run build/));
+  });
+
   it("el checkout no deja el token guardado en el disco", () => {
     for (const [n, t] of flujos) {
       for (const m of t.matchAll(/uses:\s*actions\/checkout@[^\n]*\n((?:\s+[^\n]*\n){0,3})/g)) {

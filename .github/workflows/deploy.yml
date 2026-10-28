@@ -74,6 +74,11 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      # Lo que viaja a la web (dependencias, no las de desarrollo) sin avisos de
+      # seguridad graves. Si uno aparece, se actualiza antes de publicar.
+      - name: Dependencias sin avisos graves
+        run: bun audit --prod --audit-level=high
+
       # Barreras antes de publicar. Hasta ahora el despliegue sólo hacía
       # `build`, y con `typescript.ignoreBuildErrors: true` en next.config
       # eso significaba que NADA impedía publicar el sitio roto. Estos dos
