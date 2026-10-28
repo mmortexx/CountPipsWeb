@@ -150,16 +150,27 @@ así que el mapa del sitio no lo anuncia nadie. Con el dominio, en este orden:
 
 ## Cabeceras
 
-`public/_headers` lleva las cabeceras de seguridad y de caché, incluida la
-`Content-Security-Policy` (restringe scripts/conexiones a los dominios que el
-sitio usa de verdad: Turnstile, Web3Forms, Apps Script; el Worker de acceso
-anticipado solo si la compilación lo usa, que entonces añade su dirección). Lo lee
-Cloudflare; GitHub Pages lo ignora porque no permite configurarlas — así que
-la copia de GitHub Pages **no lleva CSP ni el resto de estas cabeceras**, y
-ese fichero no puede romper la publicación antigua. Es una de las cosas que se
-ganan con este cambio. Como solo se aplica en el dominio, cada PR recorre el
-sitio con esas cabeceras puestas (`scripts/cabeceras.mjs`): un servicio externo
-nuevo que falte en la CSP se ve ahí y no el día del lanzamiento.
+`public/_headers` lleva las cabeceras de seguridad y de caché. Lo lee
+Cloudflare; GitHub Pages lo ignora porque no permite configurarlas.
+
+La política de contenido (CSP) sale de `src/lib/csp.ts` y llega por dos vías:
+
+- **En cada página**, como `<meta http-equiv>`, con la huella de cada script
+  en línea de esa página y sin `'unsafe-inline'`. Es la que protege la copia de
+  GitHub Pages, y en el dominio propio se suma a la de la cabecera.
+- **En `out/_headers`**, que `postbuild.mjs` rellena. Añade `frame-ancestors`
+  (que una `<meta>` no puede aplicar) y el resto de cabeceras.
+
+Las dos solo abren los terceros que la compilación usa: Web3Forms siempre, y
+Turnstile, la hoja o el Worker si su variable está definida. Una dirección de
+destino que no sea `https` rompe la compilación.
+
+Lo que GitHub Pages **no** puede dar y el dominio propio sí: impedir que otra
+web incruste la página en un marco (`frame-ancestors`, `X-Frame-Options`),
+`X-Content-Type-Options`, `Permissions-Policy`, COOP/CORP y un HSTS propio
+(`github.io` ya va en la lista HSTS de los navegadores). Cada PR recorre el
+sitio con las dos políticas puestas (`scripts/cabeceras.mjs`, en las dos
+compilaciones): un servicio externo nuevo que falte se ve ahí y no en público.
 
 ---
 

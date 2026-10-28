@@ -74,8 +74,8 @@ jobs:
 
       # Las pruebas que leen `out/`: en el paso «Pruebas» se saltan porque aún
       # no está compilado. Aquí, con `COMPROBAR_OUT=1`, sin `out/` fallan.
-      - name: Pruebas sobre el sitio compilado (idiomas nuevos, formulario, acceso y tarjetas)
-        run: COMPROBAR_OUT=1 bunx vitest run tests/idiomas-nuevos.test.ts tests/formulario-declarado.test.ts tests/acceso-enlazado.test.ts tests/tarjeta-seccion.test.ts
+      - name: Pruebas sobre el sitio compilado (idiomas nuevos, formulario, acceso, tarjetas y política de contenido)
+        run: COMPROBAR_OUT=1 bunx vitest run tests/idiomas-nuevos.test.ts tests/formulario-declarado.test.ts tests/acceso-enlazado.test.ts tests/tarjeta-seccion.test.ts tests/csp-pagina.test.ts
 
       - name: Instalar navegador de pruebas
         run: bunx playwright install --with-deps chromium
@@ -93,6 +93,11 @@ jobs:
 
       - name: Recorrido con teclado
         run: node scripts/teclado.mjs --serve out
+
+      # La política de contenido de cada página (la única que tiene GitHub Pages)
+      # y la de `_headers`, en los dos temas: nada de lo que el sitio usa, bloqueado.
+      - name: Política de contenido
+        run: node scripts/cabeceras.mjs --serve out
 
   # El sitio tal como se servirá en el dominio propio (Cloudflare Pages): en la
   # raíz, sin prefijo, y con la dirección oficial nueva. Nadie lo compila así

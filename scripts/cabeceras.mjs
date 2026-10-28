@@ -7,10 +7,13 @@
  * partes y fallaría por primera vez el día del lanzamiento, en público.
  *
  * Aplica las cabeceras del bloque `/*` a todas las respuestas, abre cada
- * página del export (más la 404), recorre las pestañas de la demo y escucha el
- * evento `securitypolicyviolation` del navegador. Falla si `_headers` no
- * declara una CSP o si alguna página dispara un bloqueo. No mide Turnstile:
- * solo se carga al empezar a rellenar /beta, y aquí no se rellena nada.
+ * página del export (más la 404) en los dos temas, recorre las pestañas de la
+ * demo y escucha el evento `securitypolicyviolation` y la consola. Así mide a
+ * la vez la política de cabecera (dominio propio) y la de la `<meta>` de cada
+ * página (la única que tiene GitHub Pages): el navegador aplica las dos. Si la
+ * compilación lleva clave de Turnstile, empieza a rellenar /beta para que se
+ * cargue el widget. Falla si `_headers` no declara una CSP o si alguna página
+ * dispara un bloqueo.
  *
  * Uso:  node scripts/cabeceras.mjs --serve out
  */
@@ -101,25 +104,47 @@ const paginas = [];
 })(RAIZ);
 paginas.push("/no-existe/");
 
+const TURNSTILE = /challenges\.cloudflare\.com/.test(CABECERAS["Content-Security-Policy"]);
+const TEMAS = ["light", "dark"];
+const cola = TEMAS.flatMap((tema) => paginas.map((ruta) => [ruta, tema]));
+
 const navegador = await chromium.launch();
 const bloqueos = [];
 let siguiente = 0;
 let demoRecorrida = 0;
+let turnstileCargado = false;
 
 await Promise.all(
   Array.from({ length: 6 }, async () => {
-    const ctx = await navegador.newContext();
-    await ctx.addInitScript(() => {
-      document.addEventListener("securitypolicyviolation", (e) => {
-        (window.__bloqueos ??= []).push(`${e.violatedDirective} ${e.blockedURI}`);
-      });
-    });
-    while (siguiente < paginas.length) {
-      const ruta = paginas[siguiente++];
-      const pagina = await ctx.newPage();
+    const contextos = {};
+    for (const tema of TEMAS) {
+      const ctx = (contextos[tema] = await navegador.newContext({ colorScheme: tema }));
+      await ctx.addInitScript((t) => {
+        try {
+          localStorage.setItem("tj-theme", t);
+        } catch {}
+        document.addEventListener("securitypolicyviolation", (e) => {
+          (window.__bloqueos ??= []).push(`${e.violatedDirective} ${e.blockedURI}`);
+        });
+      }, tema);
+    }
+    while (siguiente < cola.length) {
+      const [ruta, tema] = cola[siguiente++];
+      const pagina = await contextos[tema].newPage();
       const errores = [];
       pagina.on("pageerror", (e) => errores.push(`error de JavaScript: ${e.message.slice(0, 120)}`));
+      pagina.on("console", (m) => {
+        if (/Content.Security.Policy|Refused to/i.test(m.text())) errores.push(`consola: ${m.text().slice(0, 160)}`);
+      });
       await pagina.goto(BASE + ruta, { waitUntil: "networkidle" });
+      if (TURNSTILE && /^\/beta\/$/.test(ruta)) {
+        // El widget solo se carga al empezar a rellenar el formulario.
+        await pagina.focus("form input:not([type=hidden])").catch(() => errores.push("/beta sin campos que enfocar"));
+        turnstileCargado ||= await pagina
+          .waitForSelector('iframe[src*="challenges.cloudflare.com"]', { state: "attached", timeout: 15000 })
+          .then(() => pagina.waitForTimeout(2000))
+          .then(() => true, () => false);
+      }
       if (/\/demo\/$/.test(ruta)) {
         // La demo monta sus pestañas al hidratar; sin ellas no se ha recorrido nada.
         await pagina
@@ -142,18 +167,25 @@ await Promise.all(
         await pagina.waitForTimeout(300);
       }
       const vistos = await pagina.evaluate(() => window.__bloqueos ?? []);
-      for (const b of [...new Set([...vistos, ...errores])]) bloqueos.push(`${ruta}  ${b}`);
+      for (const b of [...new Set([...vistos, ...errores])]) bloqueos.push(`${ruta} (${tema})  ${b}`);
       await pagina.close();
     }
-    await ctx.close();
+    for (const ctx of Object.values(contextos)) await ctx.close();
   }),
 );
 await navegador.close();
 servidor.close();
 
 console.log(
-  `[cabeceras] ${paginas.length} páginas con ${Object.keys(CABECERAS).length} cabeceras de _headers; ${demoRecorrida} pestañas de la demo abiertas`,
+  `[cabeceras] ${paginas.length} páginas × ${TEMAS.length} temas con ${Object.keys(CABECERAS).length} cabeceras de _headers y la política de cada página; ${demoRecorrida} pestañas de la demo abiertas`,
 );
+if (TURNSTILE) {
+  console.log(
+    turnstileCargado
+      ? "[cabeceras] Turnstile cargado en /beta y medido"
+      : "[cabeceras] aviso — Turnstile no llegó a cargar en /beta (¿sin red?): no queda medido",
+  );
+}
 if (demoRecorrida === 0) bloqueos.push("(demo)  no se abrió ninguna pestaña de la demo");
 if (bloqueos.length) {
   console.log(`[cabeceras] FALLO — ${bloqueos.length} bloqueo(s) de la política de contenido:`);
