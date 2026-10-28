@@ -38,5 +38,15 @@ describe.skipIf(!existsSync(join(OUT, "index.html")) && process.env.COMPROBAR_OU
       const encontradas = leidas.get(ruta)!;
       expect(encontradas).toEqual([tarjeta, tarjeta]);
     });
+
+    // La tarjeta heredada lleva el texto alternativo de la página que la genera.
+    it.each(CASOS)("%s lleva el texto alternativo de %s", (ruta, tarjeta) => {
+      const alts = (html: string) =>
+        [...html.matchAll(/<meta (?:property="og:image:alt"|name="twitter:image:alt") content="([^"]*)"/g)].map((m) => m[1]);
+      const duena = readFileSync(join(OUT, tarjeta.replace(/^\//, "").replace(/opengraph-image\.png$/, "index.html")), "utf8");
+      const [alt] = alts(duena);
+      expect(alt).toBeTruthy();
+      expect(alts(readFileSync(join(OUT, ruta, "index.html"), "utf8"))).toEqual([alt, alt]);
+    });
   },
 );
