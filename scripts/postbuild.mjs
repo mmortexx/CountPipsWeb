@@ -1,13 +1,15 @@
 /**
  * Retoques sobre el sitio ya exportado (`out/`), ejecutados desde el script
  * `build`: el `lang` de las páginas inglesas, los ficheros de precarga con el
- * nombre que pide el navegador y las tarjetas sociales. Si algo no sale bien
+ * nombre que pide el navegador, las tarjetas sociales y la política de
+ * contenido de cada página y de `_headers`. Si algo no sale bien
  * rompe la compilación en vez de publicar el fallo.
  */
 import { readdir, readFile, writeFile, copyFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { TABLA_IDIOMAS } from "../src/lib/locale.ts";
-import { cabecerasConWorker } from "../src/lib/csp.ts";
+import nextEnv from "@next/env";
+import { cabecerasConPolitica, conPoliticaEnMeta, entornoDeCompilacion, politica } from "../src/lib/csp.ts";
 
 const OUT = "out";
 
@@ -282,11 +284,24 @@ console.log(
     `${conExtension} página(s) reescritas, ${conImagenAnadida} que no tenían imagen ya la tienen.`
 );
 
-/* 4 · La CSP del dominio propio deja conectar con el Worker de acceso
-   anticipado solo si esta compilación lo usa, y solo con su origen. */
-const urlWorker = (process.env.NEXT_PUBLIC_BETA_API_URL ?? "").trim();
-if (urlWorker) {
-  const rutaCabeceras = join(OUT, "_headers");
-  await writeFile(rutaCabeceras, cabecerasConWorker(await readFile(rutaCabeceras, "utf8"), urlWorker));
-  console.log(`[postbuild] CSP: connect-src admite ${new URL(urlWorker).origin}.`);
+/* 4 · La política de contenido (src/lib/csp.ts): en cada página, con la huella
+   de sus scripts en línea, porque GitHub Pages no deja poner cabeceras; y en
+   `_headers` para el dominio propio. Solo abre los destinos que esta
+   compilación usa. Va al final: cualquier retoque posterior del HTML cambiaría
+   las huellas. */
+// Los mismos `.env*` que leyó `next build` (este es otro proceso): sin esto, una
+// dirección puesta solo en `.env.local` viajaría en el JS y la política la bloquearía.
+nextEnv.loadEnvConfig(process.cwd());
+const entorno = entornoDeCompilacion(process.env);
+const rutaCabeceras = join(OUT, "_headers");
+await writeFile(rutaCabeceras, cabecerasConPolitica(await readFile(rutaCabeceras, "utf8"), entorno));
+const conPolitica = await ficheros(OUT, (n) => n.endsWith(".html"));
+for (const f of conPolitica) {
+  try {
+    await writeFile(f, conPoliticaEnMeta(await readFile(f, "utf8"), entorno), "utf8");
+  } catch (e) {
+    console.error(`[postbuild] ${f}: ${e.message}`);
+    process.exit(1);
+  }
 }
+console.log(`[postbuild] CSP: ${conPolitica.length} página(s) con su política; connect-src ${politica(entorno, []).match(/connect-src ([^;]*)/)[1]}.`);

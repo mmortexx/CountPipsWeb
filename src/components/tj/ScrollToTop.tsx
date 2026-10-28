@@ -21,7 +21,12 @@ export function ScrollToTop() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const hash = decodeURIComponent(window.location.hash.replace("#", ""));
+    let hash = window.location.hash.replace("#", "");
+    try {
+      hash = decodeURIComponent(hash);
+    } catch {
+      // Ancla mal codificada (`#%`): se busca tal cual en vez de tumbar la página.
+    }
 
     if (!hash) {
       // `auto` evita pelear con la restauración nativa del navegador.

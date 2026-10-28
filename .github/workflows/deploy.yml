@@ -62,17 +62,24 @@ jobs:
       NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: 1.3.14
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
+
+      # Lo que viaja a la web (dependencias, no las de desarrollo) sin avisos de
+      # seguridad graves. Si uno aparece, se actualiza antes de publicar; si aún
+      # no tiene arreglo y no afecta a un sitio estático, `--ignore=<GHSA-…>`
+      # aquí y en comprobar.yml, con su porqué.
+      - name: Dependencias sin avisos graves
+        run: bun audit --prod --audit-level=high
 
       # Barreras antes de publicar. Hasta ahora el despliegue sólo hacía
       # `build`, y con `typescript.ignoreBuildErrors: true` en next.config
@@ -102,7 +109,8 @@ jobs:
         # sitio estático en ./out/, que es lo que Pages sirve.
         # `postbuild.mjs` retoca ese `out/` (el `lang` de las páginas
         # traducidas, los ficheros de precarga, las tarjetas sociales y la
-        # CSP de `_headers`) y rompe la compilación si algo no sale bien.
+        # política de contenido de cada página y de `_headers`) y rompe la
+        # compilación si algo no sale bien.
         run: bun run build
         env:
           # PREFIJO DE RUTAS — solo para GitHub Pages.
@@ -190,8 +198,8 @@ jobs:
 
       # Las pruebas que leen `out/`: en el paso «Pruebas» se saltan porque aún
       # no está compilado. Aquí, con `COMPROBAR_OUT=1`, sin `out/` fallan.
-      - name: Pruebas sobre el sitio compilado (idiomas nuevos, formulario, acceso y tarjetas)
-        run: COMPROBAR_OUT=1 bunx vitest run tests/idiomas-nuevos.test.ts tests/formulario-declarado.test.ts tests/acceso-enlazado.test.ts tests/tarjeta-seccion.test.ts
+      - name: Pruebas sobre el sitio compilado (idiomas nuevos, formulario, acceso, tarjetas y política de contenido)
+        run: COMPROBAR_OUT=1 bunx vitest run tests/idiomas-nuevos.test.ts tests/formulario-declarado.test.ts tests/acceso-enlazado.test.ts tests/tarjeta-seccion.test.ts tests/csp-pagina.test.ts
 
       - name: Instalar navegador de pruebas
         run: bunx playwright install --with-deps chromium
@@ -213,6 +221,11 @@ jobs:
       - name: Recorrido con teclado
         run: node scripts/teclado.mjs --serve out
 
+      # La política de contenido de cada página (la única que tiene GitHub Pages)
+      # y la de `_headers`, en los dos temas: nada de lo que el sitio usa, bloqueado.
+      - name: Política de contenido
+        run: node scripts/cabeceras.mjs --serve out
+
       - name: Disable Jekyll + add nojekyll
         # GitHub Pages procesa el contenido con Jekyll por defecto.
         # Jekyll ignora directorios que empiezan por `_`, lo cual
@@ -222,7 +235,7 @@ jobs:
         run: touch out/.nojekyll
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v5
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         # `include-hidden-files` NO es opcional aquí. Desde la v4 esta
         # acción empaqueta con `--exclude=.[^/]*`, y eso se lleva por
         # delante el `.nojekyll` que acaba de crear el paso anterior.
@@ -244,8 +257,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Setup Pages
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

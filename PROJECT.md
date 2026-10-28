@@ -27,6 +27,11 @@ Windows (WinUI 3, en otro repositorio).
   `services/beta-api/` (D1, KV, Turnstile), el Apps Script de
   `docs/waitlist-apps-script.js` o, sin ninguno, por Web3Forms al correo
   (`DESPLIEGUE.md`).
+- **Política de contenido**: una sola fuente, `src/lib/csp.ts`. `postbuild.mjs` la
+  escribe en cada página como `<meta>` con la huella de sus scripts en línea (sin
+  `'unsafe-inline'`; GitHub Pages no deja cabeceras) y en `out/_headers` para el
+  dominio propio. Un script en línea nuevo no necesita nada: su huella sale sola.
+  Un tercero nuevo (script, conexión, frame) se añade en `csp.ts` o lo bloquea.
 
 ## Sistema de diseño
 
@@ -99,7 +104,7 @@ Si el cambio se ve, además las auditorías sobre el sitio compilado (`out/`). C
 script explica en su cabecera qué mide. El CI corre en cada PR y antes de publicar las
 cinco que no abren navegador (`metadatos`, `enlaces`, `cifras`, `rotulos`, `equipaje`),
 las pruebas que leen `out/` (con `COMPROBAR_OUT=1`, que convierte su ausencia en fallo) y
-`humo`, `toque`, `alto-contraste` y `teclado`; las demás se pasan en local:
+`humo`, `toque`, `alto-contraste`, `teclado` y `cabeceras`; las demás se pasan en local:
 
 ```bash
 node scripts/humo.mjs --serve out          # contraste, entradas, menú, sin JavaScript; a 320 px, desborde, miga, pestañas que se deslizan con aviso y texto espaciado (WCAG 1.4.12), sin partir cifras entre dígitos, con las cifras de cada fila de casillas a la misma altura y, de 320 a 390 px, sin partir un rótulo de casilla a mitad de palabra, y sin cortar el texto de ejemplo de un campo; letra de la demo ≥ 11 px
@@ -127,7 +132,7 @@ node scripts/deslizadores.mjs --serve out  # relleno, marcas y alturas de los de
 node scripts/viudas.mjs --serve out        # titulares sin palabra sola al final
 node scripts/teclado.mjs --serve out       # todo el sitio sin ratón; los atajos de una tecla se apagan
 node scripts/toque.mjs --serve out         # zona que recoge el dedo, medida en móvil táctil: 44 px de alto
-node scripts/cabeceras.mjs --serve out     # nada bloqueado por la CSP de `_headers` (dominio propio)
+node scripts/cabeceras.mjs --serve out     # nada bloqueado por la CSP de `_headers` ni la de cada página, en los dos temas y con la demo; con clave de Turnstile, falla si el widget no carga en /beta (necesita red)
 node scripts/corrobora-menus.mjs --base <url>  # menús; contra `npx serve out` (sin -s)
 node scripts/barrido-rueda.mjs --base <url>    # ningún recuadro atrapa la rueda del ratón; mismo servidor
 ```

@@ -18,6 +18,18 @@ updates:
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
 
+  # El Worker de acceso anticipado (`services/beta-api`) tiene su propio lockfile.
+  - package-ecosystem: "bun"
+    directory: "/services/beta-api"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 1
+    groups:
+      worker:
+        patterns: ["*"]
+
+  # Las acciones van fijadas a su commit; Dependabot sube commit y comentario juntos.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

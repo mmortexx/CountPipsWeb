@@ -23,8 +23,12 @@
   Referrer-Policy: strict-origin-when-cross-origin
   # Se renuncia explícitamente a permisos que este sitio no usa. Si
   # alguna dependencia intentara pedir cámara o micrófono, el navegador
-  # lo deniega sin preguntar al visitante.
-  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  # lo deniega sin preguntar al visitante. Solo el portapapeles (botones
+  # «Copiar») queda fuera de la lista. Solo nombres que reconoce el
+  # Chromium de Linux del CI: uno desconocido sale como error en la consola
+  # y `scripts/cabeceras.mjs` falla. Por eso no está `bluetooth`: el
+  # Chromium de Windows lo reconoce y el de Linux no.
+  Permissions-Policy: accelerometer=(), browsing-topics=(), camera=(), display-capture=(), geolocation=(), gyroscope=(), hid=(), idle-detection=(), local-fonts=(), magnetometer=(), microphone=(), midi=(), payment=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), usb=(), window-management=(), xr-spatial-tracking=()
   # Le dice al navegador que memorice, un año entero, que este dominio se
   # sirve por HTTPS y que nunca debe intentar la versión sin cifrar — ni
   # siquiera si alguien teclea `http://` a mano o un enlace viejo lo
@@ -39,30 +43,15 @@
   # esté ya estable en `countpips.com`, como paso deliberado y no como
   # efecto secundario de esta cabecera.
   Strict-Transport-Security: max-age=31536000; includeSubDomains
-  # Restringe desde dónde puede cargar el sitio scripts, estilos,
-  # conexiones y frames, a los dominios que el sitio usa de verdad:
-  # Turnstile (verificación anti-bot de /beta), Web3Forms (contacto y
-  # acceso anticipado) y el Apps Script de Google (destino opcional de
-  # /beta; responde redirigiendo a script.googleusercontent.com, por eso
-  # los dos van en connect-src y ninguno en script-src). Todo lo demás
-  # queda bloqueado — así un XSS reflejado o almacenado no puede cargar un
-  # <script src="dominio-arbitrario">.
-  #
-  # 'unsafe-inline' en script-src y style-src es una concesión deliberada,
-  # no un descuido: esta es una exportación estática de Next.js App
-  # Router (output: "export"), que hornea en cada página scripts inline
-  # sin nonce (hidratación RSC, anti-FOUC de tema, corrección de idioma
-  # bajo /en) y atributos style="" inline (gradientes, variables CSS). Sin
-  # servidor dinámico no hay forma de emitir un nonce por petición, y
-  # enumerar hashes para docenas de scripts que cambian en cada build no
-  # es viable sin tooling adicional.
-  #
-  # El Worker de acceso anticipado no va aquí: si la compilación lo usa
-  # (NEXT_PUBLIC_BETA_API_URL), `scripts/postbuild.mjs` añade su origen
-  # exacto a connect-src en `out/_headers` (`src/lib/csp.ts`). Así no queda
-  # abierto ningún Worker ajeno mientras no se use, y el día que se
-  # configure no lo bloquea la CSP.
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.web3forms.com https://script.google.com https://script.googleusercontent.com https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  # La política de contenido la escribe `scripts/postbuild.mjs` en
+  # `out/_headers` desde `src/lib/csp.ts`, la misma fuente que la que
+  # lleva cada página en su `<meta>`: solo abre los terceros que la
+  # compilación usa (Web3Forms, y Turnstile, la hoja o el Worker si están
+  # configurados). Aquí los scripts van con 'unsafe-inline' porque una
+  # cabecera no cabe con las huellas de cada página; el navegador aplica
+  # también la de la página, que no lo lleva, y manda la más estricta.
+  # Esta añade lo que una <meta> no puede: frame-ancestors.
+  Content-Security-Policy: (la escribe scripts/postbuild.mjs)
   # Ninguna ventana abierta desde otro sitio puede tocar esta (ni al
   # revés), y ningún otro sitio puede incrustar nuestros ficheros.
   Cross-Origin-Opener-Policy: same-origin
