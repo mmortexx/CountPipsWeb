@@ -482,7 +482,7 @@ for (const [clase, casos] of fallos) {
   if (casos.length > 6) console.log(`     … y ${casos.length - 6} más`);
 }
 
-console.log(`\n[rejillas] ${RUTAS.length} páginas × ${ANCHOS.length} anchos · ${rejillas} rejillas de varias filas medidas · ${columnadasTotal} de tres columnas o más, con su compás · ${filetesTotal} filetes · ${filasCifraTotal} filas de cifras`);
+console.log(`\n[rejillas] ${RUTAS.length} páginas × ${ANCHOS.length} anchos · ${rejillas} rejillas de varias filas medidas · ${columnadasTotal} de tres columnas o más, con su compás · ${filetesTotal} filetes · ${filasCifraTotal} filas de cifras · ${matricesSueltasTotal} matrices sin ficha`);
 if (filasCifraTotal < 50) {
   console.log(`[rejillas] solo ${filasCifraTotal} filas de cifras: la comprobación de compás de cifras no está mirando`);
   process.exit(1);
