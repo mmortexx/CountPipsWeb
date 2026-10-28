@@ -41,20 +41,20 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "question about how trading felt today, which is recorded against the day’s trades.",
     notaPt:
       "Abaixo do formulário de registro, a tela Resumo se divide em duas: a curva de " +
-      "desempenho com as áreas de drawdown sombreadas e o saldo em linha pontilhada, e o " +
+      "desempenho com as áreas de drawdown sombreadas e o saldo em linha tracejada, e o " +
       "calendário do mês com o resultado de cada dia e o total de cada semana. Acima, o " +
       "briefing de hoje — o que seu histórico diz antes de operar —, os avisos de comportamento " +
       "e uma pergunta sobre como você se sentiu operando hoje, registrada nas operações do dia.",
     notaFr:
       "Sous le formulaire de saisie, l’écran Tableau de bord se divise en deux\u00a0: la courbe de " +
-      "performance avec ses zones de drawdown grisées et le solde en pointillés, et le " +
+      "performance avec ses zones de drawdown grisées et le solde en tirets, et le " +
       "calendrier du mois avec le résultat de chaque jour et le total de chaque semaine. Au-dessus, " +
       "le briefing du jour — ce que votre historique dit de la séance avant de trader —, les " +
       "alertes de comportement et une question sur votre ressenti de trading aujourd’hui, " +
       "enregistrée avec les opérations du jour.",
     notaDe:
       "Unter dem Erfassungsformular teilt sich die Übersicht in zwei Bereiche: die Performancekurve " +
-      "mit schattierten Drawdown-Zonen und gepunkteter Kontostandslinie sowie der Monatskalender " +
+      "mit schattierten Drawdown-Zonen und gestrichelter Kontostandslinie sowie der Monatskalender " +
       "mit dem Tagesergebnis und dem Wochentotal. Darüber das heutige Briefing — was Ihre Historie " +
       "vor dem Handeln über den Tag sagt —, Verhaltenshinweise und eine Frage zum heutigen Befinden, " +
       "die bei den Tages-Trades erfasst wird.",
@@ -84,13 +84,13 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "acumulado semanal na margem e o melhor e pior dia no rodapé.",
     altFr:
       "Écran de vue d’ensemble\u00a0: en haut, la fin du briefing du jour avec les indications de " +
-      "l’historique et une question pour évaluer de « très mal » à « très bien » le ressenti de " +
+      "l’historique et une question pour évaluer de «\u00a0très mal\u00a0» à «\u00a0très bien\u00a0» le ressenti de " +
       "la séance, aux côtés des alertes de comportement\u00a0; en bas, la courbe de performance avec " +
       "les cases de performance et de solde, et un calendrier mensuel avec les gains ou pertes " +
       "de chaque jour, le total hebdomadaire dans la marge et le meilleur et pire jour au bas.",
     altDe:
       "Übersichtsbildschirm: oben das Tages-Briefing mit Hinweisen aus der Historie und einer " +
-      "Bewertungsskala von «sehr schlecht» bis «sehr gut» zum Befinden beim Trading neben den " +
+      "Bewertungsskala von „sehr schlecht“ bis „sehr gut“ zum Befinden beim Trading neben den " +
       "Verhaltenshinweisen; darunter die Performancekurve mit Kontrollkästchen für Performance " +
       "und Kontostand sowie ein Monatskalender mit Gewinn oder Verlust jedes Tages, Wochensummen " +
       "am Rand und bestem sowie schlechtestem Tag am Fuß.",
@@ -153,10 +153,10 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "Einstieg, Stop, Ziel und Ausstieg neben einem großen Bereich zum Ablegen oder Einfügen " +
       "von Chart-Screenshots. Während Sie tippen, berechnet sich das Risiko in Geld und als " +
       "Kontoprozentsatz auf einer Leiste von Stop bis 1 R neu, und ein Hinweis vergleicht Ihre " +
-      "Positionsgröße mit Halb-Kelly. Alles andere misst genau das, was hier erfasst wird.",
+      "Positionsgröße mit Halb-Kelly. Alles andere – der Rest dieser Ansicht und die zehn anderen – misst genau das, was hier erfasst wird.",
     notaIt:
       "Il modulo occupa l’intero schermo di proposito: strumento, direzione, ingresso, stop, " +
-      "target e uscita, accanto a un’ampia area in cui trascinare o incollare le catture del " +
+      "target e uscita, accanto a un’ampia area in cui trascinare o incollare gli screenshot del " +
       "grafico. Mentre scrivi, il rischio viene ricalcolato in denaro e in percentuale del conto " +
       "su un righello dallo stop a 1 R, e una nota posiziona la tua taglia rispetto al mezzo Kelly. " +
       "Tutto il resto — il resto di questa schermata e le altre dieci — misura ciò che viene inserito qui.",
@@ -183,18 +183,18 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "e botões para adicionar detalhes, calcular lote, salvar rascunho, «Vi e não entrei» e " +
       "registrar a operação. Abaixo, linha com as métricas da conta.",
     altFr:
-      "Formulaire de saisie sous la question « Qu’avez-vous tradé aujourd’hui\u00a0? »\u00a0: à gauche, " +
+      "Formulaire de saisie sous la question «\u00a0Qu’avez-vous tradé aujourd’hui\u00a0?\u00a0»\u00a0: à gauche, " +
       "zone pour glisser ou coller des graphiques\u00a0; à droite, instrument, sélecteur Long ou " +
       "Short, entrée, stop, objectif facultatif et sortie ouverte, le risque en dollars et en " +
       "pourcentage du compte sur une règle stop–entrée–1 R, note comparant la position au demi-Kelly, " +
       "quantité et boutons pour ajouter des détails, calculer la taille, sauvegarder un brouillon, " +
-      "« Vu sans entrer » et enregistrer le trade. En bas, une ligne avec les métriques du compte.",
+      "«\u00a0Vu sans entrer\u00a0» et enregistrer le trade. En bas, une ligne avec les métriques du compte.",
     altDe:
-      "Erfassungsformular unter der Frage «Was haben Sie heute gehandelt?»: links ein Bereich " +
+      "Erfassungsformular unter der Frage „Was haben Sie heute gehandelt?“: links ein Bereich " +
       "zum Ablegen oder Einfügen von Chart-Screenshots; rechts Instrument, Long/Short-Wahl, " +
       "Einstieg, Stop, optionales Kursziel und offener Ausstieg, Risiko in Dollar und Prozent auf " +
       "einer Stop-Einstieg-1 R-Leiste, Hinweis zum Vergleich mit Halb-Kelly, Stückzahl sowie " +
-      "Schaltflächen für Details, Positionsgrößenrechner, Entwurf speichern, «Gesehen, nicht eingestiegen» " +
+      "Schaltflächen für Details, Positionsgrößenrechner, Entwurf speichern, „Gesehen, nicht eingestiegen“ " +
       "und Trade speichern. Darunter Kennzahlen des Kontos.",
     altIt:
       "Modulo di registrazione sotto la domanda «Cosa hai operato oggi?»: a sinistra, area per " +
@@ -287,13 +287,13 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     notaFr:
       "Filtres par instrument, sens, résultat, respect du plan, setup, comportement, frais " +
       "et session. L’essentiel n’est pas le tableau\u00a0: c’est la ligne au-dessus, intitulée " +
-      "« ce qui est à l’écran », recalculée sur les opérations filtrées. Se demander « et si " +
+      "«\u00a0ce qui est à l’écran\u00a0», recalculée sur les opérations filtrées. Se demander «\u00a0et si " +
       "j’enlevais les jours où j’ai enfreint mon plan\u00a0? » cesse d’être une hypothèse pour devenir deux clics.",
     notaDe:
       "Filter nach Instrument, Richtung, Ergebnis, Einhaltung der Regeln, Setup, Verhalten, " +
       "Gebühren und Handelssitzung. Entscheidend ist nicht die Tabelle: es ist die Zeile darüber " +
-      "mit der Aufschrift «was auf dem Bildschirm zu sehen ist», die sich über die gefilterte " +
-      "Auswahl neu berechnet. Die Frage «Was wäre, wenn ich die Tage ohne Planeinhaltung streiche?» " +
+      "mit der Aufschrift „was auf dem Bildschirm zu sehen ist“, die sich über die gefilterte " +
+      "Auswahl neu berechnet. Die Frage „Was wäre, wenn ich die Tage ohne Planeinhaltung streiche?“ " +
       "ist keine Spekulation mehr, sondern zwei Klicks.",
     notaIt:
       "Filtri per strumento, direzione, esito, rispetto del piano, setup, condotta, " +
@@ -409,12 +409,12 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "Écran d’analyse\u00a0: le net historique global en grand et un tableau par période avec opérations, " +
       "net, win rate, profit factor et pire drawdown\u00a0; résumé de la période filtrée\u00a0; bloc de risque " +
       "et qualité avec drawdown maximal, Sharpe, Sortino, Calmar, SQN et autres ratios\u00a0; et le " +
-      "verdict « Avantage confirmé » avec sa p-valeur et l’intervalle de confiance de chaque chiffre.",
+      "verdict «\u00a0Avantage confirmé\u00a0» avec sa p-valeur et l’intervalle de confiance de chaque chiffre.",
     altDe:
       "Analysebildschirm: historischer Gesamtertrag in großer Schrift und Periodentabelle mit " +
       "Trades, Nettoertrag, Win Rate, Profit Factor und maximalem Drawdown; Zusammenfassung der " +
       "gefilterten Spanne; Risiko- und Qualitätsblock mit größtem Drawdown, Sharpe, Sortino, Calmar, " +
-      "SQN und weiteren Kennzahlen; sowie das Urteil «Bestätigter Edge» mit p-Wert und Konfidenzintervall jeder Zahl.",
+      "SQN und weiteren Kennzahlen; sowie das Urteil „Bestätigter Edge“ mit p-Wert und Konfidenzintervall jeder Zahl.",
     altIt:
       "Schermata analitica: il netto complessivo in grande e tabella periodica con operazioni, " +
       "netto, win rate, profit factor e peggior drawdown; riepilogo del periodo filtrato; riquadro " +
