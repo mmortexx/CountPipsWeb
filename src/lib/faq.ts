@@ -174,7 +174,7 @@ export const PRICING_FAQ_ES: QA[] = [
   },
   {
     q: "¿Qué datos no se solicitan?",
-    a: "Nunca pedimos credenciales, capital, extractos ni datos financieros. Solo preguntamos lo necesario para seleccionar el piloto y entender tu contexto de diario.",
+    a: "Nunca pedimos credenciales, capital, extractos ni datos financieros. Solo preguntamos lo necesario para elegir a quién invitar al piloto y saber cómo llevas hoy tu diario.",
   },
 ];
 
@@ -193,7 +193,7 @@ export const PRICING_FAQ_EN: QA[] = [
   },
   {
     q: "What data do you not request?",
-    a: "We never ask for credentials, capital, statements or financial data. We only ask what is needed to select the pilot and understand your journaling context.",
+    a: "We never ask for credentials, capital, statements or financial data. We only ask what we need to choose who joins the pilot and how you keep your journal today.",
   },
 ];
 
@@ -214,7 +214,7 @@ const PRICING_FAQ_PT: QA[] = [
   },
   {
     q: "Quais dados não são solicitados?",
-    a: "Nunca pedimos credenciais, capital, extratos nem dados financeiros. Perguntamos apenas o necessário para selecionar o piloto e entender como você mantém seu diário.",
+    a: "Nunca pedimos credenciais, capital, extratos nem dados financeiros. Perguntamos apenas o necessário para escolher quem participa do piloto e entender como você mantém seu diário.",
   },
 ];
 
@@ -233,7 +233,7 @@ const PRICING_FAQ_FR: QA[] = [
   },
   {
     q: "Quelles données ne sont pas demandées ?",
-    a: "Nous ne demandons jamais d’identifiants, de capital, de relevés ni de données financières. Seulement ce qu’il faut pour sélectionner le pilote et comprendre comment vous tenez votre journal.",
+    a: "Nous ne demandons jamais d’identifiants, de capital, de relevés ni de données financières. Seulement ce qu’il faut pour choisir les participants du pilote et comprendre comment vous tenez votre journal.",
   },
 ];
 
@@ -252,14 +252,14 @@ const PRICING_FAQ_DE: QA[] = [
   },
   {
     q: "Welche Daten werden nicht abgefragt?",
-    a: "Wir fragen nie nach Zugangsdaten, Kapital, Kontoauszügen oder Finanzdaten. Wir erfragen nur, was nötig ist, um das Pilotprojekt auszuwählen und zu verstehen, wie Sie Ihr Journal führen.",
+    a: "Wir fragen nie nach Zugangsdaten, Kapital, Kontoauszügen oder Finanzdaten. Wir erfragen nur, was nötig ist, um die Teilnehmer des Pilotprojekts auszuwählen und zu verstehen, wie Sie Ihr Journal führen.",
   },
 ];
 
 const PRICING_FAQ_IT: QA[] = [
   {
     q: "Cosa ricevo quando richiedo l’accesso anticipato?",
-    a: "Esaminiamo ogni richiesta in base al profilo e alla fase del prodotto. Se è adatta al pilota privato, riceverai un invito con i passi successivi. Non mostriamo una posizione in coda.",
+    a: "Esaminiamo ogni richiesta in base al profilo e alla fase del prodotto. Se è adatta al progetto pilota privato, riceverai un invito con i passi successivi. Non mostriamo una posizione in coda.",
   },
   {
     q: "La demo ha un costo?",
@@ -271,7 +271,7 @@ const PRICING_FAQ_IT: QA[] = [
   },
   {
     q: "Quali dati non vengono richiesti?",
-    a: "Non chiediamo mai credenziali, capitale, estratti conto né dati finanziari. Chiediamo solo ciò che serve per selezionare il pilota e capire come tieni il tuo journal.",
+    a: "Non chiediamo mai credenziali, capitale, estratti conto né dati finanziari. Chiediamo solo ciò che serve per scegliere chi partecipa al progetto pilota e capire come tieni il tuo journal.",
   },
 ];
 

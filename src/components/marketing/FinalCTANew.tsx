@@ -22,7 +22,7 @@ const TEXTOS = {
     en: ["Stop trading blind.", "See how it’s measured.", `${METRICAS} metrics, a discipline guardian and your data on your machine. Explore the demo, no sign-up, and decide with clarity.`],
     pt: ["Pare de operar às cegas.", "Veja como isso é medido.", `${METRICAS} métricas, um guardião de disciplina e seus dados na sua máquina. Explore a demo, sem cadastro, e decida com clareza.`],
     fr: ["Cessez de trader à l’aveugle.", "Voyez comment tout est mesuré.", `${METRICAS} métriques, un gardien de discipline et vos données sur votre machine. Explorez la démo sans inscription et décidez avec clarté.`],
-    de: ["Hören Sie auf, blind zu handeln.", "Sehen Sie, wie gemessen wird.", `${METRICAS} Kennzahlen, ein Disziplin-Wächter und Ihre Daten auf Ihrem Rechner. Testen Sie die Demo ohne Anmeldung und entscheiden Sie mit Klarheit.`],
+    de: ["Hören Sie auf, blind zu handeln.", "Sehen Sie, wie gemessen wird.", `${METRICAS} Kennzahlen, ein Disziplin-Wächter und Ihre Daten auf Ihrem Rechner. Testen Sie die Demo ohne Registrierung und entscheiden Sie mit Klarheit.`],
     it: ["Smetti di fare trading alla cieca.", "Guarda come viene misurato.", `${METRICAS} metriche, un guardiano della disciplina e i tuoi dati sulla tua macchina. Esplora la demo senza registrazione e decidi con chiarezza.`],
   },
   herramienta: {
