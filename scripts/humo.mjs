@@ -1984,6 +1984,8 @@ let estrechasMedidas = 0;
 let pestanasDeslizadas = 0;
 let espaciadosMedidos = 0;
 let ejemplosMedidos = 0;
+let demosMontadas = 0;
+const RUTA_DEMO = /^\/(en\/)?demo\/$/;
 {
   const compiladas = async (carpeta, rel = "") => {
     const rutas = [];
@@ -2004,6 +2006,12 @@ let ejemplosMedidos = 0;
         const ruta = cola.pop();
         try {
           await pagina.goto(`${BASE}${ruta}`, { waitUntil: "load", timeout: 30000 });
+          // La demo se carga aparte y monta su fila de pestañas después de
+          // `load`: sin esperarla, la fila se medía unas veces sí y otras no.
+          if (RUTA_DEMO.test(ruta)) {
+            if (await pagina.waitForSelector("#demo-tablist", { timeout: 20000 }).catch(() => null)) demosMontadas++;
+            else fallos.push(`estrecho ${ruta}: la demo no montó su fila de pestañas en 20 s`);
+          }
           await pagina.addStyleTag({ content: ".cv-auto{content-visibility:visible!important}" });
           const r = await pagina.evaluate(async () => {
             await document.fonts.ready;
@@ -2162,6 +2170,7 @@ let ejemplosMedidos = 0;
   if (espaciadosMedidos < estrechasMedidas) fallos.push(`estrecho: texto espaciado medido en ${espaciadosMedidos} de ${estrechasMedidas} páginas`);
   // Glosario, FAQ y calculadoras llevan buscador o campos con ejemplo.
   if (SERVIR && ejemplosMedidos < 10) fallos.push(`estrecho: solo ${ejemplosMedidos} textos de ejemplo de campos medidos`);
+  if (SERVIR && demosMontadas < 2) fallos.push(`estrecho: la demo se midió montada en ${demosMontadas} de 2 idiomas`);
 }
 
 // Las cinco cifras de percentil del simulador de rachas, a 320 px con el texto
@@ -2332,7 +2341,7 @@ console.log(
 if (subirMedidos) {
   console.log(`[humo] botón de subir — ${subirMedidos} finales de página medidos en 3 anchos sin tapar el pie`);
 }
-console.log(`[humo] estrecho — ${estrechasMedidas} páginas medidas a ${ANCHO_ESTRECHO} px, ${pestanasDeslizadas} filas de pestañas deslizables con su aviso, ${ejemplosMedidos} textos de ejemplo de campos`);
+console.log(`[humo] estrecho — ${estrechasMedidas} páginas medidas a ${ANCHO_ESTRECHO} px, ${pestanasDeslizadas} filas de pestañas deslizables con su aviso, ${ejemplosMedidos} textos de ejemplo de campos, ${demosMontadas} demos montadas`);
 if (elementosMirados && !desenfoquesVistos) {
   console.log(`[humo] desenfoque — ${elementosMirados} elementos recorridos en 5 rutas, ninguno desenfoca su fondo`);
 }
