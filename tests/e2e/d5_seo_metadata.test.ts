@@ -137,6 +137,15 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
       }
     });
 
+    // El programa funciona en español e inglés en todas las portadas; la página sí va en su idioma.
+    it.each(["es", "en", "pt", "fr", "de", "it"] as const)("D5-T1-5b: el JSON-LD no promete el programa en %s si no lo está", (lang) => {
+      const schemas = esquemasGlobales(lang, { soporte: null });
+      const app = schemas.find((s) => s["@type"] === "SoftwareApplication") as Record<string, unknown>;
+      const web = schemas.find((s) => s["@type"] === "WebSite") as Record<string, unknown>;
+      expect(app.inLanguage).toEqual(["es", "en"]);
+      expect(web.inLanguage).toBe(lang);
+    });
+
     it("D5-T1-5: JSON-LD Schemas validity (Organization, WebSite, SoftwareApplication, FAQPage)", () => {
       const schemasEs = esquemasGlobales("es", { soporte: "soporte@countpips.com" });
       const schemasEn = esquemasGlobales("en", { soporte: "soporte@countpips.com" });

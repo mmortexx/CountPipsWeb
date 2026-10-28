@@ -34,6 +34,7 @@ export function siteUrl(path = "/"): string {
 }
 
 import { TABLA_IDIOMAS, tieneVersion, type Lang } from "@/lib/locale";
+import { PROGRAMA } from "@/lib/producto";
 
 /**
  * Etiquetas `hreflang` recíprocas de una ruta que existe en los idiomas correspondientes.
@@ -180,7 +181,7 @@ export function esquemasGlobales(
       operatingSystem: "Windows",
       url: inicio,
       description: descripcionesApp[lang] ?? descripcionesApp.en,
-      inLanguage: [lang],
+      inLanguage: [...PROGRAMA.idiomas],
       screenshot: [
         `${SITE_URL}/img/app-resumen.webp`,
         `${SITE_URL}/img/app-operaciones.webp`,
