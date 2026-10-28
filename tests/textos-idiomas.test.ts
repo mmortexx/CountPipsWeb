@@ -25,6 +25,7 @@ import { ThemeProvider } from "@/lib/theme";
 import { ProfileSelector } from "@/components/marketing/ProfileSelector";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { Comparison } from "@/components/marketing/Comparison";
+import { BetaStatus } from "@/components/beta/BetaStatus";
 import { pricingFaq } from "@/lib/faq";
 import { LAMINAS_PRODUCTO } from "@/lib/laminas";
 import { SALTOS_TECLADO } from "@/lib/saltos-teclado";
@@ -96,9 +97,11 @@ describe("cada idioma nombra las cosas de una sola forma", () => {
     expect(cierre).not.toMatch(/\bLaunch\b/);
   });
 
-  it("italiano: «diario di trading», no «trading journal», en la portada y la comparativa", () => {
+  it("italiano: «diario di trading», no «trading journal», en la portada, la comparativa, el estado y las preguntas de precios", () => {
     expect(texto("it", createElement(Hero))).not.toMatch(/\bjournal\b/i);
     expect(texto("it", createElement(Comparison))).not.toMatch(/\bjournal\b/i);
+    expect(texto("it", createElement(BetaStatus))).not.toMatch(/\bjournal\b/i);
+    for (const { q, a } of pricingFaq("it")) expect(`${q} ${a}`).not.toMatch(/\bjournal\b/i);
   });
 
   it("italiano: la respuesta del precio lleva sus artículos", () => {

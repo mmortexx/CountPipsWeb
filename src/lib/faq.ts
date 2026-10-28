@@ -271,7 +271,7 @@ const PRICING_FAQ_IT: QA[] = [
   },
   {
     q: "Quali dati non vengono richiesti?",
-    a: "Non chiediamo mai credenziali, capitale, estratti conto né dati finanziari. Chiediamo solo ciò che serve per scegliere chi partecipa al progetto pilota e capire come tieni il tuo journal.",
+    a: "Non chiediamo mai credenziali, capitale, estratti conto né dati finanziari. Chiediamo solo ciò che serve per scegliere chi partecipa al progetto pilota e capire come tieni il tuo diario.",
   },
 ];
 
