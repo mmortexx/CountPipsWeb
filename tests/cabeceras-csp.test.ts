@@ -73,6 +73,21 @@ describe("política de contenido según lo que usa la compilación", () => {
     expect(() => cabecerasConPolitica("/*\n  X-Frame-Options: DENY\n", {})).toThrow();
   });
 
+  // El sitio solo usa el portapapeles (botones «Copiar»), que no se toca. Lo demás
+  // se niega a la página y a cualquier marco o dependencia que lo pida.
+  it("niega las capacidades del navegador que el sitio no usa", () => {
+    const pp = generales(HEADERS)["Permissions-Policy"] ?? "";
+    const negadas = pp.split(",").map((d) => d.trim()).filter((d) => d.endsWith("=()")).map((d) => d.slice(0, -3));
+    for (const f of [
+      "camera", "microphone", "geolocation", "payment", "usb", "serial", "hid", "bluetooth", "midi",
+      "display-capture", "screen-wake-lock", "xr-spatial-tracking", "idle-detection", "browsing-topics",
+      "accelerometer", "gyroscope", "magnetometer", "publickey-credentials-get", "local-fonts", "window-management",
+    ]) {
+      expect(negadas, f).toContain(f);
+    }
+    expect(pp).not.toMatch(/clipboard-write=\(\)/);
+  });
+
   it("aísla la ventana y los recursos de otros orígenes (COOP y CORP)", () => {
     const c = generales(HEADERS);
     expect(c["Cross-Origin-Opener-Policy"]).toBe("same-origin");

@@ -134,7 +134,7 @@ await Promise.all(
       const errores = [];
       pagina.on("pageerror", (e) => errores.push(`error de JavaScript: ${e.message.slice(0, 120)}`));
       pagina.on("console", (m) => {
-        if (/Content.Security.Policy|Refused to/i.test(m.text())) errores.push(`consola: ${m.text().slice(0, 160)}`);
+        if (/Content.Security.Policy|Refused to|Permissions.Policy/i.test(m.text())) errores.push(`consola: ${m.text().slice(0, 160)}`);
       });
       await pagina.goto(BASE + ruta, { waitUntil: "networkidle" });
       if (TURNSTILE && /^\/beta\/$/.test(ruta)) {
