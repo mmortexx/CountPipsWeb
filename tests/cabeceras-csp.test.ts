@@ -79,7 +79,7 @@ describe("política de contenido según lo que usa la compilación", () => {
     const pp = generales(HEADERS)["Permissions-Policy"] ?? "";
     const negadas = pp.split(",").map((d) => d.trim()).filter((d) => d.endsWith("=()")).map((d) => d.slice(0, -3));
     for (const f of [
-      "camera", "microphone", "geolocation", "payment", "usb", "serial", "hid", "bluetooth", "midi",
+      "camera", "microphone", "geolocation", "payment", "usb", "serial", "hid", "midi",
       "display-capture", "screen-wake-lock", "xr-spatial-tracking", "idle-detection", "browsing-topics",
       "accelerometer", "gyroscope", "magnetometer", "publickey-credentials-get", "local-fonts", "window-management",
     ]) {

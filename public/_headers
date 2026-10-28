@@ -24,9 +24,11 @@
   # Se renuncia explícitamente a permisos que este sitio no usa. Si
   # alguna dependencia intentara pedir cámara o micrófono, el navegador
   # lo deniega sin preguntar al visitante. Solo el portapapeles (botones
-  # «Copiar») queda fuera de la lista. Solo nombres que Chromium reconoce:
-  # uno desconocido sale como error en la consola.
-  Permissions-Policy: accelerometer=(), bluetooth=(), browsing-topics=(), camera=(), display-capture=(), geolocation=(), gyroscope=(), hid=(), idle-detection=(), local-fonts=(), magnetometer=(), microphone=(), midi=(), payment=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), usb=(), window-management=(), xr-spatial-tracking=()
+  # «Copiar») queda fuera de la lista. Solo nombres que reconoce el
+  # Chromium de Linux del CI: uno desconocido sale como error en la consola
+  # y `scripts/cabeceras.mjs` falla. Por eso no está `bluetooth`: el
+  # Chromium de Windows lo reconoce y el de Linux no.
+  Permissions-Policy: accelerometer=(), browsing-topics=(), camera=(), display-capture=(), geolocation=(), gyroscope=(), hid=(), idle-detection=(), local-fonts=(), magnetometer=(), microphone=(), midi=(), payment=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), usb=(), window-management=(), xr-spatial-tracking=()
   # Le dice al navegador que memorice, un año entero, que este dominio se
   # sirve por HTTPS y que nunca debe intentar la versión sin cifrar — ni
   # siquiera si alguien teclea `http://` a mano o un enlace viejo lo
