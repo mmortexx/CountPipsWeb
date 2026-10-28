@@ -87,6 +87,6 @@ describe("el despliegue da a cada trabajo solo lo que usa", () => {
   });
 
   it("el checkout de «build», que instala y ejecuta dependencias, no guarda el token", () => {
-    expect(trabajo(despliegue, "build")).toMatch(/uses:\s*actions\/checkout@\S+\s*\n\s+with:\s*\n\s+persist-credentials:\s*false/);
+    expect(trabajo(despliegue, "build")).toMatch(/uses:\s*actions\/checkout@\S+[^\n]*\n\s+with:\s*\n\s+persist-credentials:\s*false/);
   });
 });
