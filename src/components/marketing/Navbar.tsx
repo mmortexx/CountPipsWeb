@@ -164,7 +164,7 @@ export const PRODUCT_ITEMS: {
     descPt: "A demo, o escopo e o acesso",
     descFr: "La démo, le périmètre et l’accès",
     descDe: "Demo, Umfang und Zugang",
-    descIt: "La demo, il perimetro e l’accesso",
+    descIt: "La demo, le funzionalità e l’accesso",
     grupo: "recursos",
   },
 ];
