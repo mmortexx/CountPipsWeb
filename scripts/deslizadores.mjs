@@ -9,10 +9,14 @@
  *  2. Las marcas de debajo («0,25 % · 1 % · 2 % · 3 %») están bajo su valor,
  *     no repartidas a partes iguales.
  *  3. Dos deslizadores de la misma fila tienen la pista a la misma altura.
+ *  4. La bolita está donde dice su valor (de ella depende que 1 y 2 valgan).
  *
- * Uso:  node scripts/deslizadores.mjs --serve out
+ * Firefox pinta la pista y el recorrido con sus propios pseudo-elementos:
+ * `--navegador firefox` (o `webkit`) mide su motor (en local; el CI solo tiene Chromium).
+ *
+ * Uso:  node scripts/deslizadores.mjs --serve out [--navegador firefox|webkit]
  */
-import { chromium } from "playwright";
+import { chromium, firefox, webkit } from "playwright";
 import { createServer } from "node:http";
 import { readFile, stat, readdir } from "node:fs/promises";
 import { existsSync, readFileSync } from "node:fs";
@@ -24,6 +28,13 @@ if (!existsSync(dir)) {
   process.exit(1);
 }
 const PREFIJO = process.env.NEXT_PUBLIC_BASE_PATH || "";
+const iNav = process.argv.indexOf("--navegador");
+const MOTOR = iNav >= 0 ? process.argv[iNav + 1] : "chromium";
+const MOTORES = { chromium, firefox, webkit };
+if (!MOTORES[MOTOR]) {
+  console.log(`[deslizadores] navegador desconocido: ${MOTOR} (chromium, firefox o webkit)`);
+  process.exit(1);
+}
 const TIPOS = {
   ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css",
   ".webp": "image/webp", ".png": "image/png", ".svg": "image/svg+xml", ".avif": "image/avif",
@@ -77,7 +88,7 @@ if (RUTAS.length < 10) {
 }
 
 const { server, base } = await servir(dir);
-const navegador = await chromium.launch();
+const navegador = await MOTORES[MOTOR].launch();
 const fallos = [];
 let medidos = 0;
 
@@ -108,7 +119,8 @@ for (const v of VARIANTES) {
     viewport: { width: v.ancho, height: 900 },
     colorScheme: v.tema,
     reducedMotion: "reduce",
-    isMobile: v.ancho < 768,
+    // Firefox no emula móvil: se queda con el ancho y el toque.
+    isMobile: MOTOR !== "firefox" && v.ancho < 768,
     hasTouch: v.ancho < 768,
   });
   const lienzo = await (await navegador.newContext()).newPage();
@@ -201,6 +213,13 @@ for (const v of VARIANTES) {
             if (k < centro && !esRecorrido(k)) huecos++;
             if (k > centro && esRecorrido(k)) sobra++;
           }
+          // 4. La bolita está donde dice su valor: el canto derecho de su anillo
+          // (que se pinta en tinta, como el recorrido) queda a 8 px de su centro.
+          // En Firefox, sin `box-sizing`, el tirador medía 70 px y recorría otro camino.
+          let borde = -1;
+          for (let k = Math.ceil(centro); k < Math.min(clip.width, centro + 30); k++) if (esRecorrido(k)) borde = k;
+          if (borde < 0) fallos.push(`${ruta} (${v.ancho}, ${v.tema}): «${dato.n}» al ${Math.round(m.f * 100)} %: no encuentro el anillo de la bolita`);
+          else if (Math.abs(borde - (centro + 8)) > 2.5) fallos.push(`${ruta} (${v.ancho}, ${v.tema}): «${dato.n}» al ${Math.round(m.f * 100)} %: la bolita está a ${Math.round(borde - centro - 8)} px de donde marca su valor`);
           medidos++;
           if (huecos > 2) fallos.push(`${ruta} (${v.ancho}, ${v.tema}): «${dato.n}» al ${Math.round(m.f * 100)} % deja ${huecos} px sin rellenar detrás de la bolita`);
           if (sobra > 2) fallos.push(`${ruta} (${v.ancho}, ${v.tema}): «${dato.n}» al ${Math.round(m.f * 100)} % pinta ${sobra} px de relleno por delante de la bolita`);
@@ -215,13 +234,13 @@ for (const v of VARIANTES) {
 await navegador.close();
 server.close();
 
-console.log(`[deslizadores] ${RUTAS.length} páginas · ${medidos} posiciones medidas en píxeles`);
+console.log(`[deslizadores] ${MOTOR}: ${RUTAS.length} páginas · ${medidos} posiciones medidas en píxeles`);
 if (medidos < 40) fallos.push(`solo ${medidos} posiciones medidas: la guarda no está viendo los deslizadores`);
 if (fallos.length) {
   for (const f of fallos.slice(0, 60)) console.log(`  ✗ ${f}`);
   if (fallos.length > 60) console.log(`  … y ${fallos.length - 60} más`);
   const cuenta = (re) => fallos.filter((f) => re.test(f)).length;
-  console.log(`[deslizadores] relleno: ${cuenta(/sin rellenar|por delante/)} · marcas: ${cuenta(/la marca/)} · filas: ${cuenta(/misma fila/)} · otros: ${cuenta(/no cargó|no pude|solo \d+ posiciones/)}`);
+  console.log(`[deslizadores] relleno: ${cuenta(/sin rellenar|por delante/)} · bolita: ${cuenta(/la bolita está|anillo/)} · marcas: ${cuenta(/la marca/)} · filas: ${cuenta(/misma fila/)} · otros: ${cuenta(/no cargó|no pude|solo \d+ posiciones/)}`);
   console.log(`[deslizadores] ${fallos.length} fallo(s)`);
   process.exit(1);
 }
