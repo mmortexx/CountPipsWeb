@@ -17,9 +17,12 @@
  * aviso de consola de la CSP o de `Permissions-Policy`: el Chromium de Linux
  * del CI es la referencia.
  *
- * Uso:  node scripts/cabeceras.mjs --serve out
+ * Firefox y Safari aplican la `<meta>` a su manera; `--navegador firefox` o
+ * `webkit` repite el recorrido con su motor (en local: el CI solo tiene Chromium).
+ *
+ * Uso:  node scripts/cabeceras.mjs --serve out [--navegador firefox|webkit]
  */
-import { chromium } from "playwright";
+import { chromium, firefox, webkit } from "playwright";
 import { createServer } from "node:http";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { extname, join, normalize, relative } from "node:path";
@@ -27,6 +30,13 @@ import { extname, join, normalize, relative } from "node:path";
 const args = process.argv.slice(2);
 const i = args.indexOf("--serve");
 const RAIZ = i >= 0 && args[i + 1] ? args[i + 1] : "out";
+const j = args.indexOf("--navegador");
+const MOTORES = { chromium, firefox, webkit };
+const MOTOR = j >= 0 ? args[j + 1] : "chromium";
+if (!MOTORES[MOTOR]) {
+  console.log(`[cabeceras] navegador desconocido: ${MOTOR} (chromium, firefox o webkit)`);
+  process.exit(1);
+}
 const PREFIJO = (process.env.NEXT_PUBLIC_BASE_PATH ?? "").replace(/\/$/, "");
 
 if (!existsSync(join(RAIZ, "_headers"))) {
@@ -110,7 +120,7 @@ const TURNSTILE = /challenges\.cloudflare\.com/.test(CABECERAS["Content-Security
 const TEMAS = ["light", "dark"];
 const cola = TEMAS.flatMap((tema) => paginas.map((ruta) => [ruta, tema]));
 
-const navegador = await chromium.launch();
+const navegador = await MOTORES[MOTOR].launch();
 const bloqueos = [];
 let siguiente = 0;
 let demoRecorrida = 0;
@@ -165,7 +175,9 @@ await Promise.all(
         let abiertas = 0;
         for (const pestana of pestanas) {
           try {
-            await pestana.click({ timeout: 1000 });
+            // Firefox con seis páginas a la vez tarda más de 1 s en dar la
+            // pestaña por quieta, aunque sola responda en ~100 ms.
+            await pestana.click({ timeout: 5000 });
             abiertas++;
           } catch (e) {
             errores.push(`pestaña de la demo sin abrir: ${String(e).split("\n")[0].slice(0, 120)}`);
@@ -188,7 +200,7 @@ await navegador.close();
 servidor.close();
 
 console.log(
-  `[cabeceras] ${paginas.length} páginas × ${TEMAS.length} temas con ${Object.keys(CABECERAS).length} cabeceras de _headers y la política de cada página; ${demoRecorrida} pestañas de la demo abiertas`,
+  `[cabeceras] ${MOTOR}: ${paginas.length} páginas × ${TEMAS.length} temas con ${Object.keys(CABECERAS).length} cabeceras de _headers y la política de cada página; ${demoRecorrida} pestañas de la demo abiertas`,
 );
 // Con clave, un widget que no carga es un fallo: si solo avisara, la parte de
 // la política que abre Cloudflare quedaría sin medir y en verde para siempre.
