@@ -128,7 +128,7 @@ node scripts/proporcion.mjs --serve out    # textos de gráficos SVG sin estirar
 node scripts/tema.mjs --serve out          # elección de tema, sin fogonazo blanco y barra del móvil del color del fondo
 node scripts/alto-contraste.mjs --serve out  # alto contraste de Windows: foco, lo elegido y los interruptores
 node scripts/anuncios.mjs --serve out      # resultados anunciados a lectores de pantalla
-node scripts/deslizadores.mjs --serve out  # relleno, marcas y alturas de los deslizadores
+node scripts/deslizadores.mjs --serve out  # relleno, marcas y alturas de los deslizadores; `--navegador firefox|webkit` mide ese motor
 node scripts/viudas.mjs --serve out        # titulares sin palabra sola al final
 node scripts/teclado.mjs --serve out       # todo el sitio sin ratón; los atajos de una tecla se apagan
 node scripts/toque.mjs --serve out         # zona que recoge el dedo, medida en móvil táctil: 44 px de alto

@@ -951,18 +951,21 @@ textarea:focus-visible,
     var(--tj-surco) var(--tj-corte) 100%
   );
 }
-/* Pista de Firefox */
+/* Pista de Firefox: los mismos dos tramos, con el mismo corte, que en WebKit.
+   Su `::-moz-range-progress` iba en otro tono (acento al 55 %) y acababa antes
+   de la bolita; `deslizadores.mjs --navegador firefox` lo mide. */
 .tj-range::-moz-range-track {
   height: 4px;
   border-radius: 999px;
-  background: var(--tj-surco);
+  --tj-corte: calc(22px + (100% - 44px) * var(--f, 0));
+  background: linear-gradient(
+    to right,
+    var(--tj-recorrido) 0 var(--tj-corte),
+    var(--tj-surco) var(--tj-corte) 100%
+  );
 }
-/* Lo ya recorrido, en el color de acento. Solo Firefox lo ofrece como
-   pseudo-elemento; en WebKit lo pinta el propio componente. */
 .tj-range::-moz-range-progress {
-  height: 4px;
-  border-radius: 999px;
-  background: rgb(var(--accent-base) / 0.55);
+  background: transparent;
 }
 .tj-range:focus-visible {
   outline: none;
@@ -1018,8 +1021,10 @@ textarea:focus-visible,
 }
 /* Pulgar de Firefox: misma zona táctil de 44×44 que WebKit (admite `padding`
    + `background-clip: content-box` en ::-moz-range-thumb desde la v109) y el
-   mismo `radial-gradient`. */
+   mismo `radial-gradient`. `border-box`: WebKit cuenta el relleno dentro de los
+   44 px y Firefox no; sin él la bolita medía 70 px y no caía sobre su valor. */
 .tj-range::-moz-range-thumb {
+  box-sizing: border-box;
   width: 44px;
   height: 44px;
   padding: 13px;
@@ -1051,9 +1056,6 @@ textarea:focus-visible,
    a borrar el recorrido. */
 :root[data-theme="light"] .tj-range {
   --tj-surco: rgb(19 29 38 / 0.13);
-}
-:root[data-theme="light"] .tj-range::-moz-range-track {
-  background: var(--tj-surco);
 }
 
 /* ============================================================
