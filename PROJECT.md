@@ -132,7 +132,8 @@ node scripts/deslizadores.mjs --serve out  # relleno, marcas y alturas de los de
 node scripts/viudas.mjs --serve out        # titulares sin palabra sola al final
 node scripts/teclado.mjs --serve out       # todo el sitio sin ratón; los atajos de una tecla se apagan
 node scripts/toque.mjs --serve out         # zona que recoge el dedo, medida en móvil táctil: 44 px de alto
-node scripts/cabeceras.mjs --serve out     # nada bloqueado por la CSP de `_headers` ni la de cada página, en los dos temas y con la demo; con clave de Turnstile, falla si el widget no carga en /beta (necesita red)
+node scripts/cabeceras.mjs --serve out     # nada bloqueado por la CSP de `_headers` ni la de cada página, en los dos temas y con la demo; con clave de Turnstile, falla si el widget no carga en /beta (necesita red); `--navegador firefox|webkit` repite con ese motor
+node scripts/motores.mjs --serve out       # Chromium, Firefox y WebKit a 375 y 1440 px, en los dos temas, rutas principales y las cuatro pestañas de la demo: sin errores, tema y fuentes cargadas, titular visible y ningún texto cortado a lo ancho (necesita `bunx playwright install firefox webkit`)
 node scripts/corrobora-menus.mjs --base <url>  # menús; contra `npx serve out` (sin -s)
 node scripts/barrido-rueda.mjs --base <url>    # ningún recuadro atrapa la rueda del ratón; mismo servidor
 ```

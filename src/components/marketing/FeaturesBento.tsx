@@ -287,7 +287,8 @@ export function FeaturesBento({
               <ul className="m-0 mt-3 p-0 list-none tnum">
                 {cuentas.map((acc) => (
                   <li key={acc.name} className={`flex items-start justify-between gap-3 border-b ${division} py-3 last:border-b-0`}>
-                    <div className="min-w-0">
+                    {/* `flex-1`: con su ancho justo, WebKit cortaba con «…» los nombres con cifras. */}
+                    <div className="min-w-0 flex-1">
                       <p className="m-0 truncate text-[13px] font-medium text-primary">{acc.name}</p>
                       <p className="m-0 mt-0.5 text-[12px] text-tertiary">{fmtMoney(acc.saldo, lang, { decimals: 0 })}</p>
                     </div>
