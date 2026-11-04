@@ -35,6 +35,7 @@ import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
 import { CifraDemo } from "@/components/tj/CifraDemo";
 import { Reveal } from "@/components/tj/Reveal";
+import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
 import { compararSeleccion, type Comparacion } from "@/lib/trading/comparacion";
@@ -906,6 +907,8 @@ export function TradesPage() {
               <span className="text-sm text-tertiary tnum mb-1">
                 {tf("tradesCount", filtered.length)}
               </span>
+              {/* El recuento cambia al filtrar o buscar: se dice cuando se queda quieto. */}
+              <ResultadoAnunciado texto={tf("tradesCount", filtered.length)} />
             </div>
           </div>
 
@@ -1509,6 +1512,18 @@ export function TradesPage() {
           {/* Sombra en el canto de la primera columna fija, que la separa de lo que se desplaza. */}
           <div className="pointer-events-none absolute left-[88px] top-0 bottom-0 w-4 bg-gradient-to-r from-[rgb(var(--sombra)/0.14)] to-transparent md:hidden" aria-hidden />
         </div>
+
+        {/* Siempre montado, para decir la selección al aparecer la barra y no en cada marca; al
+            limpiarla queda en blanco. Fuera de la barra, que se monta ya con su recuento. */}
+        <ResultadoAnunciado
+          texto={
+            selectedIds.size === 0
+              ? ""
+              : es
+                ? `${fmtOperaciones(selectedIds.size, lang)} ${selectedIds.size === 1 ? "seleccionada" : "seleccionadas"}`
+                : `${fmtOperaciones(selectedIds.size, lang)} selected`
+          }
+        />
 
         {/* Al plegarse conserva el último recuento en vez de mostrar «0». */}
         {barra.montado && (

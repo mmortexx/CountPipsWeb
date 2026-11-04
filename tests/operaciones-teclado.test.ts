@@ -107,3 +107,61 @@ describe("Operaciones: la columna ordenada lo dice con aria-sort", () => {
     expect(ordenadas()).toEqual([`${COLUMNA.r}:descending`]);
   });
 });
+
+describe("Operaciones: el recuento y la selección se anuncian una vez, cuando quedan quietos", () => {
+  const estados = () => [...cont.querySelectorAll('[role="status"].sr-only')].map((e) => e.textContent);
+  const pasa = (ms: number) =>
+    act(() => {
+      vi.advanceTimersByTime(ms);
+    });
+  const busca = (texto: string) =>
+    act(() => {
+      const campo = cont.querySelector<HTMLInputElement>('input[type="search"]')!;
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(campo, texto);
+      campo.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+  const marca = (fila: number) => act(() => filas()[fila].querySelector<HTMLInputElement>('input[type="checkbox"]')!.click());
+
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  it.each([
+    ["/demo", "0 operaciones"],
+    ["/en/demo", "0 trades"],
+  ])("el recuento, en %s: nada al cargar y la cifra nueva tras la espera", (url, frase) => {
+    monta(url);
+    expect(estados()).toEqual(["", ""]);
+    busca("zzzz");
+    // La búsqueda filtra a los 150 ms y desde ahí ResultadoAnunciado espera 700 ms: antes no dice nada.
+    pasa(150);
+    pasa(699);
+    expect(estados()).toEqual(["", ""]);
+    pasa(1);
+    expect(estados()).toEqual([frase, ""]);
+  });
+
+  it.each([
+    ["/demo", "2 operaciones seleccionadas"],
+    ["/en/demo", "2 trades selected"],
+  ])("la selección, en %s: ni cada marca ni al cargar, sino «%s» al quedarse quieta", (url, frase) => {
+    monta(url);
+    marca(0);
+    pasa(600);
+    expect(estados()[1]).toBe("");
+    marca(1);
+    pasa(699);
+    expect(estados()[1]).toBe("");
+    pasa(1);
+    expect(estados()[1]).toBe(frase);
+  });
+
+  it("una operación seleccionada se dice en singular, y al limpiar la selección no queda nada dicho", () => {
+    monta("/demo");
+    marca(0);
+    pasa(700);
+    expect(estados()[1]).toBe("1 operación seleccionada");
+    marca(0);
+    pasa(700);
+    expect(estados()[1]).toBe("");
+  });
+});
