@@ -383,8 +383,8 @@ function TagPill({
         <button
           type="button"
           onClick={onRemove}
-          aria-label={lang === "es" ? "Quitar etiqueta" : "Remove tag"}
-          className="ml-0.5 -mr-0.5 w-4 h-4 rounded-[2px] hover:bg-[rgb(var(--divider)/0.1)] inline-flex items-center justify-center"
+          aria-label={lang === "es" ? `Quitar etiqueta «${label}»` : `Remove tag “${label}”`}
+          className="tj-area-24 ml-0.5 -mr-0.5 w-4 h-4 rounded-[2px] hover:bg-[rgb(var(--divider)/0.1)] inline-flex items-center justify-center"
         >
           <svg
             width="9"

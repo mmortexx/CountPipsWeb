@@ -174,14 +174,16 @@ const TradeRow = memo(function TradeRow({
       {/* Fija a la izquierda en móvil; el fondo opaco tapa las celdas que se desplazan. */}
       <td className="pl-5 pr-3 py-2.5 whitespace-nowrap sticky left-0 z-10 bg-[rgb(var(--bg))]">
         <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={selected}
-            onClick={(e) => e.stopPropagation()}
-            onChange={() => onToggleSelect(trade.id)}
-            aria-label={`${trade.instrument} ${t("selectTrade")}`}
-            className="h-3.5 w-3.5 rounded-[2px] border-[rgb(var(--divider)/0.2)] bg-[rgb(var(--divider)/0.05)] accent-[rgb(var(--accent-base))] cursor-pointer"
-          />
+          {/* La etiqueta da a la casilla de 14 px su zona de 24 px; su clic no llega a la fila. */}
+          <label className="tj-area-24 inline-flex" onClick={(e) => e.stopPropagation()}>
+            <input
+              type="checkbox"
+              checked={selected}
+              onChange={() => onToggleSelect(trade.id)}
+              aria-label={`${trade.instrument} ${t("selectTrade")}`}
+              className="h-3.5 w-3.5 rounded-[2px] border-[rgb(var(--divider)/0.2)] bg-[rgb(var(--divider)/0.05)] accent-[rgb(var(--accent-base))] cursor-pointer"
+            />
+          </label>
           <Chip variant={trade.direction === "long" ? "pos" : "neg"}>
             {trade.direction === "long" ? t("long") : t("short")}
           </Chip>
