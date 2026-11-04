@@ -868,6 +868,8 @@ export function TradesPage() {
     }
   }
 
+  const ariaSort = (key: SortKey) => (key !== sortKey ? undefined : sortDir === "asc" ? "ascending" : "descending");
+
   /* Añadir y quitar etiquetas no persiste nada en la demo: el aviso lo dice en vez de fingir que se aplicó. */
   function handleTag(tag: string) {
     toast({
@@ -1339,7 +1341,7 @@ export function TradesPage() {
                     </div>
                   </th>
 
-                  <th scope="col" className="px-3 py-3 whitespace-nowrap w-[140px]">
+                  <th scope="col" aria-sort={ariaSort("symbol")} className="px-3 py-3 whitespace-nowrap w-[140px]">
                     <SortHeader
                       active={sortKey === "symbol"}
                       dir={sortDir}
@@ -1368,7 +1370,7 @@ export function TradesPage() {
                     </span>
                   </th>
 
-                  <th scope="col" className="px-3 py-3 whitespace-nowrap w-[90px]">
+                  <th scope="col" aria-sort={ariaSort("duration")} className="px-3 py-3 whitespace-nowrap w-[90px]">
                     <SortHeader
                       active={sortKey === "duration"}
                       dir={sortDir}
@@ -1379,7 +1381,7 @@ export function TradesPage() {
                     </SortHeader>
                   </th>
 
-                  <th scope="col" className="px-3 py-3 whitespace-nowrap w-[120px]">
+                  <th scope="col" aria-sort={ariaSort("date")} className="px-3 py-3 whitespace-nowrap w-[120px]">
                     <SortHeader
                       active={sortKey === "date"}
                       dir={sortDir}
@@ -1390,7 +1392,7 @@ export function TradesPage() {
                     </SortHeader>
                   </th>
 
-                  <th scope="col" className="px-3 py-3 whitespace-nowrap w-[120px] text-right">
+                  <th scope="col" aria-sort={ariaSort("pnl")} className="px-3 py-3 whitespace-nowrap w-[120px] text-right">
                     <SortHeader
                       active={sortKey === "pnl"}
                       dir={sortDir}
@@ -1401,7 +1403,7 @@ export function TradesPage() {
                     </SortHeader>
                   </th>
 
-                  <th scope="col" className="px-3 py-3 whitespace-nowrap w-[90px] text-right">
+                  <th scope="col" aria-sort={ariaSort("r")} className="px-3 py-3 whitespace-nowrap w-[90px] text-right">
                     <SortHeader
                       active={sortKey === "r"}
                       dir={sortDir}

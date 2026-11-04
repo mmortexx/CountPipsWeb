@@ -84,3 +84,26 @@ describe("Operaciones: abrir el detalle sin ratón", () => {
     expect(goDetail).not.toHaveBeenCalled();
   });
 });
+
+describe("Operaciones: la columna ordenada lo dice con aria-sort", () => {
+  const COLUMNA = { instrumento: 1, duracion: 5, cierre: 6, pnl: 7, r: 8 };
+  const cabeceras = () => [...cont.querySelectorAll<HTMLTableCellElement>("thead th")];
+  const ordena = (columna: number) => act(() => cabeceras()[columna].querySelector("button")!.click());
+  /** Índice de columna y valor de cada cabecera que declara su orden. */
+  const ordenadas = () =>
+    cabeceras().flatMap((th, i) => (th.hasAttribute("aria-sort") ? [`${i}:${th.getAttribute("aria-sort")}`] : []));
+
+  it.each(["/demo", "/en/demo"])("en %s, solo la columna activa lleva aria-sort y cambia con la dirección", (url) => {
+    monta(url);
+    expect(ordenadas()).toEqual([`${COLUMNA.cierre}:descending`]);
+    ordena(COLUMNA.instrumento);
+    expect(ordenadas()).toEqual([`${COLUMNA.instrumento}:ascending`]);
+    ordena(COLUMNA.instrumento);
+    expect(ordenadas()).toEqual([`${COLUMNA.instrumento}:descending`]);
+    ordena(COLUMNA.duracion);
+    expect(ordenadas()).toEqual([`${COLUMNA.duracion}:descending`]);
+    ordena(COLUMNA.pnl);
+    ordena(COLUMNA.r);
+    expect(ordenadas()).toEqual([`${COLUMNA.r}:descending`]);
+  });
+});
