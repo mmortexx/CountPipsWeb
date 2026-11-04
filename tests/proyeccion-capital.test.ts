@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { proyectaCapital, LIMITE_PROYECCION_USD } from "../src/lib/trading/proyeccion";
 import { notaWinRate } from "../src/components/marketing/EquityProjector";
+import { mulberry32 } from "../src/lib/trading/azar";
 
 /**
  * Con acierto del 80 %, ganancia media de 6 R, pérdida media de 0,25 R,
@@ -71,9 +72,14 @@ const mesDelDoble = (r: ReturnType<typeof proyectaCapital>, inicio: number) =>
   r.monthlyPoints.find((p) => p.balance - (p.totalDeposited - inicio) >= 2 * inicio)?.month ?? null;
 
 describe("proyectaCapital: la tasa anual mide la estrategia, no los ingresos", () => {
-  it("con expectancy cero, aportar dinero no da rentabilidad", () => {
-    const r = proyectaCapital({ ...PERFIL, winRate: 50, avgWinR: 1, avgLossR: 1, frictionR: 0, monthlyContribution: 1000, years: 10 });
-    expect(r.cagr).toBeCloseTo(0, 10);
+  it("con expectancy cero, aportar dinero no da rentabilidad: en riesgo fijo es cero y en compuesto, la de no aportar", () => {
+    const cero = { ...PERFIL, winRate: 50, avgWinR: 1, avgLossR: 1, frictionR: 0, years: 10 };
+    expect(proyectaCapital({ ...cero, reinvestMode: "linear", monthlyContribution: 1000 }).cagr).toBeCloseTo(0, 10);
+    const conAportes = proyectaCapital({ ...cero, monthlyContribution: 1000 }).cagr;
+    expect(conAportes).toBeCloseTo(proyectaCapital(cero).cagr, 10);
+    // En compuesto, un 50 % a 1 R : 1 R pierde poco a poco: 1,005 × 0,995 < 1.
+    expect(conAportes).toBeLessThan(0);
+    expect(conAportes).toBeGreaterThan(-0.005);
   });
 
   it("con expectancy negativa y aportes la tasa anual es negativa", () => {
@@ -146,17 +152,64 @@ describe("proyectaCapital: la banda del 80 % envuelve su propia línea", () => {
   });
 
   it("la banda mide 1,282 desviaciones a cada lado, las del 80 % bilateral", () => {
-    // Desviación de una operación que gana avgWinR o pierde avgLossR: (W + L) · √(p · (1 − p)).
+    // Desviación de una operación que gana W o pierde L: (W + L) · √(p · (1 − p)).
+    // En riesgo fijo, W y L en R; en compuesto, en logaritmo del balance, con la fricción.
     const p = PERFIL.winRate / 100;
-    const sigmaR = (PERFIL.avgWinR + PERFIL.avgLossR) * Math.sqrt(p * (1 - p));
+    const f = PERFIL.riskPct / 100;
+    const sigmaR = (PERFIL.avgWinR + PERFIL.avgLossR) * f * Math.sqrt(p * (1 - p));
+    const anchoLog = Math.log(1 + f * (PERFIL.avgWinR - PERFIL.frictionR)) - Math.log(1 - f * (PERFIL.avgLossR + PERFIL.frictionR));
+    const sigmaLog = anchoLog * Math.sqrt(p * (1 - p));
     for (const reinvestMode of ["compound", "linear"] as const) {
       const r = proyectaCapital({ ...PERFIL, reinvestMode });
       for (const q of r.monthlyPoints.slice(1)) {
-        const sigma = sigmaR * (PERFIL.riskPct / 100) * Math.sqrt(q.trades);
-        const z = reinvestMode === "compound" ? Math.log(q.upperBalance / q.balance) / sigma : (q.upperBalance - q.balance) / (PERFIL.startBalance * sigma);
+        const raiz = Math.sqrt(q.trades);
+        const z = reinvestMode === "compound"
+          ? Math.log(q.upperBalance / q.balance) / (sigmaLog * raiz)
+          : (q.upperBalance - q.balance) / (PERFIL.startBalance * sigmaR * raiz);
         expect(z).toBeCloseTo(1.282, 6);
       }
     }
+  });
+});
+
+describe("proyectaCapital: en compuesto la línea es la mediana de los caminos y la banda deja un 10 % a cada lado", () => {
+  // El mismo proceso que la fórmula: cada operación gana o pierde su R, menos la fricción, sobre el balance vivo.
+  function finales(p: typeof PERFIL, operaciones: number, caminos = 4001) {
+    const azar = mulberry32(20261104);
+    const f = p.riskPct / 100;
+    const gana = 1 + f * (p.avgWinR - p.frictionR);
+    const pierde = 1 - f * (p.avgLossR + p.frictionR);
+    return Array.from({ length: caminos }, () => {
+      let b = p.startBalance;
+      for (let i = 0; i < operaciones; i++) b *= azar() < p.winRate / 100 ? gana : pierde;
+      return b;
+    }).sort((a, b) => a - b);
+  }
+
+  const PERFILES = [
+    { ...PERFIL, years: 10, riskPct: 1, tradesPerYear: 90, winRate: 45, avgWinR: 2.2, avgLossR: 1, frictionR: 0.02 },
+    { ...PERFIL, years: 5, riskPct: 2, tradesPerYear: 250, winRate: 45, avgWinR: 1.6, avgLossR: 1, frictionR: 0.03 },
+    { ...PERFIL, years: 3, riskPct: 0.5, tradesPerYear: 600, winRate: 56, avgWinR: 1, avgLossR: 1, frictionR: 0.02 },
+  ];
+
+  it.each(PERFILES.map((p, i) => [i, p] as const))("perfil %i", (_, p) => {
+    const r = proyectaCapital(p);
+    const ultimo = r.monthlyPoints.at(-1)!;
+    const sim = finales(p, ultimo.trades);
+    const cuantil = (x: number) => sim.findIndex((v) => v >= x) / sim.length;
+    expect(cuantil(ultimo.balance)).toBeGreaterThan(0.46);
+    expect(cuantil(ultimo.balance)).toBeLessThan(0.54);
+    expect(cuantil(ultimo.lowerBalance)).toBeGreaterThan(0.07);
+    expect(cuantil(ultimo.lowerBalance)).toBeLessThan(0.13);
+    expect(cuantil(ultimo.upperBalance)).toBeGreaterThan(0.87);
+    expect(cuantil(ultimo.upperBalance)).toBeLessThan(0.93);
+  });
+
+  it("con expectancy positiva pero riesgo excesivo, la línea baja aunque la expectancy diga ventaja", () => {
+    const r = proyectaCapital({ ...PERFIL, winRate: 40, avgWinR: 2, avgLossR: 1, frictionR: 0, riskPct: 25, years: 10 });
+    expect(r.hasEdge).toBe(true);
+    expect(r.finalBalance).toBeLessThan(PERFIL.startBalance);
+    expect(r.monthsToDouble).toBeNull();
   });
 });
 

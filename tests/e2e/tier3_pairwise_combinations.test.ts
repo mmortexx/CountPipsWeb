@@ -111,8 +111,13 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
     expect(proyectaCapital(PROYECCION)).toEqual(proyectaCapital(PROYECCION));
     expect(proyectaCapital(PROYECCION).cagr).toBeGreaterThan(0);
     const sinVentaja = proyectaCapital({ ...PROYECCION, winRate: 50, avgWinR: 1 });
-    expect(sinVentaja.cagr).toBe(0);
-    expect(sinVentaja.finalBalance).toBe(PROYECCION.startBalance);
+    // En compuesto el camino mediano baja: subir un 1 % y bajar un 1 % deja menos de lo que había.
+    expect(sinVentaja.cagr).toBeLessThan(0);
+    expect(sinVentaja.finalBalance).toBeLessThan(PROYECCION.startBalance);
+    // En riesgo fijo no hay ese lastre: se queda donde estaba.
+    const sinVentajaFijo = proyectaCapital({ ...PROYECCION, winRate: 50, avgWinR: 1, reinvestMode: "linear" });
+    expect(sinVentajaFijo.cagr).toBe(0);
+    expect(sinVentajaFijo.finalBalance).toBe(PROYECCION.startBalance);
   });
 
   it("Pairwise 7: Language toggle + Frozen Glossary English terms preservation", () => {

@@ -1317,8 +1317,8 @@ export function EquityProjector() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <span className="text-[12px] tnum text-[var(--ink-3)]">
                   {es
-                    ? `Proyección ${reinvestMode === "compound" ? "con interés compuesto" : "con riesgo fijo"} y banda de varianza del ${fmtPct(CONO_CONFIANZA_PCT, 0)}. No es una promesa.`
-                    : `${reinvestMode === "compound" ? "Compounded" : "Fixed-risk"} projection with an ${fmtPct(CONO_CONFIANZA_PCT, 0)} variance band. Not a promise.`}
+                    ? `Proyección ${reinvestMode === "compound" ? "con interés compuesto" : "con riesgo fijo"}: la línea es el camino mediano, y ${fmtPct(CONO_CONFIANZA_PCT, 0)} de los caminos cae dentro de la banda. No es una promesa.`
+                    : `${reinvestMode === "compound" ? "Compounded" : "Fixed-risk"} projection: the line is the median path, and ${fmtPct(CONO_CONFIANZA_PCT, 0)} of paths fall inside the band. Not a promise.`}
                 </span>
 
                 <BotonCopiar

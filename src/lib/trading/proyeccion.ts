@@ -110,6 +110,17 @@ export function proyectaCapital(p: ParametrosProyeccion): ResultadoProyeccion {
   const growthPerTrade = (netExpectancyR * riskPct) / 100;
   const tradesPerMonth = tradesPerYear / 12;
 
+  // En compuesto el balance es un producto: lo representativo es la media del
+  // logaritmo (la mediana de los caminos), no la del retorno, que arrastran unos
+  // pocos caminos con suerte. Por eso, con ventaja pero riesgo excesivo, baja.
+  const f = riskPct / 100;
+  const logGana = Math.log(1 + Math.max(-0.99, f * (avgWinR - frictionR)));
+  const logPierde = Math.log(1 + Math.max(-0.99, f * (-avgLossR - frictionR)));
+  const logPorOperacion = wr * logGana + lr * logPierde;
+  const stdLogPorOperacion = Math.sqrt(
+    Math.max(0, wr * logGana * logGana + lr * logPierde * logPierde - logPorOperacion * logPorOperacion)
+  );
+
   const totalMonths = years * 12;
   const monthlyPoints: PuntoMensual[] = [];
 
@@ -129,7 +140,7 @@ export function proyectaCapital(p: ParametrosProyeccion): ResultadoProyeccion {
   });
 
   const z80 = 1.282; // z-score para una banda del 80 % (p10 a p90), bilateral
-  const monthlyGrowthFactor = Math.pow(1 + Math.max(-0.99, growthPerTrade), tradesPerMonth);
+  const monthlyGrowthFactor = Math.exp(logPorOperacion * tradesPerMonth);
 
   for (let m = 1; m <= totalMonths; m++) {
     if (reinvestMode === "compound") {
@@ -146,17 +157,17 @@ export function proyectaCapital(p: ParametrosProyeccion): ResultadoProyeccion {
     totalDeposited += monthlyContribution;
 
     const cumulativeTrades = Math.round(m * tradesPerMonth);
-    const stdCumulativeReturn = stdPerTradeR * (riskPct / 100) * Math.sqrt(cumulativeTrades);
 
     // La banda se abre alrededor de la propia línea: en compuesto multiplica,
     // en riesgo fijo suma (cada operación arriesga los mismos dólares).
     let upperBalance: number;
     let lowerBalance: number;
     if (reinvestMode === "compound") {
-      upperBalance = currentBalance * Math.exp(z80 * stdCumulativeReturn);
-      lowerBalance = currentBalance * Math.exp(-z80 * stdCumulativeReturn);
+      const stdLog = stdLogPorOperacion * Math.sqrt(cumulativeTrades);
+      upperBalance = currentBalance * Math.exp(z80 * stdLog);
+      lowerBalance = currentBalance * Math.exp(-z80 * stdLog);
     } else {
-      const semiancho = startBalance * z80 * stdCumulativeReturn;
+      const semiancho = startBalance * z80 * stdPerTradeR * f * Math.sqrt(cumulativeTrades);
       upperBalance = currentBalance + semiancho;
       lowerBalance = Math.max(0, currentBalance - semiancho);
     }
