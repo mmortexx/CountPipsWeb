@@ -358,24 +358,25 @@ function TagPill({
   lang: Lang;
   onRemove?: () => void;
 }) {
-  const colors: Record<TagKind, string> = {
-    error: "rgb(var(--pnl-neg))",
-    win: "rgb(var(--pnl-pos))",
-    emotion: "rgb(var(--accent-base))",
-    custom: "rgb(var(--txt-tertiary))",
+  const tokens: Record<TagKind, string> = {
+    error: "var(--pnl-neg)",
+    win: "var(--pnl-pos)",
+    emotion: "var(--accent-base)",
+    custom: "var(--txt-tertiary)",
   };
+  const color = `rgb(${tokens[kind]})`;
   return (
     <span
       className="inline-flex items-center gap-1.5 rounded-[2px] px-[0.55rem] py-[0.15rem] text-[11px] font-semibold leading-[1.4] border"
       style={{
-        color: colors[kind],
-        borderColor: `${colors[kind]} / 0.3)`,
-        backgroundColor: `${colors[kind]} / 0.08)`,
+        color,
+        borderColor: `rgb(${tokens[kind]} / 0.3)`,
+        backgroundColor: `rgb(${tokens[kind]} / 0.08)`,
       }}
     >
       <span
         className="w-1.5 h-1.5 rounded-[1px]"
-        style={{ backgroundColor: colors[kind] }}
+        style={{ backgroundColor: color }}
         aria-hidden
       />
       {label}
