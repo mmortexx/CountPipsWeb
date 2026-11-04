@@ -60,7 +60,7 @@ describe("EquityCurve: el rótulo dice de dónde a dónde va el balance, suba o 
 });
 
 describe("Heatmap: el rótulo resume la mejor y la peor franja", () => {
-  // 6 de julio de 2026 es lunes; el sábado queda fuera del mapa.
+  // 6 de julio de 2026 es lunes.
   const operacion = (d: number, h: number, minuto: number, netPnl: number): Trade => ({
     ...TRADES[0],
     closedAt: new Date(Date.UTC(2026, 6, d, h, minuto)),
@@ -71,20 +71,20 @@ describe("Heatmap: el rótulo resume la mejor y la peor franja", () => {
     operacion(6, 9, 45, 100), // lunes 08–12: la celda suma 600
     operacion(8, 17, 0, -300), // miércoles 16–20
     operacion(10, 22, 0, 50), // viernes 20–24
-    operacion(11, 10, 0, -9999), // sábado: no cuenta
+    operacion(11, 10, 0, -9999), // sábado: el mapa incluye el fin de semana
   ];
 
   it("en español", () => {
     monta("/demo", createElement(Heatmap, { trades }));
     expect(plano(imagen().getAttribute("aria-label"))).toBe(
-      "Mapa de calor de rentabilidad por día de la semana y franja horaria. Mejor franja: lunes 08–12, +600 $. Peor franja: miércoles 16–20, −300 $."
+      "Mapa de calor de rentabilidad por día de la semana y franja horaria. Mejor franja: lunes 08–12, +600 $. Peor franja: sábado 08–12, −9.999 $."
     );
   });
 
   it("en inglés", () => {
     monta("/en/demo", createElement(Heatmap, { trades }));
     expect(plano(imagen().getAttribute("aria-label"))).toBe(
-      "Heatmap of profitability by weekday and time band. Best band: Monday 08–12, +$600. Worst band: Wednesday 16–20, −$300."
+      "Heatmap of profitability by weekday and time band. Best band: Monday 08–12, +$600. Worst band: Saturday 08–12, −$9,999."
     );
   });
 
