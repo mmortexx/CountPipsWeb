@@ -2,6 +2,7 @@
 
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { useLang } from "@/lib/i18n";
+import { fmtOperaciones } from "@/lib/trading/format";
 
 interface HistogramProps {
   data: { x: number | string; count: number }[];
@@ -44,6 +45,16 @@ export const Histogram = memo(function Histogram({
   const { lang } = useLang();
 
   const maxCount = useMemo(() => Math.max(...data.map((d) => d.count), 1), [data]);
+
+  /* Lo que dice a quien no lo ve: la columna más alta (la primera si empatan) y el total. */
+  const rotulo = useMemo(() => {
+    const total = data.reduce((suma, d) => suma + d.count, 0);
+    if (total === 0) return lang === "es" ? "Histograma sin operaciones" : "Histogram with no trades";
+    const moda = data.reduce((m, d) => (d.count > m.count ? d : m), data[0]);
+    return lang === "es"
+      ? `Histograma de ${data.length} categorías. Moda: ${formatX(moda.x)}, con ${fmtOperaciones(moda.count, lang)}. Total: ${fmtOperaciones(total, lang)}.`
+      : `Histogram of ${data.length} categories. Mode: ${formatX(moda.x)}, with ${fmtOperaciones(moda.count, lang)}. Total: ${fmtOperaciones(total, lang)}.`;
+  }, [data, formatX, lang]);
 
   /* Truncar los rótulos los dejaría ilegibles: se callan los que no caben. Con
      la fila medida, el salto sale de su ancho y del rótulo más largo
@@ -89,9 +100,7 @@ export const Histogram = memo(function Histogram({
       className={`tj-realce relative tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] px-2 pt-2 pb-1 ${className}`}
       ref={containerRef}
       role="img"
-      aria-label={lang === "es"
-        ? `Histograma con ${data.length} categorías`
-        : `Histogram with ${data.length} categories`}
+      aria-label={rotulo}
       style={{ transformOrigin: "center" }}
     >
       <div ref={filaRef} className="flex items-end gap-1" style={{ height }}>

@@ -4,13 +4,44 @@ import { memo, useMemo, useRef, useState } from "react";
 import type { Trade } from "@/lib/trading/data";
 import { heatmap, WEEKDAYS_SHORT } from "@/lib/trading/data";
 import { useLang } from "@/lib/i18n";
-import { fmtCifraCorta, fmtInt, fmtMoney } from "@/lib/trading/format";
+import type { Lang } from "@/lib/locale";
+import { fmtCifraCorta, fmtInt, fmtMoney, LOCALE_FECHA } from "@/lib/trading/format";
+
 interface HeatmapProps {
   trades: Trade[];
   className?: string;
 }
 
 const HOUR_LABELS = ["00–04", "04–08", "08–12", "12–16", "16–20", "20–24"];
+
+/** Lo que dice el mapa a quien no lo ve: su mejor y su peor franja, entre las que tienen operaciones. */
+function rotuloMapa(grid: number[][], cuenta: number[][], lang: Lang): string {
+  const es = lang === "es";
+  const titulo = es
+    ? "Mapa de calor de rentabilidad por día de la semana y franja horaria"
+    : "Heatmap of profitability by weekday and time band";
+  // El 1 de enero de 2024 fue lunes: la fila r es el día 1 + r.
+  const dia = (r: number) =>
+    new Intl.DateTimeFormat(LOCALE_FECHA[lang], { weekday: "long", timeZone: "UTC" }).format(new Date(Date.UTC(2024, 0, 1 + r)));
+  const franja = (r: number, c: number) => `${dia(r)} ${HOUR_LABELS[c]}, ${fmtMoney(grid[r][c], lang, { sign: true, decimals: 0 })}`;
+
+  let mejor: [number, number] | null = null;
+  let peor: [number, number] | null = null;
+  for (let r = 0; r < grid.length; r++) {
+    for (let c = 0; c < grid[r].length; c++) {
+      if (cuenta[r][c] === 0) continue;
+      if (!mejor || grid[r][c] > grid[mejor[0]][mejor[1]]) mejor = [r, c];
+      if (!peor || grid[r][c] < grid[peor[0]][peor[1]]) peor = [r, c];
+    }
+  }
+  if (!mejor || !peor) return `${titulo}. ${es ? "Sin operaciones." : "No trades."}`;
+  if (mejor[0] === peor[0] && mejor[1] === peor[1]) {
+    return `${titulo}. ${es ? "Solo hay operaciones en" : "Trades only in"} ${franja(...mejor)}.`;
+  }
+  return es
+    ? `${titulo}. Mejor franja: ${franja(...mejor)}. Peor franja: ${franja(...peor)}.`
+    : `${titulo}. Best band: ${franja(...mejor)}. Worst band: ${franja(...peor)}.`;
+}
 
 /** Mapa de calor de P&L por día y franja horaria: verde positivo, rojo negativo, intensidad por magnitud. */
 export const Heatmap = memo(function Heatmap({ trades, className = "" }: HeatmapProps) {
@@ -38,6 +69,8 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
     return m || 1;
   }, [grid]);
 
+  const rotulo = useMemo(() => rotuloMapa(grid, countGrid, lang), [grid, countGrid, lang]);
+
   const containerRef = useRef<HTMLDivElement>(null);
   // Celda señalada: coordenadas y punto de anclaje (px, relativo al contenedor).
   const [hovered, setHovered] = useState<{ r: number; c: number; x: number; y: number } | null>(null);
@@ -48,9 +81,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
       className={`tj-realce relative tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] ${className}`}
       ref={containerRef}
       role="img"
-      aria-label={lang === "es"
-        ? "Mapa de calor de rentabilidad por día de la semana y franja horaria"
-        : "Heatmap of profitability by weekday and time band"}
+      aria-label={rotulo}
       style={{ transformOrigin: "center" }}
     >
       <div className="flex gap-1.5">
