@@ -563,7 +563,7 @@ for (const idioma of ["es", "en"]) {
   await p.setViewportSize({ width: 390, height: 844 });
   await p.locator("button[data-menu-movil]").click();
   await p.waitForTimeout(600);
-  const boton = p.locator("#mobile-nav-drawer button[aria-label='Cambiar idioma']");
+  const boton = p.locator("#mobile-nav-drawer button[aria-label$='Cambiar idioma']");
   if (!(await boton.count())) {
     fallos.push({ ruta: "/", detalle: "no encontré el selector de idioma dentro del cajón móvil" });
   } else {

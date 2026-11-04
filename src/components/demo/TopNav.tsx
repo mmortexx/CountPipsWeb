@@ -205,7 +205,7 @@ export function TopNav() {
         <button
           type="button"
           onClick={() => setLang(es ? "en" : "es")}
-          aria-label={es ? "Idioma" : "Language"}
+          aria-label={es ? "ES: cambiar idioma" : "EN: change language"}
           title={es ? "Idioma" : "Language"}
           className="h-11 min-w-[44px] sm:h-8 sm:min-w-0 px-2 rounded-[2px] flex items-center justify-center gap-1 text-[12px] font-semibold text-secondary hover:text-primary hover:bg-[rgb(var(--txt-primary)/0.06)] transition-colors"
         >

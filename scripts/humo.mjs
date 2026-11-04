@@ -1101,7 +1101,7 @@ for (const pantalla of PANTALLAS) {
           const deMenus = [["Producto", await opacidadEnTemas("#navbar-producto-panel")]];
           await pagina.keyboard.press("Escape");
           await pagina.waitForTimeout(240);
-          await pagina.locator('header button[aria-label="Cambiar idioma"]:visible').first().click();
+          await pagina.locator('header button[aria-label$="Cambiar idioma"]:visible').first().click();
           await pagina.waitForSelector("[data-panel-idiomas]", { timeout: 5000 }).catch(() => {});
           deMenus.push(["idioma", await opacidadEnTemas("[data-panel-idiomas]")]);
           await pagina.keyboard.press("Escape");

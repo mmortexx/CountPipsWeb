@@ -340,7 +340,6 @@ export function DashboardPage() {
                       La demo no pega imágenes: solo muestra el flujo. */}
                   <button
                     type="button"
-                    aria-label={t("dropScreens")}
                     // Altura: 104 px en móvil (con 260 el primer control del
                     // formulario quedaba fuera de la vista), 320 en sm y 380 en
                     // md+, como en la app.
