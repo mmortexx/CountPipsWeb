@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 /** Ventana (ms) durante la que se recoloca el ancla, hasta que la página se asienta. */
@@ -15,12 +15,20 @@ const TOLERANCE_PX = 4;
  * (`/pricing#waitlist`) lleva a la sección y la vuelve a comprobar durante
  * `SETTLE_WINDOW_MS`: la página sigue creciendo tras el salto (fuentes, trozos
  * bajo demanda, secciones diferidas) y el ancla se desplazaría. Respeta el
- * `scroll-margin-top` de cada sección. No pinta nada.
+ * `scroll-margin-top` de cada sección. Al cambiar de página sin ancla lleva
+ * también el foco al contenido principal: el enlace que se pulsó ya no existe y
+ * sin esto el teclado y el lector de pantalla vuelven al principio del documento.
+ * No pinta nada.
  */
 export function ScrollToTop() {
   const pathname = usePathname();
+  const anterior = useRef<string | null>(null);
 
   useEffect(() => {
+    // Ni la primera carga ni el segundo montaje de StrictMode son una navegación.
+    const navegacion = anterior.current !== null && anterior.current !== pathname;
+    anterior.current = pathname;
+
     let hash = window.location.hash.replace("#", "");
     try {
       hash = decodeURIComponent(hash);
@@ -31,6 +39,7 @@ export function ScrollToTop() {
     if (!hash) {
       // `auto` evita pelear con la restauración nativa del navegador.
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      if (navegacion) document.getElementById("main-content")?.focus({ preventScroll: true });
       return;
     }
 
