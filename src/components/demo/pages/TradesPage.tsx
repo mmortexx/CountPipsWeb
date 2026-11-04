@@ -156,10 +156,13 @@ const TradeRow = memo(function TradeRow({
   const assetLabel =
     ASSET_LABEL[inst?.assetClass ?? "stock"]?.[lang === "es" ? "es" : "en"] ?? "";
   const isConfirming = confirmingId === trade.id;
+  const abre = () => {
+    if (!isConfirming) goDetail(trade.id);
+  };
 
   return (
     <tr
-      onClick={() => !isConfirming && goDetail(trade.id)}
+      onClick={abre}
       data-operacion={trade.id}
       className={`group relative cursor-pointer border-b border-[rgb(var(--divider)/0.06)] last:border-b-0 transition-[background-color,box-shadow] ${
         selected ? "bg-[rgb(var(--accent-base)/0.08)]" : "even:bg-[rgb(var(--divider)/0.02)] hover:bg-[rgb(var(--divider)/0.06)]"
@@ -187,9 +190,16 @@ const TradeRow = memo(function TradeRow({
       <td className="px-3 py-2.5 whitespace-nowrap">
         <div className="flex items-center gap-2">
           <AssetMark assetClass={inst?.assetClass} title={assetLabel} />
-          <span className="font-medium text-primary text-sm tnum">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              abre();
+            }}
+            className="rounded-[2px] font-medium text-primary text-sm tnum"
+          >
             {trade.instrument}
-          </span>
+          </button>
           {isCustom && (
             <span
               className="text-[11px] uppercase tracking-[0.15em] font-semibold text-primary border border-[rgb(var(--divider)/0.2)] rounded-[2px] px-1 py-px"
