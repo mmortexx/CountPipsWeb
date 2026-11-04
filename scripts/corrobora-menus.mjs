@@ -94,7 +94,7 @@ if (!(await subir.count())) {
 }
 
 // 9. Cambio de idioma ES → EN con el selector de la barra («Cambiar idioma»).
-await page.locator('header button[aria-label="Cambiar idioma"]:visible').first().click();
+await page.locator('header button[aria-label$="Cambiar idioma"]:visible').first().click();
 await page.waitForTimeout(500);
 // Cada idioma es un enlace con su dirección: se puede abrir en otra pestaña.
 const enlaceEn = page.locator("[data-panel-idiomas] a").filter({ hasText: /English/ }).first();

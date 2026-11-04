@@ -84,8 +84,9 @@ export function computeRiskOfRuin(
 }
 
 /**
- * Racha máxima de pérdidas consecutivas esperada en una muestra de N operaciones.
- * E[Max Consecutive Losses] = ln(N) / -ln(1 - WinRate)
+ * Racha máxima de pérdidas consecutivas esperada en N operaciones, con q la
+ * probabilidad de perder: ln(N·(1 − q)) / −ln(q) + γ / −ln(q) − 1/2 (Gordon,
+ * Schilling y Waterman). `ln(N) / −ln(q)` da una o dos de más.
  */
 export function computeExpectedMaxLossStreak(winRate: number, tradesCount: number): number {
   const n = Math.max(1, Math.floor(tradesCount));
@@ -97,19 +98,16 @@ export function computeExpectedMaxLossStreak(winRate: number, tradesCount: numbe
 
   const denom = -Math.log(q);
   if (denom <= 0) return n;
-  const streak = Math.log(n) / denom;
+  const streak = (Math.log(n * p) + 0.5772) / denom - 0.5;
   return Math.min(n, Math.max(1, Math.round(streak)));
 }
 
-/** VaR paramétrico de una operación, en dólares: 1 R por z, con z = 1,645 al 95 % y 2,326 al 99 %. */
-export function computeParametricVaR(
-  balance: number,
-  riskPct: number,
-  confidence: 95 | 99 = 95
-): number {
-  const z = confidence === 99 ? 2.326 : 1.645;
-  const oneR = Math.max(0, balance) * (Math.max(0, riskPct) / 100);
-  return +(oneR * z).toFixed(2);
+/** Lo que se lleva una racha de `perdidas` operaciones perdedoras seguidas, en
+ *  dólares, si cada una arriesga el mismo % de lo que queda en la cuenta. */
+export function perdidaEnRacha(balance: number, riskPct: number, perdidas: number): number {
+  const b = Math.max(0, balance);
+  const r = Math.min(1, Math.max(0, riskPct) / 100);
+  return +(b * (1 - (1 - r) ** Math.max(0, perdidas))).toFixed(2);
 }
 
 /** CDF de la normal estándar N(0, 1) vía erf (Abramowitz y Stegun 7.1.26, error máximo < 1,5e-7). */

@@ -154,6 +154,23 @@ function cifraSinSigno(cuerpo: string, lang: Lang, decimales: number): number | 
 
 // Separador entre la cifra y el % según convención de idioma:
 // español, francés y alemán con espacio duro (U+00A0); inglés, portugués e italiano pegado.
+/** Una cantidad negociada: sin decimales si es entera («2 contratos») y, si no,
+ *  los que tenga, hasta tres («0,15», «0,005»). */
+export function fmtCantidad(valor: number, lang: Lang = "es"): string {
+  const decimales = (String(+valor.toFixed(3)).split(".")[1] ?? "").length;
+  return fmtNum(valor, lang, decimales);
+}
+
+/** Valor de los ratios (factor de beneficio, Omega, Gain-to-Pain) cuando no hay
+ *  pérdidas que dividir: finito, como exige el contrato de métricas, y sin
+ *  confundirse con un resultado. Se enseña con `fmtFactor`. */
+export const FACTOR_SIN_PERDIDAS = 100;
+
+/** Un ratio con sus decimales, o «∞» si no hubo pérdidas. */
+export function fmtFactor(valor: number, lang: Lang = "es", decimals = 2): string {
+  return valor === FACTOR_SIN_PERDIDAS ? "∞" : fmtNum(valor, lang, decimals);
+}
+
 const PCT_SEP: Record<Lang, string> = {
   es: " %",
   en: "%",

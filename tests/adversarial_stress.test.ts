@@ -93,7 +93,7 @@ describe("Adversarial Stress Test: Quantitative Mathematical Models", () => {
     expect(mWin.winRate).toBe(1.0);
     expect(mWin.wins).toBe(1);
     expect(mWin.losses).toBe(0);
-    expect(mWin.profitFactor).toBe(350);
+    expect(mWin.profitFactor).toBe(100); // sin pérdidas: la convención, no la ganancia en dólares
     expect(mWin.sharpe).toBe(0); // con n = 1 la desviación es 0
     expect(mWin.sortino).toBe(0); // sin pérdidas, la desviación a la baja es 0
     expect(mWin.maxDrawdown).toBe(0);

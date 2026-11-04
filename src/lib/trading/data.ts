@@ -21,6 +21,7 @@ import { SETUP_NAMES, type SetupName } from "./setups.ts";
 import { mulberry32 } from "./azar.ts";
 import { kellyPct } from "./estadistica.ts";
 import { OPERACIONES_MUESTRA, SALDO_INICIAL_MUESTRA } from "./muestra.ts";
+import { FACTOR_SIN_PERDIDAS } from "./format.ts";
 import type { Lang } from "@/lib/locale";
 
 export interface Instrument {
@@ -202,6 +203,40 @@ export function operacionesExportables(trades: readonly Trade[], lang: Lang) {
 
 const INITIAL_BALANCE = SALDO_INICIAL_MUESTRA;
 
+/**
+ * Precios y cantidad de una operación de la muestra, deducidos de su resultado:
+ * el riesgo y el P&L mandan (las cifras de la muestra no dependen de los precios)
+ * y lo que se lee en el detalle cuadra con ellos. La cantidad respeta el escalón
+ * del mercado (contratos y acciones enteros, con un mínimo de uno) y es el stop
+ * el que se ajusta a ella: un contrato de ES con 100 $ de riesgo son 2 puntos de
+ * stop. Los precios caen en el tick, así que el riesgo y el bruto escritos pueden
+ * diferir de los recalculados en medio tick. El precio deriva con la fecha.
+ */
+function preciosDeOperacion(
+  inst: Instrument,
+  o: { direction: Direction; riskUsd: number; grossPnl: number; plannedRr: number; sorteoStop: number; closedAt: Date; indice: number }
+) {
+  const alTick = (precio: number) => +(Math.round(precio / inst.tickSize) * inst.tickSize).toFixed(inst.decimals);
+  const dias = o.closedAt.getTime() / 86_400_000;
+  const deriva = 1 + 0.05 * Math.sin(dias / 23 + inst.basePrice) + 0.004 * Math.sin(o.indice * 2.1);
+  const entry = alTick(inst.basePrice * deriva);
+
+  const multiplicador = getInstrumentMultiplier(inst.symbol, inst.assetClass);
+  const paso = seNegociaEnEnteros(inst) ? 1 : inst.assetClass === "crypto" ? 0.001 : 0.01;
+  const distanciaBuscada = (0.004 + o.sorteoStop * 0.012) * entry;
+  const qty = +Math.max(paso, Math.floor(o.riskUsd / (distanciaBuscada * multiplicador) / paso) * paso).toFixed(3);
+  const stopDist = o.riskUsd / (qty * multiplicador);
+
+  const lado = o.direction === "long" ? 1 : -1;
+  return {
+    entry,
+    qty,
+    exit: alTick(entry + lado * (o.grossPnl / (qty * multiplicador))),
+    initialStop: alTick(entry - lado * stopDist),
+    target: alTick(entry + lado * stopDist * o.plannedRr),
+  };
+}
+
 function buildTrades(): Trade[] {
   const rnd = mulberry32(20260716);
   const trades: Trade[] = [];
@@ -231,23 +266,7 @@ function buildTrades(): Trade[] {
     // bruto = neto + comisiones.
     const grossPnl = +(netPnl + fees).toFixed(2);
 
-    const entry = +inst.basePrice.toFixed(inst.decimals);
-    const stopDist = (0.004 + rnd() * 0.012) * entry;
-    const exitRaw =
-      direction === "long" ? entry + stopDist * r : entry - stopDist * r;
-    const exit = +exitRaw.toFixed(inst.decimals);
-    const initialStop =
-      direction === "long"
-        ? +(entry - stopDist).toFixed(inst.decimals)
-        : +(entry + stopDist).toFixed(inst.decimals);
-    const target =
-      direction === "long"
-        ? +(entry + stopDist * plannedRr).toFixed(inst.decimals)
-        : +(entry - stopDist * plannedRr).toFixed(inst.decimals);
-    const qty = +Math.max(
-      0.0001,
-      riskUsd / stopDist / (inst.assetClass === "forex" ? 100000 : 1)
-    ).toFixed(inst.assetClass === "forex" ? 2 : 3);
+    const sorteoStop = rnd();
 
     const mfe = isWin ? +(r + rnd() * 0.8).toFixed(2) : +(rnd() * 1.2).toFixed(2);
     const mae = isWin ? +(-(rnd() * 0.5)).toFixed(2) : +(-(0.9 + rnd() * 0.6)).toFixed(2);
@@ -282,6 +301,10 @@ function buildTrades(): Trade[] {
         ? 60 + Math.floor(rnd() * 240)
         : 5 + Math.floor(rnd() * 180);
     const openedAt = new Date(closedAt.getTime() - durationMin * 60000);
+
+    const { entry, exit, initialStop, target, qty } = preciosDeOperacion(inst, {
+      direction, riskUsd, grossPnl, plannedRr, sorteoStop, closedAt, indice: i,
+    });
 
     // Nota del día 1–5: el mismo sorteo, desplazado un punto hacia el resultado.
     const sorteo = 1 + Math.floor(rnd() * 5);
@@ -374,6 +397,11 @@ export function nivelDisciplina(pct: number): "alta" | "media" | "baja" {
   return pct >= 0.8 ? "alta" : pct >= 0.5 ? "media" : "baja";
 }
 
+/** Ganancia bruta entre pérdida bruta, en dólares. La misma en toda la demo. */
+export function factorDeBeneficio(ganancia: number, perdida: number): number {
+  return perdida > 0 ? ganancia / perdida : ganancia > 0 ? FACTOR_SIN_PERDIDAS : 0;
+}
+
 export function computeMetrics(trades: Trade[]): Metrics {
   const sorted = [...trades].sort(
     (a, b) => a.closedAt.getTime() - b.closedAt.getTime()
@@ -398,10 +426,9 @@ export function computeMetrics(trades: Trade[]): Metrics {
     bal += t.netPnl;
     peak = Math.max(peak, bal);
     const dd = peak - bal;
-    if (dd > maxDd) {
-      maxDd = dd;
-      maxDdPct = peak > 0 ? dd / peak : 0;
-    }
+    maxDd = Math.max(maxDd, dd);
+    // Por separado: la mayor caída en dólares no tiene por qué ser la mayor en porcentaje.
+    if (peak > 0) maxDdPct = Math.max(maxDdPct, dd / peak);
     equityCurve.push({ date: t.closedAt, balance: bal, perf: bal - INITIAL_BALANCE });
     drawdownCeiling.push(peak);
   }
@@ -495,7 +522,7 @@ export function computeMetrics(trades: Trade[]): Metrics {
     losses: losses.length,
     expectancy: n ? netPnl / n : 0,
     expectancyR,
-    profitFactor: grossLoss ? grossWin / grossLoss : grossWin,
+    profitFactor: factorDeBeneficio(grossWin, grossLoss),
     payoff,
     avgWin,
     avgLoss,
@@ -551,7 +578,7 @@ export function computeOmega(trades: Trade[], threshold = 0): number {
   }
 
   if (shortfallLosses === 0) {
-    return excessGains > 0 ? 100 : 0;
+    return excessGains > 0 ? FACTOR_SIN_PERDIDAS : 0;
   }
   return +(excessGains / shortfallLosses).toFixed(4);
 }
@@ -659,7 +686,7 @@ export function computeGainToPain(trades: Trade[]): number {
   const netPnl = trades.reduce((s, t) => s + t.netPnl, 0);
   const losses = trades.filter((t) => t.netPnl < 0);
   const absLoss = Math.abs(losses.reduce((s, t) => s + t.netPnl, 0));
-  if (absLoss === 0) return netPnl > 0 ? 100 : 0;
+  if (absLoss === 0) return netPnl > 0 ? FACTOR_SIN_PERDIDAS : 0;
   return +(netPnl / absLoss).toFixed(4);
 }
 
@@ -905,22 +932,22 @@ export function durationHistogram(trades: Trade[]): { label: string; count: numb
   }));
 }
 
+/** Fila del mapa de calor para un día UTC: de lunes (0) a domingo (6). */
+export const filaDeDia = (d: Date) => (d.getUTCDay() + 6) % 7;
+
+/** P&L por día de la semana (lunes a domingo) y franja de 4 horas. */
 export function heatmap(trades: Trade[]): number[][] {
-  const hourBuckets = [0, 4, 8, 12, 16, 20];
-  const grid = Array.from({ length: 5 }, () => Array(hourBuckets.length).fill(0));
+  const grid: number[][] = Array.from({ length: 7 }, () => Array(6).fill(0));
   for (const t of trades) {
-    const d = t.closedAt.getUTCDay();
-    if (d === 0 || d === 6) continue;
-    const row = d - 1;
-    const h = t.closedAt.getUTCHours();
-    const col = Math.min(5, Math.floor(h / 4));
-    grid[row][col] += t.netPnl;
+    grid[filaDeDia(t.closedAt)][Math.floor(t.closedAt.getUTCHours() / 4)] += t.netPnl;
   }
   return grid;
 }
 
 const DAYS_ES = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const DAYS_EN = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+export const diasCortos = (lang: Lang) => (lang === "es" ? DAYS_ES : DAYS_EN);
 
 const MONTHS_ES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 const MONTHS_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -939,13 +966,19 @@ export function weekdayBreakdown(trades: Trade[], lang: Lang = "es"): { day: str
 
 export function monthlyBreakdown(trades: Trade[], lang: Lang = "es"): { month: string; pnl: number }[] {
   const months = lang === "es" ? MONTHS_ES : MONTHS_EN;
+  // La clave lleva el año: una operación registrada hoy no se suma al mismo mes de otro año.
   const byMonth = new Map<number, number>();
   for (const t of trades) {
-    const m = t.closedAt.getUTCMonth();
+    const m = t.closedAt.getUTCFullYear() * 12 + t.closedAt.getUTCMonth();
     byMonth.set(m, (byMonth.get(m) || 0) + t.netPnl);
   }
   const present = [...byMonth.keys()].sort((a, b) => a - b);
-  return present.map((m) => ({ month: months[m], pnl: byMonth.get(m)! }));
+  const anio = (m: number) => Math.floor(m / 12);
+  const variosAnios = present.length > 0 && anio(present[0]) !== anio(present[present.length - 1]);
+  return present.map((m) => ({
+    month: variosAnios ? `${months[m % 12]} ${String(anio(m) % 100).padStart(2, "0")}` : months[m % 12],
+    pnl: byMonth.get(m)!,
+  }));
 }
 
 export interface RankingRow {
@@ -998,11 +1031,9 @@ export function dailyPnlForMonth(
   return m;
 }
 
-export const WEEKDAYS_SHORT = ["Lun", "Mar", "Mié", "Jue", "Vie"];
-
 export {
   computeRiskOfRuin,
   computeExpectedMaxLossStreak,
-  computeParametricVaR,
+  perdidaEnRacha,
   normalCdf,
 } from "./estadistica.ts";

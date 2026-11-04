@@ -78,9 +78,13 @@ export const UNIDADES_LOTE: Record<TipoLote, number> = { standard: 100000, mini:
 const ESCALON_FOREX = 1000;
 /** Comisión de ida y vuelta por lote estándar, en dólares. */
 const COMISION_FOREX_LOTE = 5;
-/** Comisión por unidad en acciones o cripto, y su tick: un céntimo. */
+/** Comisión por unidad en acciones, y su tick: un céntimo. */
 const COMISION_ACCION = 0.005;
 const TICK_ACCION = 0.01;
+/** En cripto la comisión es un % del nocional por lado, sin deslizamiento aparte. */
+export const COMISION_CRIPTO_LADO = 0.001;
+/** En cripto un céntimo no dice nada: la cifra de escalón es un 1 % de precio. */
+const ESCALON_CRIPTO = 0.01;
 
 export interface EntradaPlan {
   mercado: MercadoPlan;
@@ -149,6 +153,7 @@ export function calculaPlan(e: EntradaPlan): ResultadoPlan {
   let escalon = 0;
   let comisionPorUnidad = COMISION_ACCION;
   let tick = TICK_ACCION;
+  let deslizamientoPorUnidad = TICK_ACCION;
   let unidadesPorTamano = 1;
   let decimalesTamano = 2;
   if (e.mercado === "forex") {
@@ -156,6 +161,7 @@ export function calculaPlan(e: EntradaPlan): ResultadoPlan {
     escalon = ESCALON_FOREX;
     comisionPorUnidad = COMISION_FOREX_LOTE / UNIDADES_LOTE.standard;
     tick = e.par.pip;
+    deslizamientoPorUnidad = tick * dolaresPorUnidad;
     unidadesPorTamano = UNIDADES_LOTE[e.lote];
     decimalesTamano = e.lote === "standard" ? 2 : e.lote === "mini" ? 1 : 0;
   } else if (e.mercado === "futures") {
@@ -163,7 +169,12 @@ export function calculaPlan(e: EntradaPlan): ResultadoPlan {
     escalon = 1;
     comisionPorUnidad = e.futuro.comision;
     tick = e.futuro.tickSize;
+    deslizamientoPorUnidad = tick * dolaresPorUnidad;
     decimalesTamano = 0;
+  } else if (e.mercado === "crypto") {
+    comisionPorUnidad = e.entrada * COMISION_CRIPTO_LADO * 2;
+    tick = e.entrada * ESCALON_CRIPTO;
+    deslizamientoPorUnidad = 0;
   }
 
   const riesgoPorUnidad = distStop * dolaresPorUnidad;
@@ -194,7 +205,7 @@ export function calculaPlan(e: EntradaPlan): ResultadoPlan {
   // Hacia abajo y con tolerancia de coma flotante: 100 $ entre 100 $ por contrato es uno, no 0,9999999.
   const unidades = escalon > 0 ? Math.floor(exactas / escalon + 1e-9) * escalon : exactas;
   const riesgoReal = unidades * riesgoPorUnidad;
-  const friccion = e.friccion ? unidades * (comisionPorUnidad + tick * dolaresPorUnidad) : 0;
+  const friccion = e.friccion ? unidades * (comisionPorUnidad + deslizamientoPorUnidad) : 0;
   const beneficioBruto = unidades * distObjetivo * dolaresPorUnidad;
   const nocional = unidades * e.entrada * dolaresPorUnidad;
   const apalancamiento = e.balance > 0 ? nocional / e.balance : 0;
@@ -207,7 +218,7 @@ export function calculaPlan(e: EntradaPlan): ResultadoPlan {
     friccionSuperaRiesgo: friccion > riesgoReal,
     riesgoTotal: riesgoReal + friccion,
     tamano: unidades / unidadesPorTamano,
-    decimalesTamano: e.mercado === "equities" ? decimalesDeTamano(unidades) : decimalesTamano,
+    decimalesTamano: e.mercado === "equities" || e.mercado === "crypto" ? decimalesDeTamano(unidades) : decimalesTamano,
     noCabe: escalon > 0 && unidades === 0,
     riesgoDeUno: escalon * riesgoPorUnidad,
     valorPip: unidades * tick * dolaresPorUnidad,

@@ -714,6 +714,23 @@
     }
   }
 
+  /* Zona de 24 × 24 px como mínimo (WCAG 2.5.8) alrededor de un control más
+     pequeño (la casilla de una fila, la «×» de una etiqueta), siempre y no solo
+     con el dedo. Crece un pseudoelemento centrado, no la caja: el control y sus
+     vecinos no se mueven. */
+  .tj-area-24 {
+    position: relative;
+  }
+  .tj-area-24::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 24px);
+    height: max(100%, 24px);
+    transform: translate(-50%, -50%);
+  }
+
   /* Las flechas de WebKit en los campos numéricos reservan ancho aunque
      `appearance: none` las oculte (a 320 px recortaban el número). Se
      retiran explícitamente; Firefox usa `-moz-appearance`. */

@@ -138,7 +138,7 @@ const ROWS: Row[] = [
       },
       {
         es: "Depende del proveedor",
-        en: "Up to the vendor",
+        en: "Depends on the vendor",
         pt: "Depende do provedor",
         fr: "Dépend du fournisseur",
         de: "Hängt vom Anbieter ab",
@@ -218,7 +218,7 @@ export function Comparison() {
           etiqueta={tx(lang, { es: "Comparativa", en: "Comparison", pt: "Comparativo", fr: "Comparatif", de: "Vergleich", it: "Confronto" })}
           titulo={tx(lang, {
             es: <>No es lo mismo medir que apuntar.</>,
-            en: <>Measuring is not writing it down.</>,
+            en: <>Measuring isn’t the same as writing it down.</>,
             pt: <>Medir não é o mesmo que anotar.</>,
             fr: <>Mesurer n’est pas simplement noter.</>,
             de: <>Messen ist nicht bloßes Notieren.</>,

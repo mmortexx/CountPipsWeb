@@ -49,6 +49,45 @@ export function tituloDeTermino(term: string, lang: Lang): string {
   return sigla;
 }
 
+/** Voces que un trader hispano busca en inglés: la ficha española las nombra también así. */
+const ALIAS_INGLES: Record<string, string> = {
+  long: "long",
+  short: "short",
+  liquidity: "liquidity",
+  volatility: "volatility",
+  trend: "trend",
+  margin: "margin",
+  leverage: "leverage",
+  slippage: "slippage",
+  "win-rate": "win rate",
+  "risk-of-ruin": "risk of ruin",
+  "position-sizing": "position sizing",
+  "risk-reward-ratio": "risk-reward",
+  "limit-order": "limit order",
+  "market-order": "market order",
+};
+
+/** El nombre español con su alias inglés, si lo tiene: «Deslizamiento (slippage)». */
+export function nombreConAliasIngles(t: TerminoGlosario): string {
+  const nombre = nombreTermino(t, "es");
+  const alias = ALIAS_INGLES[t.slug];
+  return alias ? `${nombre} (${alias})` : nombre;
+}
+
+/** La entradilla de la ficha española: la definición y cómo se dice en inglés. */
+export function definicionConAliasIngles(t: TerminoGlosario): string {
+  const alias = ALIAS_INGLES[t.slug];
+  return alias ? `${t.es} En inglés, ${alias}.` : t.es;
+}
+
+/** El `<title>` de la ficha española: con el alias inglés si cabe. */
+export function tituloDeFicha(t: TerminoGlosario): string {
+  const nombre = nombreTermino(t, "es");
+  const conAlias = nombreConAliasIngles(t);
+  const corto = `${conAlias}: qué es`;
+  return conAlias !== nombre && `${corto} — CountPips`.length <= LARGO_MAXIMO_TITULO ? corto : tituloDeTermino(nombre, "es");
+}
+
 /**
  * Descripción de la ficha de un término (meta description, og y twitter): la
  * definición recortada por frases enteras, entre 70 y 155 caracteres. Si
@@ -312,8 +351,8 @@ export const FORMULAS_GLOSARIO: Record<
   "sortino-ratio": {
     formulaEs: "So = ((μ − Rf) / σd) × √N",
     formulaEn: "So = ((μ − Rf) / σd) × √N",
-    variablesEs: "μ: retorno medio, Rf: tasa libre de riesgo (Rf=0 en operativa intradiaria), σd: desviación estándar de retornos negativos, N: operaciones/año",
-    variablesEn: "μ: mean return, Rf: risk-free rate (Rf=0 in intraday trading), σd: downside standard deviation, N: trades/year",
+    variablesEs: "μ: retorno medio, Rf: tasa libre de riesgo (Rf=0 en operativa intradiaria), σd: raíz de la media de los cuadrados de las pérdidas, con las ganadoras contando como 0, N: operaciones/año",
+    variablesEn: "μ: mean return, Rf: risk-free rate (Rf=0 in intraday trading), σd: root mean square of the losses, with winners counting as 0, N: trades/year",
   },
   "calmar-ratio": {
     formulaEs: "Ca = CAGR / |MaxDD|",

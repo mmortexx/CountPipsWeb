@@ -456,6 +456,11 @@ export function DisciplineCost() {
                 );
               })}
             </ul>
+            <p className="mb-5 text-[12px] leading-[1.4] text-tertiary">
+              {es
+                ? "El total sale de tus cifras; el reparto por tipo de fallo es un ejemplo fijo."
+                : "The total comes from your numbers; the split by mistake type is a fixed example."}
+            </p>
 
             {/* Totales: Mensual y Anual */}
             <div className="pt-1 border-t border-[var(--ficha-division)]">

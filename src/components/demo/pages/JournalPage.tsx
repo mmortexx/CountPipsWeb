@@ -486,11 +486,40 @@ interface HistoryEntry {
   key: string;
   date: Date;
   sumPnl: number;
-  avgScore: number;
+  avgScore: number | null;
   compliancePct: number;
   count: number;
   note: string;
   compliance: "yes" | "partial" | "no";
+}
+
+/** Nota media redondeada de un grupo de operaciones. */
+export function notaMediaDelDia(ts: readonly Pick<Trade, "dayScore">[]): number | null {
+  const conNota = ts.filter((t) => t.dayScore > 0);
+  return conNota.length ? Math.round(conNota.reduce((s, t) => s + t.dayScore, 0) / conNota.length) : null;
+}
+
+/** Cruces de sueño, estado mental, físico y plan con el resultado. Sueño y estado
+ *  físico salen de la nota del día con un desvío fijo por operación, para que cada
+ *  cruce agrupe operaciones distintas. Lo registrado desde el formulario no tiene
+ *  nota (`dayScore` 0): no dice cómo estaba nadie, así que no entra en esos tres. */
+export function crucesDelDiario(trades: readonly Trade[]) {
+  const media = (arr: readonly Trade[]) => (arr.length ? arr.reduce((s, t) => s + t.netPnl, 0) / arr.length : 0);
+  const conNota = trades.filter((t) => t.dayScore > 0);
+  const cruce = (f: (t: Trade) => number) => {
+    const bajas = conNota.filter((t) => f(t) <= 2);
+    const altas = conNota.filter((t) => f(t) >= 4);
+    return { bajo: media(bajas), alto: media(altas), n: bajas.length + altas.length };
+  };
+  return {
+    sueno: cruce((t) => t.dayScore + ((t.id * 7) % 3) - 1),
+    mental: cruce((t) => t.dayScore),
+    fisico: cruce((t) => t.dayScore + ((t.id * 5) % 3) - 1),
+    plan: {
+      con: media(trades.filter((t) => t.compliance === "yes")),
+      sin: media(trades.filter((t) => t.compliance !== "yes")),
+    },
+  };
 }
 
 function buildHistory(trades: Trade[]): HistoryEntry[] {
@@ -505,9 +534,7 @@ function buildHistory(trades: Trade[]): HistoryEntry[] {
     .slice(0, 6)
     .map(([key, ts]) => {
       const sumPnl = ts.reduce((s, t) => s + t.netPnl, 0);
-      const avgScore = Math.round(
-        ts.reduce((s, t) => s + t.dayScore, 0) / ts.length
-      );
+      const avgScore = notaMediaDelDia(ts);
       const complied = ts.filter((t) => t.compliance === "yes").length;
       const compliancePct = complied / ts.length;
       const overall: "yes" | "partial" | "no" =
@@ -835,35 +862,21 @@ export function JournalPage() {
 
   const trafficLevel = ({ alta: "green", media: "amber", baja: "red" } as const)[nivelDisciplina(compliancePct)];
 
-  // Cruces sueño, mental, físico y plan × resultado, deterministas sobre la muestra.
   const cross = useMemo(() => {
-    // Sueño y estado físico salen de la nota del día con un desvío fijo por
-    // operación, para que cada cruce agrupe operaciones distintas.
-    const avg = (arr: Trade[]) =>
-      arr.length ? arr.reduce((s, t) => s + t.netPnl, 0) / arr.length : 0;
-    const sueno = (t: Trade) => t.dayScore + ((t.id * 7) % 3) - 1;
-    const fisico = (t: Trade) => t.dayScore + ((t.id * 5) % 3) - 1;
-    const cruce = (f: (t: Trade) => number, bajo: number, alto: number) => {
-      const b = allTrades.filter((t) => f(t) <= bajo);
-      const a = allTrades.filter((t) => f(t) >= alto);
-      return { low: avg(b), high: avg(a), n: b.length + a.length };
-    };
+    const c = crucesDelDiario(allTrades);
     const ops = (n: number) => fmtOperaciones(n, lang);
-    const s = cruce(sueno, 2, 4);
-    const m = cruce((t) => t.dayScore, 2, 4);
-    const f = cruce(fisico, 2, 4);
     return {
-      sleepLow: s.low,
-      sleepHigh: s.high,
-      sleepSample: ops(s.n),
-      mentalLow: m.low,
-      mentalHigh: m.high,
-      mentalSample: ops(m.n),
-      physicalLow: f.low,
-      physicalHigh: f.high,
-      physicalSample: ops(f.n),
-      planWith: avg(allTrades.filter((t) => t.compliance === "yes")),
-      planWithout: avg(allTrades.filter((t) => t.compliance !== "yes")),
+      sleepLow: c.sueno.bajo,
+      sleepHigh: c.sueno.alto,
+      sleepSample: ops(c.sueno.n),
+      mentalLow: c.mental.bajo,
+      mentalHigh: c.mental.alto,
+      mentalSample: ops(c.mental.n),
+      physicalLow: c.fisico.bajo,
+      physicalHigh: c.fisico.alto,
+      physicalSample: ops(c.fisico.n),
+      planWith: c.plan.con,
+      planWithout: c.plan.sin,
       planSample: ops(allTrades.length),
     };
   }, [allTrades, lang]);
@@ -1478,7 +1491,7 @@ export function JournalPage() {
                           <span className="text-[11px] text-tertiary tnum">
                             {t("dayScore")}:{" "}
                             <span className="text-primary font-medium">
-                              {fmtInt(entry.avgScore, lang)}/5
+                              {entry.avgScore === null ? "—" : `${fmtInt(entry.avgScore, lang)}/5`}
                             </span>
                           </span>
                         </div>

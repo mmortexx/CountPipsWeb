@@ -1,7 +1,10 @@
 "use client";
 
+import NextLink from "next/link";
+import { usePathname } from "next/navigation";
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang, tx } from "@/lib/i18n";
+import { idiomasDeRuta, rutaEnIdioma } from "@/lib/locale";
 import { openGlossary, openShortcutsHelp } from "@/lib/overlays";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
 import { ANIO_PUBLICACION, FECHA_PUBLICACION } from "@/lib/publicacion";
@@ -19,7 +22,9 @@ const REPOSITORIO = "https://github.com/mmortexx/CountPipsWeb";
  * sociales sin cuenta detrás ni indicadores de estado que no miden nada.
  */
 export function Footer() {
-  const { t, lang } = useLang();
+  const { t, lang, setLang } = useLang();
+  const pathname = usePathname();
+  const otrosIdiomas = idiomasDeRuta(pathname).filter((l) => l.codigo !== lang);
   // Año de publicación fijado al compilar, nunca `new Date()` (ver
   // `anioDePublicacion()` en `next.config.ts`).
   const year = ANIO_PUBLICACION;
@@ -95,6 +100,34 @@ export function Footer() {
 
         <div className="mt-12 h-px bg-[var(--line)]" />
 
+        {/* Las otras versiones de esta página. El selector de la barra solo pinta
+            sus enlaces al abrirse: estos son los que un buscador encuentra. */}
+        {otrosIdiomas.length > 0 && (
+          <nav
+            aria-label={tx(lang, { es: "Idiomas", en: "Languages", pt: "Idiomas", fr: "Langues", de: "Sprachen", it: "Lingue" })}
+            className="mt-4 flex flex-wrap gap-x-5 text-xs"
+          >
+            {otrosIdiomas.map((l) => (
+              <NextLink
+                key={l.codigo}
+                href={rutaEnIdioma(pathname, l.codigo)}
+                hrefLang={l.htmlLang}
+                lang={l.codigo}
+                prefetch={false}
+                data-cambio-idioma=""
+                onClick={(e) => {
+                  // Con modificador o clic central, el navegador abre la pestaña.
+                  if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+                  e.preventDefault();
+                  setLang(l.codigo);
+                }}
+                className="link-underline-host inline-flex min-h-[44px] items-center text-secondary transition-colors hover:text-primary focus-visible:text-primary"
+              >
+                <span className="link-underline link-underline--al-pasar">{l.nombre}</span>
+              </NextLink>
+            ))}
+          </nav>
+        )}
 
         {/* Barra final: datos a la izquierda (también en móvil), lo que se
             pulsa a la derecha. `data-pie-final` es la marca que mide el botón

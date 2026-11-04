@@ -262,12 +262,12 @@ function PlanCard({ plan, lang }: { plan: Plan; lang: Lang }) {
         fr="Prix prévisionnel"
         de="Geplanter Preis"
         it="Prezzo previsto"
-        detalleEs="se fija con la entrega comercial"
-        detalleEn="set at commercial launch"
-        detallePt="definido no lançamento comercial"
-        detalleFr="défini au lancement commercial"
-        detalleDe="beim Verkaufsstart festgelegt"
-        detalleIt="fissato al lancio commerciale"
+        detalleEs="pago único, se fija con la entrega comercial"
+        detalleEn="one-time payment, set at commercial launch"
+        detallePt="pagamento único, definido no lançamento comercial"
+        detalleFr="paiement unique, défini au lancement commercial"
+        detalleDe="Einmalzahlung, beim Verkaufsstart festgelegt"
+        detalleIt="pagamento unico, fissato al lancio commerciale"
       />
 
       <div

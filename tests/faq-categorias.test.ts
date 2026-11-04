@@ -19,6 +19,7 @@ const CATEGORIA_POR_PREGUNTA: Record<string, (typeof CATEGORIAS)[number]> = {
   "¿Cómo se selecciona el acceso anticipado?": "access",
   "¿Qué está listo y qué se está validando?": "access",
   "¿Qué métodos de pago se aceptan?": "access",
+  "¿Se puede probar antes de pagar?": "access",
   "¿Puedo ver el producto antes de solicitar acceso?": "access",
   "¿Cuál es la diferencia entre Core y Pro?": "product",
   "¿Qué datos pide esta web?": "security",

@@ -84,8 +84,8 @@ export function PropChallengeSimulator() {
         : "Without positive expectancy, passing is down to luck: the more trades you take, the likelier the drawdown."
       : r.aprueba < r.suspende
         ? es
-          ? "La expectancy es positiva, pero con este riesgo el drawdown llega antes que el objetivo en la mayoría de intentos. Con menos riesgo por operación, la ventaja tiene más operaciones para notarse."
-          : "Expectancy is positive, but at this risk the drawdown arrives before the target in most attempts. With less risk per trade, the edge gets more trades to show."
+          ? `La expectancy es positiva, pero con este riesgo el drawdown llega antes que el objetivo ${r.suspende > 0.5 ? "en la mayoría de intentos" : "más veces de las que se aprueba"}. Con menos riesgo por operación, la ventaja tiene más operaciones para notarse.`
+          : `Expectancy is positive, but at this risk the drawdown arrives before the target ${r.suspende > 0.5 ? "in most attempts" : "more often than you pass"}. With less risk per trade, the edge gets more trades to show.`
         : r.sinResolver > 0.2
           ? es
             ? `Más de uno de cada cinco intentos sigue abierto tras ${fmtOperaciones(maxOps, lang)}: con este riesgo, el objetivo queda lejos para ese plazo.`

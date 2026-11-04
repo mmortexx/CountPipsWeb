@@ -18,6 +18,7 @@ import {
 } from "@/lib/trading/data";
 import { useAllTrades } from "@/lib/trading/demoStore";
 import {
+  fmtCantidad,
   fmtNum,
   fmtInt,
   fmtR,
@@ -157,79 +158,43 @@ function buildFills(trade: Trade, decimals: number, lang: Lang): FillRow[] {
       timeZone: "UTC",
     }).format(d);
   const totalQty = trade.qty;
-  // Dos entradas (60 % y 40 %) y una salida, o una entrada y dos salidas, según la excursión favorable.
+  const fila = (dir: "ENTRY" | "EXIT", t: Date, qty: number, restante: number): FillRow => ({
+    dir,
+    side: dir === "ENTRY" ? entrySide : exitSide,
+    time: fmtT(t),
+    qty: fmtCantidad(qty, lang),
+    price: fmtPrice(dir === "ENTRY" ? trade.entry : trade.exit, decimals, lang),
+    fee: "—",
+    cumulative: fmtCantidad(restante, lang),
+  });
+  // Dos entradas (60 % y 40 %) y una salida, o una entrada y dos salidas (50 % y 50 %),
+  // según la excursión favorable, siempre a los precios de la operación. Un solo
+  // contrato no se reparte.
   const splitEntry = trade.mfe > 1.2;
+  const primera = reparteCantidad(totalQty, splitEntry ? 0.6 : 0.5);
+  if (primera === null) {
+    return [fila("ENTRY", opened, totalQty, totalQty), fila("EXIT", closed, totalQty, 0)];
+  }
+  const resto = +(totalQty - primera).toFixed(3);
   if (splitEntry) {
-    const q1 = +(totalQty * 0.6).toFixed(3);
-    const q2 = +(totalQty * 0.4).toFixed(3);
     return [
-      {
-        dir: "ENTRY",
-        side: entrySide,
-        time: fmtT(opened),
-        qty: fmtNum(q1, lang, 3),
-        price: fmtPrice(trade.entry, decimals, lang),
-        fee: "—",
-        cumulative: fmtNum(q1, lang, 3),
-      },
-      {
-        dir: "ENTRY",
-        side: entrySide,
-        time: fmtT(mid),
-        qty: fmtNum(q2, lang, 3),
-        price: fmtPrice(
-          +(trade.entry * (1 + (isLong ? 0.0008 : -0.0008))).toFixed(decimals),
-          decimals,
-          lang
-        ),
-        fee: "—",
-        cumulative: fmtNum(totalQty, lang, 3),
-      },
-      {
-        dir: "EXIT",
-        side: exitSide,
-        time: fmtT(closed),
-        qty: fmtNum(totalQty, lang, 3),
-        price: fmtPrice(trade.exit, decimals, lang),
-        fee: "—",
-        cumulative: "0",
-      },
+      fila("ENTRY", opened, primera, primera),
+      fila("ENTRY", mid, resto, totalQty),
+      fila("EXIT", closed, totalQty, 0),
     ];
   }
-  const q1 = +(totalQty * 0.5).toFixed(3);
   return [
-    {
-      dir: "ENTRY",
-      side: entrySide,
-      time: fmtT(opened),
-      qty: fmtNum(totalQty, lang, 3),
-      price: fmtPrice(trade.entry, decimals, lang),
-      fee: "—",
-      cumulative: fmtNum(totalQty, lang, 3),
-    },
-    {
-      dir: "EXIT",
-      side: exitSide,
-      time: fmtT(mid),
-      qty: fmtNum(q1, lang, 3),
-      price: fmtPrice(
-        +(trade.entry * (1 + (isLong ? 0.0008 : -0.0008))).toFixed(decimals),
-        decimals,
-        lang
-      ),
-      fee: "—",
-      cumulative: fmtNum(+(totalQty - q1).toFixed(3), lang, 3),
-      },
-    {
-      dir: "EXIT",
-      side: exitSide,
-      time: fmtT(closed),
-      qty: fmtNum(+(totalQty - q1).toFixed(3), lang, 3),
-      price: fmtPrice(trade.exit, decimals, lang),
-      fee: "—",
-      cumulative: "0",
-    },
+    fila("ENTRY", opened, totalQty, totalQty),
+    fila("EXIT", mid, primera, resto),
+    fila("EXIT", closed, resto, 0),
   ];
+}
+
+/** La primera parte de `qty` si se puede repartir en dos ejecuciones reales:
+ *  una cantidad entera solo en enteros y nunca una parte vacía. */
+export function reparteCantidad(qty: number, parte: number): number | null {
+  const q = Number.isInteger(qty) ? Math.round(qty * parte) : +(qty * parte).toFixed(3);
+  return q > 0 && q < qty ? q : null;
 }
 
 function Detail({ label, children }: { label: string; children: ReactNode }) {
@@ -358,24 +323,25 @@ function TagPill({
   lang: Lang;
   onRemove?: () => void;
 }) {
-  const colors: Record<TagKind, string> = {
-    error: "rgb(var(--pnl-neg))",
-    win: "rgb(var(--pnl-pos))",
-    emotion: "rgb(var(--accent-base))",
-    custom: "rgb(var(--txt-tertiary))",
+  const tokens: Record<TagKind, string> = {
+    error: "var(--pnl-neg)",
+    win: "var(--pnl-pos)",
+    emotion: "var(--accent-base)",
+    custom: "var(--txt-tertiary)",
   };
+  const color = `rgb(${tokens[kind]})`;
   return (
     <span
       className="inline-flex items-center gap-1.5 rounded-[2px] px-[0.55rem] py-[0.15rem] text-[11px] font-semibold leading-[1.4] border"
       style={{
-        color: colors[kind],
-        borderColor: `${colors[kind]} / 0.3)`,
-        backgroundColor: `${colors[kind]} / 0.08)`,
+        color,
+        borderColor: `rgb(${tokens[kind]} / 0.3)`,
+        backgroundColor: `rgb(${tokens[kind]} / 0.08)`,
       }}
     >
       <span
         className="w-1.5 h-1.5 rounded-[1px]"
-        style={{ backgroundColor: colors[kind] }}
+        style={{ backgroundColor: color }}
         aria-hidden
       />
       {label}
@@ -383,8 +349,8 @@ function TagPill({
         <button
           type="button"
           onClick={onRemove}
-          aria-label={lang === "es" ? "Quitar etiqueta" : "Remove tag"}
-          className="ml-0.5 -mr-0.5 w-4 h-4 rounded-[2px] hover:bg-[rgb(var(--divider)/0.1)] inline-flex items-center justify-center"
+          aria-label={lang === "es" ? `Quitar etiqueta «${label}»` : `Remove tag “${label}”`}
+          className="tj-area-24 ml-0.5 -mr-0.5 w-4 h-4 rounded-[2px] hover:bg-[rgb(var(--divider)/0.1)] inline-flex items-center justify-center"
         >
           <svg
             width="9"
@@ -704,7 +670,7 @@ export function TradeDetailPage() {
               </Detail>
               <Detail label={t("quantity")}>
                 <span className="tnum text-primary">
-                  {fmtNum(trade.qty, lang, 3)}
+                  {fmtCantidad(trade.qty, lang)}
                 </span>
               </Detail>
               <Detail label={t("grossPnl")}>
@@ -881,7 +847,7 @@ export function TradeDetailPage() {
                   <span className="text-primary">{mercado.regimen[lang === "es" ? "es" : "en"]}</span>
                 </Detail>
                 <Detail label={t("dayScore")}>
-                  <span className="text-primary tnum">{fmtInt(trade.dayScore, lang)}/5</span>
+                  <span className="text-primary tnum">{trade.dayScore > 0 ? `${fmtInt(trade.dayScore, lang)}/5` : "—"}</span>
                 </Detail>
               </dl>
             </div>

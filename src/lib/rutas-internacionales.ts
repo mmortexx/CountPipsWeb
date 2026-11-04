@@ -25,7 +25,7 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
     homeSlogan: "CountPips — Opere como uma mesa institucional.",
     homeDescription:
       `Diário de trading para Windows: ${METRICAS} métricas, um guardião de disciplina e seus dados na sua máquina. Experimente a demo sem cadastro.`,
-    pricingTitle: "Preços",
+    pricingTitle: "Preços do diário de trading",
     pricingDescription:
       `Demo interativa sem cadastro. Preços previstos de lançamento: Core ${fmtMoney(PRECIO_CORE, "pt", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "pt", { decimals: 0 })}.`,
     pricingTwitterDesc:
@@ -38,7 +38,7 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
     homeSlogan: "CountPips — Tradez comme un desk institutionnel.",
     homeDescription:
       `Journal de trading pour Windows\u00a0: ${METRICAS} métriques, un gardien de discipline et vos données sur votre machine. Essayez la démo sans inscription.`,
-    pricingTitle: "Tarifs",
+    pricingTitle: "Tarifs du journal de trading",
     pricingDescription:
       `Démo interactive sans inscription. Tarifs de lancement prévus\u00a0: Core ${fmtMoney(PRECIO_CORE, "fr", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "fr", { decimals: 0 })}.`,
     pricingTwitterDesc:
@@ -51,7 +51,7 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
     homeSlogan: "CountPips — Traden wie ein institutioneller Desk.",
     homeDescription:
       `Trading-Journal für Windows: ${METRICAS} Kennzahlen, ein Disziplin-Wächter und Ihre Daten auf Ihrem Rechner. Testen Sie die Demo ohne Registrierung.`,
-    pricingTitle: "Preise",
+    pricingTitle: "Trading-Journal Preise",
     pricingDescription:
       `Interaktive Demo ohne Registrierung. Geplante Einführungspreise: Core ${fmtMoney(PRECIO_CORE, "de", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "de", { decimals: 0 })}.`,
     pricingTwitterDesc:
@@ -64,7 +64,7 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
     homeSlogan: "CountPips — Opera come un desk istituzionale.",
     homeDescription:
       `Diario di trading per Windows: ${METRICAS} metriche, un guardiano della disciplina e i tuoi dati sulla tua macchina. Prova la demo senza registrazione.`,
-    pricingTitle: "Prezzi",
+    pricingTitle: "Prezzi del diario di trading",
     pricingDescription:
       `Demo interattiva senza registrazione. Prezzi di lancio previsti: Core ${fmtMoney(PRECIO_CORE, "it", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "it", { decimals: 0 })}.`,
     pricingTwitterDesc:

@@ -37,7 +37,7 @@ export function BetaApplicationNote() {
     <p className="medida mt-5 text-[13px] leading-[1.6] text-tertiary">
       {es
         ? "La solicitud no es una compra ni garantiza una invitación. Se revisa por perfil y fase del producto; puedes pedir la eliminación de tus datos en cualquier momento."
-        : "The application is not a purchase and does not guarantee an invitation. We review by profile and product phase; you can request deletion of your data at any time."}
+        : "The request is not a purchase and does not guarantee an invitation. We review by profile and product phase; you can request deletion of your data at any time."}
     </p>
   );
 }

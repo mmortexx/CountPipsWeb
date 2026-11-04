@@ -176,8 +176,8 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
       const faqLdEn = jsonLdFaq(FAQ_EN);
 
       expect(faqLdEs["@type"]).toBe("FAQPage");
-      expect(faqLdEs.mainEntity.length).toBe(13);
-      expect(faqLdEn.mainEntity.length).toBe(13);
+      expect(faqLdEs.mainEntity.length).toBe(14);
+      expect(faqLdEn.mainEntity.length).toBe(14);
 
       for (const item of faqLdEs.mainEntity) {
         expect(item["@type"]).toBe("Question");
@@ -203,7 +203,8 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
         expect(["always", "hourly", "daily", "weekly", "monthly", "yearly", "never"]).toContain(
           entry.changeFrequency,
         );
-        expect(entry.lastModified).toBeInstanceOf(Date);
+        // La fecha sería la del último commit para todas: sin fecha real por página, ninguna.
+        expect(entry.lastModified).toBeUndefined();
       }
 
       const rb = robots();

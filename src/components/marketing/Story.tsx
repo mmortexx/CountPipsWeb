@@ -23,18 +23,18 @@ export function Story() {
   const phases: Phase[] = [
     {
       tag: es ? "Antes" : "Before",
-      title: es ? "Operabas por instinto" : "You traded on instinct",
+      title: es ? "Sin datos de tu operativa" : "No data on your trading",
       desc: es
-        ? "Anotabas en Excel. No sabías por qué ganabas ni por qué perdías. Repetías los mismos errores sin ver el patrón."
-        : "You took notes in Excel. You didn’t know why you won or why you lost. You repeated the same mistakes without seeing the pattern.",
+        ? "Una hoja de cálculo guarda lo que pasó, pero no dice por qué ganas o pierdes ni qué errores se repiten."
+        : "A spreadsheet records what happened, but it doesn’t say why you win or lose, or which mistakes repeat.",
       tone: "neg",
     },
     {
       tag: es ? "Mes 1" : "Month 1",
       title: es ? "Registras todo" : "You log everything",
       desc: es
-        ? "Por primera vez ves tu win rate real, tu expectancy real, tu comisión real. La verdad duele un poco, y eso es bueno."
-        : "For the first time you see your real win rate, your real expectancy, your real fees. The truth hurts a bit — and that’s good.",
+        ? "Por primera vez ves tu win rate real, tu expectancy real y tu comisión real."
+        : "For the first time you see your real win rate, your real expectancy and your real fees.",
       tone: "warn",
     },
     {
@@ -42,24 +42,24 @@ export function Story() {
       title: es ? "Descubres lo que no sabías" : "You discover what you didn’t know",
       desc: es
         /* Comillas «…» en español y “…” en inglés; el sitio no usa las rectas. */
-        ? "Tu setup «estrella» apenas tiene expectancy positiva. Tu mejor hora no es la que creías. Tu sesión perdedora es siempre la misma."
-        : "Your “star” setup barely has positive expectancy. Your best hour isn’t the one you thought. Your losing session is always the same one.",
+        ? "Puedes encontrarte con que tu setup «estrella» apenas tiene expectancy positiva, con que tu mejor hora no es la que creías o con que pierdes siempre en la misma sesión."
+        : "You may find that your “star” setup barely has positive expectancy, that your best hour isn’t the one you thought, or that you always lose in the same session.",
       tone: "neutral",
     },
     {
       tag: es ? "Mes 6" : "Month 6",
       title: es ? "Romper el plan cuesta dinero" : "Breaking the plan costs money",
       desc: es
-        ? "Ves el coste de indisciplina en una cifra concreta. Cada vez que rompes tu plan, ves cuánto te estás cobrando a ti mismo."
-        : "You see the cost of indiscipline as a concrete number. Every time you break your plan, you see how much you’re charging yourself.",
+        ? "Ves el coste de indisciplina en una cifra concreta. Cada vez que rompes tu plan, ves cuánto te cuesta."
+        : "You see the cost of indiscipline as a concrete number. Every time you break your plan, you see what it cost.",
       tone: "accent",
     },
     {
       tag: es ? "Mes 12" : "Month 12",
-      title: es ? "Tu operativa tiene forma" : "Your trading has shape",
+      title: es ? "Tu operativa tiene método" : "Your trading has a method",
       desc: es
-        ? "Sabes qué setups conservar y cuáles cortar. Tu playbook tiene muestra. Tienes un proceso que puedes revisar, y eso es lo único que se sostiene en el tiempo."
-        : "You know which setups to keep and which to cut. Your playbook has a sample. You have a process you can review, and that is the only thing that holds up over time.",
+        ? "Qué setups conservar y cuáles cortar se decide con muestra y no de memoria. Tienes un proceso que puedes revisar."
+        : "Which setups to keep and which to cut is decided on a sample, not from memory. You have a process you can review.",
       tone: "pos",
     },
   ];
@@ -120,7 +120,7 @@ export function Story() {
           <Reveal delay={0.18}>
             <p className="mt-8 text-secondary leading-[1.7] max-w-[44em]">
               {es
-                ? "Las apps de trading que probamos eran casi siempre una hoja de cálculo con otro nombre o una suscripción mensual que se quedaba con tus datos si dejabas de pagar. Ninguna te enseñaba lo que tu propio comportamiento te costaba en dinero. Así que construimos una que sí lo hace, y que vive en tu ordenador."
+                ? "Las apps de trading que probamos eran casi siempre una hoja de cálculo con otro nombre o una suscripción mensual que se quedaba con tus datos si dejabas de pagar. Ninguna te enseñaba lo que tu propio comportamiento te costaba en dinero. Así que construimos una que sí lo hace, y que vive en tu equipo."
                 : "Almost every trading app we tried was either a glorified spreadsheet or a monthly subscription that lost your data if you stopped paying. None of them showed what your own behaviour cost you in money. So we built one that does — and that lives on your computer."}
             </p>
           </Reveal>

@@ -11,8 +11,7 @@ import {
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { rutaEnIdioma, TABLA_IDIOMAS, type Lang } from "@/lib/locale";
-import { fmtInt, fmtMoney, fmtOperaciones } from "@/lib/trading/format";
-import { LIMITES } from "@/lib/trading/limites";
+import { fmtMoney, fmtOperaciones } from "@/lib/trading/format";
 import { SALDO_INICIAL_MUESTRA } from "@/lib/trading/muestra";
 
 export type { Lang };
@@ -160,14 +159,6 @@ export const STR = {
   tradeRegisteredDesc: {
     es: "Guardada localmente: aparece arriba del todo en Operaciones.",
     en: "Saved locally — shows at the top of Trades.",
-  },
-  tradeRegisterError: {
-    es: "Faltan campos obligatorios",
-    en: "Required fields missing",
-  },
-  tradeRegisterErrorDesc: {
-    es: `Instrumento, setup, dirección, entrada y stop son obligatorios; precios y cantidad, mayores que cero y de ${fmtInt(LIMITES.precio.max, "es")} como máximo; el resultado y el riesgo, de ${fmtInt(LIMITES.resultadoRegistro.max, "es")} $ como máximo. En largo, el stop va por debajo de la entrada y el objetivo (opcional) por encima; en corto, al revés.`,
-    en: `Instrument, setup, direction, entry and stop are required; prices and quantity must be above zero and at most ${fmtInt(LIMITES.precio.max, "en")}; the result and the risk, at most $${fmtInt(LIMITES.resultadoRegistro.max, "en")}. For a long, the stop goes below the entry and the target (optional) above it; for a short, the other way round.`,
   },
   sizeNoFits: {
     es: "No cabe ni una unidad",

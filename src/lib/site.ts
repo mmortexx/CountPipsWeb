@@ -27,6 +27,8 @@ export const SITE_NAME = "CountPips";
  * duplica el prefijo de GitHub Pages.
  */
 export const LOGO_URL = `${SITE_URL}/logo.png`;
+/** La misma organización en todos los bloques de datos estructurados de una página. */
+const ID_ORGANIZACION = `${SITE_URL}/#organizacion`;
 
 /** URL absoluta de una ruta del sitio. Normaliza las barras. */
 export function siteUrl(path = "/"): string {
@@ -188,11 +190,12 @@ export function esquemasGlobales(
         `${SITE_URL}/img/app-analitica.webp`,
       ],
       featureList: funcionesPorIdioma[lang] ?? funcionesPorIdioma.en,
-      publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+      publisher: { "@id": ID_ORGANIZACION },
     },
     {
       "@context": "https://schema.org",
       "@type": "Organization",
+      "@id": ID_ORGANIZACION,
       name: SITE_NAME,
       url: SITE_URL,
       logo: { "@type": "ImageObject", url: LOGO_URL, width: 512, height: 512 },
@@ -214,7 +217,7 @@ export function esquemasGlobales(
       alternateName: alternateNames[lang] ?? alternateNames.en,
       url: inicio,
       inLanguage: lang,
-      publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+      publisher: { "@id": ID_ORGANIZACION },
       potentialAction: {
         "@type": "SearchAction",
         target: {

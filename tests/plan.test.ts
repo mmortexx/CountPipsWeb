@@ -131,6 +131,38 @@ describe("acciones y cripto: el tamaño enseña los decimales que hacen falta", 
   });
 });
 
+describe("cripto: comisión sobre el nocional, no por unidad", () => {
+  const btc: EntradaPlan = { ...BASE, mercado: "crypto", balance: 10000, riesgoPct: 1, entrada: 60000, stop: 59000, objetivo: 63000, friccion: true };
+
+  it("0,1 unidades de 60.000 $: 0,1 % por lado son 12 $ y no los céntimos de una acción", () => {
+    const c = calculaPlan(btc);
+    expect(c.tamano).toBeCloseTo(0.1, 12);
+    expect(c.nocional).toBeCloseTo(6000, 6);
+    expect(c.friccion).toBeCloseTo(12, 6);
+    expect(c.riesgoTotal).toBeCloseTo(112, 6);
+    expect(c.beneficioNeto).toBeCloseTo(288, 6);
+  });
+
+  it("la cifra de escalón es lo que mueve a la posición un 1 % de precio", () => {
+    expect(calculaPlan(btc).valorPip).toBeCloseTo(60, 6);
+  });
+
+  it("el tamaño se fracciona con los decimales que hagan falta", () => {
+    const c = calculaPlan({ ...btc, balance: 100, riesgoPct: 2.5 });
+    expect(c.tamano).toBeCloseTo(0.0025, 12);
+    expect(fmtNum(c.tamano, "es", c.decimalesTamano)).toBe("0,0025");
+  });
+
+  it("el tope de apalancamiento es el de la cripto, 2:1", () => {
+    expect(calculaPlan(btc).apalancamientoExcesivo).toBe(false);
+    expect(calculaPlan({ ...btc, stop: 59900 }).apalancamientoExcesivo).toBe(true);
+  });
+
+  it("sin fricción no se resta nada", () => {
+    expect(calculaPlan({ ...btc, friccion: false }).friccion).toBe(0);
+  });
+});
+
 describe("fricción mayor que el riesgo: se avisa", () => {
   const barata: EntradaPlan = { ...BASE, mercado: "equities", balance: 10000, riesgoPct: 1, entrada: 0.5, stop: 0.49, objetivo: 0.53, friccion: true };
 

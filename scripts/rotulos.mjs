@@ -1,7 +1,7 @@
 /**
- * RÓTULOS: comprueba, en el HTML compilado de todas las páginas, siete cosas
+ * RÓTULOS: comprueba, en el HTML compilado de todas las páginas, ocho cosas
  * que con la vista no se notan y con un lector de pantalla dejan la
- * herramienta muda:
+ * herramienta muda o la hacen inmanejable por voz:
  *  1. Grupos de opciones sin nombre.
  *  2. `aria-labelledby` o `aria-describedby` con un id que no existe.
  *  3. Botones sin nombre.
@@ -9,6 +9,10 @@
  *  5. Deslizadores sin `aria-valuetext` (leen el número crudo).
  *  6. Rótulos en inglés en una página española («Close», «Notifications»).
  *  7. Un título h2–h6 que repite el h1 (en la lista de títulos se oye dos veces).
+ *  8. Un botón, enlace o pestaña con texto visible cuyo `aria-label` (o
+ *     `aria-labelledby`) no lo contiene, sin mayúsculas ni tildes (WCAG 2.5.3:
+ *     quien dicta «pulsar ES» no llega a un botón que se llama «Cambiar idioma»).
+ *     Solo cuenta el texto con letras: un icono («×», «→») no es una etiqueta.
  *
  * Va sin navegador: es el HTML que llega antes de cualquier script, que es lo
  * primero que lee un lector, y React lo escribe bien formado. Los diálogos y
@@ -17,6 +21,7 @@
  * Uso:  node scripts/rotulos.mjs out   (--todo para la lista entera)
  */
 import { readFileSync, globSync, existsSync } from "node:fs";
+import { contieneEtiqueta, esEstadoDescrito, esEtiqueta } from "./etiqueta-en-nombre.mjs";
 
 const dir = process.argv.slice(2).find((a) => !a.startsWith("-")) || "out";
 if (!existsSync(dir)) {
@@ -78,6 +83,14 @@ const grupoDe = (n) => {
   return null;
 };
 
+/** Lo que se ve de un nodo: sin lo oculto a la vista (`aria-hidden`) ni lo solo para lectores (`sr-only`). */
+const visibleDe = (n) =>
+  n.attr["aria-hidden"] === "true" || /\bsr-only\b/.test(n.attr.class ?? "") ? "" : [n.texto, ...n.hijos.map(visibleDe)].join(" ");
+
+/** Controles que tienen un texto visible y pueden llevar otro nombre (WCAG 2.5.3, «etiqueta en el nombre»). */
+const ROLES_CON_ETIQUETA = new Set(["button", "link", "tab", "menuitem", "menuitemcheckbox", "menuitemradio", "radio", "checkbox", "switch", "option"]);
+const llevaEtiqueta = (n) => n.tag === "button" || n.tag === "summary" || (n.tag === "a" && "href" in n.attr) || ROLES_CON_ETIQUETA.has(n.attr.role);
+
 /** Mismo título salvo mayúsculas, espacios y el punto final: en la lista de títulos se oye dos veces. */
 const normaTitulo = (s) => s.replace(/\s+/g, " ").replace(/[.\s]+$/, "").trim().toLowerCase();
 const mismoTitulo = (a, b) => normaTitulo(a) !== "" && normaTitulo(a) === normaTitulo(b);
@@ -94,6 +107,7 @@ for (const f of ficheros) {
   const raiz = arbol(html);
   const nodos = [...recorre(raiz)];
   const ids = new Set(nodos.map((n) => n.attr.id).filter(Boolean));
+  const porId = new Map(nodos.filter((n) => n.attr.id).map((n) => [n.attr.id, n]));
   const corto = (n) => (textoDe(n) || n.attr.class || "").slice(0, 50);
   const h1 = textoDe(nodos.find((n) => n.tag === "h1") ?? { attr: {}, texto: "", hijos: [] });
 
@@ -108,6 +122,16 @@ for (const f of ficheros) {
 
     const esBoton = n.tag === "button" || a.role === "button";
     if (esBoton && !nombreDe(n)) anota("botón sin nombre", ruta, `«${a.class?.slice(0, 50) ?? n.tag}»`);
+
+    if (llevaEtiqueta(n)) {
+      const visible = visibleDe(n).replace(/\s+/g, " ").trim();
+      const nombre = a["aria-labelledby"]
+        ? a["aria-labelledby"].split(/\s+/).map((id) => (porId.has(id) ? textoDe(porId.get(id)) : "")).join(" ").trim()
+        : (a["aria-label"]?.trim() ?? "");
+      const descripcion = (a["aria-describedby"] ?? "").split(/\s+/).map((id) => (porId.has(id) ? textoDe(porId.get(id)) : "")).join(" ");
+      if (nombre && esEtiqueta(visible) && !contieneEtiqueta(nombre, visible) && !esEstadoDescrito(visible, descripcion))
+        anota("nombre sin el texto visible", ruta, `«${visible.slice(0, 40)}» no está en «${nombre.slice(0, 60)}»`);
+    }
 
     if (esBoton && !a.role) {
       const g = grupoDe(n);

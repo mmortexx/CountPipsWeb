@@ -22,7 +22,8 @@ import { fraseOperacionesHoy, operacionesDeHoy, operacionesDelMismoDia } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useTeclaMando } from "@/hooks/use-tecla-mando";
-import { cifraEditable, fmtInt, fmtNum, fmtOperaciones, fmtPct, fmtR, leeCifra, LOCALE_FECHA } from "@/lib/trading/format";
+import { cifraEditable, fmtFactor, fmtInt, fmtMoney, fmtNum, fmtOperaciones, fmtPct, fmtR, leeCifra, LOCALE_FECHA } from "@/lib/trading/format";
+import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { Reveal } from "@/components/tj/Reveal";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Money } from "@/components/tj/Money";
@@ -32,7 +33,14 @@ import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
 import { moverConFlechas } from "@/lib/flechas";
 import { tamanoParaRiesgo } from "@/lib/trading/plan";
-import { rrPlanificado, validaRegistro } from "@/lib/trading/validaPlan";
+import {
+  etiquetaCampoRegistro,
+  mensajeFalloRegistro,
+  revisaRegistro,
+  rrPlanificado,
+  tituloFalloRegistro,
+  type CampoRegistro,
+} from "@/lib/trading/validaPlan";
 
 // Ventanas de la curva de capital: últimos N días. La muestra cubre ~180, así que «6M» equivale a todo.
 type Timeframe = "1M" | "3M" | "6M";
@@ -65,16 +73,27 @@ export function sliceMetricsByDays(m: Metrics, days: number): Metrics {
   if (startIdx === 0) return m;
   const equityCurve = m.equityCurve.slice(startIdx - 1);
   const drawdownCeiling = m.drawdownCeiling.slice(startIdx - 1);
-  return { ...m, equityCurve, drawdownCeiling };
+  const inicio = equityCurve[0].balance;
+  const roiPct = inicio > 0 ? (equityCurve[equityCurve.length - 1].balance - inicio) / inicio : 0;
+  return { ...m, equityCurve, drawdownCeiling, roiPct };
 }
 
 const inputCls =
   /* `min-w-0` aquí vale para todos los campos: un `<input>` trae ancho
      intrínseco y, como hijo de rejilla, su `min-width:auto` impide
      encoger la celda (a 320 px se salía 14 px). */
-  "w-full min-w-0 bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] h-9 toque-comodo px-3 text-sm text-primary tnum placeholder:text-tertiary focus:border-[rgb(var(--divider)/0.2)] focus:bg-[rgb(var(--divider)/0.08)] transition-colors appearance-none";
+  "w-full min-w-0 bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] h-9 toque-comodo px-3 text-sm text-primary tnum placeholder:text-tertiary focus:border-[rgb(var(--divider)/0.2)] focus:bg-[rgb(var(--divider)/0.08)] transition-colors appearance-none aria-invalid:border-[rgb(var(--pnl-neg)/0.7)]";
 const labelCls =
   "block text-[11px] uppercase tracking-[0.15em] text-tertiary mb-1.5";
+
+/** El `id` del campo de cada cifra del registro: su etiqueta, su aviso y el foco salen de él. */
+const ID_CAMPO: Record<CampoRegistro, string> = {
+  entrada: "d-entry",
+  salida: "d-exit",
+  cantidad: "d-qty",
+  stop: "d-stop",
+  objetivo: "d-target",
+};
 
 /**
  * Página «Resumen» de la demo, reflejo de DashboardPage.xaml de la app.
@@ -153,27 +172,42 @@ export function DashboardPage() {
 
   const riskPct = INITIAL_BALANCE_CONST > 0 ? riskUsdLive / INITIAL_BALANCE_CONST : 0;
 
-  function handleRegister() {
-    // Sin salida se usa la entrada: queda una operación en tablas (P&L = 0, R = 0), no NaN.
-    const registro = validaRegistro({
-      direccion: direction,
-      entrada: num(entry, inst.decimals),
-      stop: num(stop, inst.decimals),
-      objetivo: num(target, inst.decimals),
-      salida: num(exitPrice, inst.decimals),
-      cantidad: num(quantity, decLecturaCantidad),
-      multiplicador: getInstrumentMultiplier(instrumentSymbol, inst.assetClass),
-    });
+  /* Sin salida se usa la entrada: queda una operación en tablas (P&L = 0, R = 0), no NaN.
+     Tras un intento fallido, el campo que falla se marca mientras siga fallando. */
+  const revision = revisaRegistro({
+    direccion: direction,
+    entrada: num(entry, inst.decimals),
+    stop: num(stop, inst.decimals),
+    objetivo: num(target, inst.decimals),
+    salida: num(exitPrice, inst.decimals),
+    cantidad: num(quantity, decLecturaCantidad),
+    multiplicador: getInstrumentMultiplier(instrumentSymbol, inst.assetClass),
+  });
+  const [intentado, setIntentado] = useState(false);
+  const fallo = intentado ? revision.fallo : null;
+  const marca = (campo: CampoRegistro) =>
+    fallo?.campo === campo ? ({ "aria-invalid": true, "aria-describedby": `${ID_CAMPO[campo]}-error` } as const) : {};
+  /* Lo que falla, bajo su campo; el campo lo enlaza con `aria-describedby`. */
+  const aviso = (campo: CampoRegistro) =>
+    fallo?.campo === campo ? (
+      <p id={`${ID_CAMPO[campo]}-error`} className="m-0 mt-1 text-xs text-pnl-neg">
+        {mensajeFalloRegistro(fallo, direction, lang)}
+      </p>
+    ) : null;
 
-    if (!registro) {
+  function handleRegister() {
+    if (revision.fallo) {
+      setIntentado(true);
       toast({
-        title: t("tradeRegisterError"),
-        description: t("tradeRegisterErrorDesc"),
+        title: tituloFalloRegistro(revision.fallo.campo, lang),
+        description: mensajeFalloRegistro(revision.fallo, direction, lang),
         variant: "destructive",
       });
+      document.getElementById(ID_CAMPO[revision.fallo.campo])?.focus();
       return;
     }
-    const { entrada: entryN, stop: stopN, objetivo: targetN, salida: exitN, cantidad: qtyN } = registro;
+    setIntentado(false);
+    const { entrada: entryN, stop: stopN, objetivo: targetN, salida: exitN, cantidad: qtyN } = revision.registro;
 
     // priceDiff lleva signo: positivo si el movimiento gana.
     const stopDistLocal = Math.abs(entryN - stopN);
@@ -262,12 +296,9 @@ export function DashboardPage() {
             </Reveal>
           </div>
           <Reveal delay={0.08}>
-            {/* La región viva es el contenedor, que no cambia: la cifra se
-                remonta en cada valor (por su `key`) y una región que nace
-                ya rellena no la anuncian los lectores de pantalla. */}
+            {/* La cifra se remonta en cada valor (por su `key`) y no es una región
+                viva: se anuncia aparte, con espera, cuando se queda quieta. */}
             <div
-              aria-live="polite"
-              aria-atomic="true"
               className="flex items-baseline justify-between gap-3 border-t border-[rgb(var(--divider)/0.12)] pt-2.5 sm:block sm:shrink-0 sm:border-0 sm:pt-0 sm:text-right"
             >
               <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
@@ -281,6 +312,7 @@ export function DashboardPage() {
               >
                 <Money value={riskUsdLive} />
               </div>
+              <ResultadoAnunciado texto={`${es ? "Riesgo" : "Risk"}: ${fmtMoney(riskUsdLive, lang, { decimals: 2 })}`} />
             </div>
           </Reveal>
         </div>
@@ -310,7 +342,6 @@ export function DashboardPage() {
                       La demo no pega imágenes: solo muestra el flujo. */}
                   <button
                     type="button"
-                    aria-label={t("dropScreens")}
                     // Altura: 104 px en móvil (con 260 el primer control del
                     // formulario quedaba fuera de la vista), 320 en sm y 380 en
                     // md+, como en la app.
@@ -494,7 +525,7 @@ export function DashboardPage() {
                   <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-3">
                     <div>
                       <label htmlFor="d-entry" className={labelCls}>
-                        {es ? "Entrada" : "Entry"}
+                        {etiquetaCampoRegistro("entrada", lang)}
                       </label>
                       <input
                         id="d-entry"
@@ -503,12 +534,14 @@ export function DashboardPage() {
                         autoComplete="off"
                         value={entry}
                         onChange={(e) => setEntry(e.target.value)}
+                        {...marca("entrada")}
                         className={inputCls}
                       />
+                      {aviso("entrada")}
                     </div>
                     <div>
                       <label htmlFor="d-exit" className={labelCls}>
-                        {t("exit")}
+                        {etiquetaCampoRegistro("salida", lang)}
                       </label>
                       <input
                         id="d-exit"
@@ -517,15 +550,17 @@ export function DashboardPage() {
                         autoComplete="off"
                         value={exitPrice}
                         onChange={(e) => setExitPrice(e.target.value)}
+                        {...marca("salida")}
                         className={inputCls}
                       />
+                      {aviso("salida")}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-[1fr_auto] gap-3">
                     <div>
                       <label htmlFor="d-qty" className={labelCls}>
-                        {t("quantity")}
+                        {etiquetaCampoRegistro("cantidad", lang)}
                       </label>
                       <input
                         id="d-qty"
@@ -534,8 +569,10 @@ export function DashboardPage() {
                         autoComplete="off"
                         value={quantity}
                         onChange={(e) => setQuantity(e.target.value)}
+                        {...marca("cantidad")}
                         className={inputCls}
                       />
+                      {aviso("cantidad")}
                     </div>
                     {/* «Calcular tamaño» junto a Cantidad, como en la app
                         (DashboardPage.xaml L466). En la app abre un diálogo; aquí
@@ -582,7 +619,7 @@ export function DashboardPage() {
                   <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-3">
                     <div>
                       <label htmlFor="d-stop" className={labelCls}>
-                        {es ? "Stop" : "Stop"}
+                        {etiquetaCampoRegistro("stop", lang)}
                       </label>
                       <input
                         id="d-stop"
@@ -591,12 +628,14 @@ export function DashboardPage() {
                         autoComplete="off"
                         value={stop}
                         onChange={(e) => setStop(e.target.value)}
+                        {...marca("stop")}
                         className={inputCls}
                       />
+                      {aviso("stop")}
                     </div>
                     <div>
                       <label htmlFor="d-target" className={labelCls}>
-                        {es ? "Objetivo" : "Target"}
+                        {etiquetaCampoRegistro("objetivo", lang)}
                       </label>
                       <input
                         id="d-target"
@@ -605,8 +644,10 @@ export function DashboardPage() {
                         autoComplete="off"
                         value={target}
                         onChange={(e) => setTarget(e.target.value)}
+                        {...marca("objetivo")}
                         className={inputCls}
                       />
+                      {aviso("objetivo")}
                     </div>
                   </div>
 
@@ -808,7 +849,7 @@ export function DashboardPage() {
                     metrics.profitFactor >= 1 ? "text-pnl-pos" : "text-pnl-neg"
                   }`}
                 >
-                  {fmtNum(metrics.profitFactor, lang, 2)}
+                  {fmtFactor(metrics.profitFactor, lang)}
                 </span>
               }
             />
@@ -888,10 +929,10 @@ export function DashboardPage() {
                       />
                       <span
                         className={`text-xs tnum ${
-                          metrics.roiPct >= 0 ? "text-pnl-pos" : "text-pnl-neg"
+                          slicedMetrics.roiPct >= 0 ? "text-pnl-pos" : "text-pnl-neg"
                         }`}
                       >
-                        {fmtPct(metrics.roiPct, lang, 1)}
+                        {fmtPct(slicedMetrics.roiPct, lang, 1)}
                       </span>
                     </div>
                   </div>

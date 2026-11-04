@@ -35,10 +35,11 @@ import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
 import { CifraDemo } from "@/components/tj/CifraDemo";
 import { Reveal } from "@/components/tj/Reveal";
+import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
 import { compararSeleccion, type Comparacion } from "@/lib/trading/comparacion";
-import { coincideOperacion, pasaCumplimiento } from "@/lib/trading/filtros";
+import { coincideOperacion, filtraOperaciones } from "@/lib/trading/filtros";
 
 const DECIMALS: Record<string, number> = Object.fromEntries(
   INSTRUMENTS.map((i) => [i.symbol, i.decimals])
@@ -156,10 +157,13 @@ const TradeRow = memo(function TradeRow({
   const assetLabel =
     ASSET_LABEL[inst?.assetClass ?? "stock"]?.[lang === "es" ? "es" : "en"] ?? "";
   const isConfirming = confirmingId === trade.id;
+  const abre = () => {
+    if (!isConfirming) goDetail(trade.id);
+  };
 
   return (
     <tr
-      onClick={() => !isConfirming && goDetail(trade.id)}
+      onClick={abre}
       data-operacion={trade.id}
       className={`group relative cursor-pointer border-b border-[rgb(var(--divider)/0.06)] last:border-b-0 transition-[background-color,box-shadow] ${
         selected ? "bg-[rgb(var(--accent-base)/0.08)]" : "even:bg-[rgb(var(--divider)/0.02)] hover:bg-[rgb(var(--divider)/0.06)]"
@@ -170,14 +174,16 @@ const TradeRow = memo(function TradeRow({
       {/* Fija a la izquierda en móvil; el fondo opaco tapa las celdas que se desplazan. */}
       <td className="pl-5 pr-3 py-2.5 whitespace-nowrap sticky left-0 z-10 bg-[rgb(var(--bg))]">
         <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={selected}
-            onClick={(e) => e.stopPropagation()}
-            onChange={() => onToggleSelect(trade.id)}
-            aria-label={`${trade.instrument} ${t("selectTrade")}`}
-            className="h-3.5 w-3.5 rounded-[2px] border-[rgb(var(--divider)/0.2)] bg-[rgb(var(--divider)/0.05)] accent-[rgb(var(--accent-base))] cursor-pointer"
-          />
+          {/* La etiqueta da a la casilla de 14 px su zona de 24 px; su clic no llega a la fila. */}
+          <label className="tj-area-24 inline-flex" onClick={(e) => e.stopPropagation()}>
+            <input
+              type="checkbox"
+              checked={selected}
+              onChange={() => onToggleSelect(trade.id)}
+              aria-label={`${trade.instrument} ${t("selectTrade")}`}
+              className="h-3.5 w-3.5 rounded-[2px] border-[rgb(var(--divider)/0.2)] bg-[rgb(var(--divider)/0.05)] accent-[rgb(var(--accent-base))] cursor-pointer"
+            />
+          </label>
           <Chip variant={trade.direction === "long" ? "pos" : "neg"}>
             {trade.direction === "long" ? t("long") : t("short")}
           </Chip>
@@ -187,9 +193,16 @@ const TradeRow = memo(function TradeRow({
       <td className="px-3 py-2.5 whitespace-nowrap">
         <div className="flex items-center gap-2">
           <AssetMark assetClass={inst?.assetClass} title={assetLabel} />
-          <span className="font-medium text-primary text-sm tnum">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              abre();
+            }}
+            className="rounded-[2px] font-medium text-primary text-sm tnum"
+          >
             {trade.instrument}
-          </span>
+          </button>
           {isCustom && (
             <span
               className="text-[11px] uppercase tracking-[0.15em] font-semibold text-primary border border-[rgb(var(--divider)/0.2)] rounded-[2px] px-1 py-px"
@@ -635,7 +648,9 @@ export function TradesPage() {
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   // Resultado y Setup (TradesPage.xaml L107-213): estado local porque ninguna otra página los comparte.
   const [outcome, setOutcome] = useState<"all" | "win" | "loss" | "be">("all");
-  const [setupSel, setSetupSel] = useState<string>("all");
+  /* El mismo filtro que Analítica: lo elegido allí se sigue viendo aquí, marcado en su botón. */
+  const setupSel = filters.setup;
+  const setSetupSel = (setup: string) => setFilters({ setup });
 
   const handleExport = (format: "csv" | "json") => {
     if (!filtered.length) return;
@@ -728,26 +743,13 @@ export function TradesPage() {
   };
 
   const filtered = useMemo(() => {
-    return allTrades.filter((tr) => {
-      if (filters.instrument !== "all" && tr.instrument !== filters.instrument) return false;
-      if (filters.direction !== "all" && tr.direction !== filters.direction) return false;
-      if (!pasaCumplimiento(tr.compliance, filters.compliance)) return false;
+    return filtraOperaciones(allTrades, filters).filter((tr) => {
       if (outcome === "win" && tr.netPnl <= 0) return false;
       if (outcome === "loss" && tr.netPnl >= 0) return false;
       if (outcome === "be" && tr.netPnl !== 0) return false;
-      if (setupSel !== "all" && tr.setup !== setupSel) return false;
       return coincideOperacion(tr, debounced, nombreSetup(tr.setup, lang), lang);
     });
-  }, [
-    allTrades,
-    debounced,
-    filters.instrument,
-    filters.direction,
-    filters.compliance,
-    outcome,
-    setupSel,
-    lang,
-  ]);
+  }, [allTrades, debounced, filters, outcome, lang]);
 
   const sorted = useMemo(() => {
     const arr = [...filtered];
@@ -858,6 +860,8 @@ export function TradesPage() {
     }
   }
 
+  const ariaSort = (key: SortKey) => (key !== sortKey ? undefined : sortDir === "asc" ? "ascending" : "descending");
+
   /* Añadir y quitar etiquetas no persiste nada en la demo: el aviso lo dice en vez de fingir que se aplicó. */
   function handleTag(tag: string) {
     toast({
@@ -894,6 +898,8 @@ export function TradesPage() {
               <span className="text-sm text-tertiary tnum mb-1">
                 {tf("tradesCount", filtered.length)}
               </span>
+              {/* El recuento cambia al filtrar o buscar: se dice cuando se queda quieto. */}
+              <ResultadoAnunciado texto={tf("tradesCount", filtered.length)} />
             </div>
           </div>
 
@@ -1329,7 +1335,7 @@ export function TradesPage() {
                     </div>
                   </th>
 
-                  <th scope="col" className="px-3 py-3 whitespace-nowrap w-[140px]">
+                  <th scope="col" aria-sort={ariaSort("symbol")} className="px-3 py-3 whitespace-nowrap w-[140px]">
                     <SortHeader
                       active={sortKey === "symbol"}
                       dir={sortDir}
@@ -1358,7 +1364,7 @@ export function TradesPage() {
                     </span>
                   </th>
 
-                  <th scope="col" className="px-3 py-3 whitespace-nowrap w-[90px]">
+                  <th scope="col" aria-sort={ariaSort("duration")} className="px-3 py-3 whitespace-nowrap w-[90px]">
                     <SortHeader
                       active={sortKey === "duration"}
                       dir={sortDir}
@@ -1369,7 +1375,7 @@ export function TradesPage() {
                     </SortHeader>
                   </th>
 
-                  <th scope="col" className="px-3 py-3 whitespace-nowrap w-[120px]">
+                  <th scope="col" aria-sort={ariaSort("date")} className="px-3 py-3 whitespace-nowrap w-[120px]">
                     <SortHeader
                       active={sortKey === "date"}
                       dir={sortDir}
@@ -1380,7 +1386,7 @@ export function TradesPage() {
                     </SortHeader>
                   </th>
 
-                  <th scope="col" className="px-3 py-3 whitespace-nowrap w-[120px] text-right">
+                  <th scope="col" aria-sort={ariaSort("pnl")} className="px-3 py-3 whitespace-nowrap w-[120px] text-right">
                     <SortHeader
                       active={sortKey === "pnl"}
                       dir={sortDir}
@@ -1391,7 +1397,7 @@ export function TradesPage() {
                     </SortHeader>
                   </th>
 
-                  <th scope="col" className="px-3 py-3 whitespace-nowrap w-[90px] text-right">
+                  <th scope="col" aria-sort={ariaSort("r")} className="px-3 py-3 whitespace-nowrap w-[90px] text-right">
                     <SortHeader
                       active={sortKey === "r"}
                       dir={sortDir}
@@ -1497,6 +1503,18 @@ export function TradesPage() {
           {/* Sombra en el canto de la primera columna fija, que la separa de lo que se desplaza. */}
           <div className="pointer-events-none absolute left-[88px] top-0 bottom-0 w-4 bg-gradient-to-r from-[rgb(var(--sombra)/0.14)] to-transparent md:hidden" aria-hidden />
         </div>
+
+        {/* Siempre montado, para decir la selección al aparecer la barra y no en cada marca; al
+            limpiarla queda en blanco. Fuera de la barra, que se monta ya con su recuento. */}
+        <ResultadoAnunciado
+          texto={
+            selectedIds.size === 0
+              ? ""
+              : es
+                ? `${fmtOperaciones(selectedIds.size, lang)} ${selectedIds.size === 1 ? "seleccionada" : "seleccionadas"}`
+                : `${fmtOperaciones(selectedIds.size, lang)} selected`
+          }
+        />
 
         {/* Al plegarse conserva el último recuento en vez de mostrar «0». */}
         {barra.montado && (

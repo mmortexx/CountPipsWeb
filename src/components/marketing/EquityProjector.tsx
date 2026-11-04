@@ -861,6 +861,19 @@ export function EquityProjector() {
                 </div>
               )}
 
+              {c.medianaCae && (
+                <div
+                  className="border-y border-[var(--ficha-division)] py-3 text-xs tnum leading-relaxed"
+                  style={{ color: "rgb(var(--pnl-neg))" }}
+                  role="alert"
+                >
+                  ⚠{" "}
+                  {es
+                    ? "Tu expectancy es positiva, pero con este riesgo las rachas se la comen: en compuesto, el camino mediano baja. Prueba con menos riesgo por operación."
+                    : "Your expectancy is positive, but at this risk the streaks eat it: when compounding, the median path falls. Try less risk per trade."}
+                </div>
+              )}
+
               {/* Selector de Pestaña */}
               <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
                 <div className="tj-segmentado" role="group" aria-label={es ? "Vista del resultado" : "Result view"}>
@@ -960,7 +973,7 @@ export function EquityProjector() {
                   {/* SVG Chart con Renderizado Preciso */}
                   <div
                     ref={cajaGraficoRef}
-                    className="relative cursor-crosshair touch-none select-none rounded-[4px] overflow-hidden"
+                    className="relative cursor-crosshair touch-pan-y select-none rounded-[4px] overflow-hidden"
                     style={{ boxShadow: "inset 0 0 0 1px var(--ficha-division)" }}
                     onMouseMove={(e) => handleSvgMove(e.clientX)}
                     onTouchMove={(e) => {
@@ -976,6 +989,7 @@ export function EquityProjector() {
                       viewBox={`0 0 ${svgW} ${svgH}`}
                       className="w-full"
                       style={{ height: "auto", display: "block", shapeRendering: "geometricPrecision", textRendering: "geometricPrecision" }}
+                      role="img"
                       aria-label={es ? "Gráfico interactivo de proyección" : "Interactive projection chart"}
                     >
                       {/* Rejilla Horizontal con Labels a la Izquierda */}
@@ -1110,11 +1124,11 @@ export function EquityProjector() {
                   <table className="w-full text-left tnum text-xs">
                     <thead>
                       <tr className="text-[12px] text-[var(--ink-3)]">
-                        <th className="tj-matriz-cab py-2.5 px-3 font-medium">{es ? "Año" : "Year"}</th>
-                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Balance inicial" : "Start balance"}</th>
-                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Resultado del año" : "Year P&L"}</th>
-                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Rentabilidad" : "Return"}</th>
-                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Balance final" : "End balance"}</th>
+                        <th scope="col" className="tj-matriz-cab py-2.5 px-3 font-medium">{es ? "Año" : "Year"}</th>
+                        <th scope="col" className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Balance inicial" : "Start balance"}</th>
+                        <th scope="col" className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Resultado del año" : "Year P&L"}</th>
+                        <th scope="col" className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Rentabilidad" : "Return"}</th>
+                        <th scope="col" className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Balance final" : "End balance"}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1315,10 +1329,10 @@ export function EquityProjector() {
               </div>
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <span className="text-[12px] tnum text-[var(--ink-3)]">
+                <span className="medida text-[12px] tnum text-[var(--ink-3)]">
                   {es
-                    ? `Proyección ${reinvestMode === "compound" ? "con interés compuesto" : "con riesgo fijo"} y banda de varianza del ${fmtPct(CONO_CONFIANZA_PCT, 0)}. No es una promesa.`
-                    : `${reinvestMode === "compound" ? "Compounded" : "Fixed-risk"} projection with an ${fmtPct(CONO_CONFIANZA_PCT, 0)} variance band. Not a promise.`}
+                    ? `Proyección ${reinvestMode === "compound" ? "con interés compuesto" : "con riesgo fijo"}: la línea es el camino mediano, y ${fmtPct(CONO_CONFIANZA_PCT, 0)} de los caminos cae dentro de la banda. No es una promesa.`
+                    : `${reinvestMode === "compound" ? "Compounded" : "Fixed-risk"} projection: the line is the median path, and ${fmtPct(CONO_CONFIANZA_PCT, 0)} of paths fall inside the band. Not a promise.`}
                 </span>
 
                 <BotonCopiar

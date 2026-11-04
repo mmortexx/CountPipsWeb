@@ -2,9 +2,11 @@
 
 import { memo, useMemo, useRef, useState } from "react";
 import type { Trade } from "@/lib/trading/data";
-import { heatmap, WEEKDAYS_SHORT } from "@/lib/trading/data";
+import { diasCortos, filaDeDia, heatmap } from "@/lib/trading/data";
 import { useLang } from "@/lib/i18n";
-import { fmtCifraCorta, fmtInt, fmtMoney } from "@/lib/trading/format";
+import type { Lang } from "@/lib/locale";
+import { fmtCifraCorta, fmtInt, fmtMoney, LOCALE_FECHA } from "@/lib/trading/format";
+
 interface HeatmapProps {
   trades: Trade[];
   className?: string;
@@ -12,31 +14,62 @@ interface HeatmapProps {
 
 const HOUR_LABELS = ["00–04", "04–08", "08–12", "12–16", "16–20", "20–24"];
 
+/** Lo que dice el mapa a quien no lo ve: su mejor y su peor franja, entre las que tienen operaciones. */
+function rotuloMapa(grid: number[][], cuenta: number[][], lang: Lang): string {
+  const es = lang === "es";
+  const titulo = es
+    ? "Mapa de calor de rentabilidad por día de la semana y franja horaria"
+    : "Heatmap of profitability by weekday and time band";
+  // El 1 de enero de 2024 fue lunes: la fila r es el día 1 + r.
+  const dia = (r: number) =>
+    new Intl.DateTimeFormat(LOCALE_FECHA[lang], { weekday: "long", timeZone: "UTC" }).format(new Date(Date.UTC(2024, 0, 1 + r)));
+  const franja = (r: number, c: number) => `${dia(r)} ${HOUR_LABELS[c]}, ${fmtMoney(grid[r][c], lang, { sign: true, decimals: 0 })}`;
+
+  let mejor: [number, number] | null = null;
+  let peor: [number, number] | null = null;
+  for (let r = 0; r < grid.length; r++) {
+    for (let c = 0; c < grid[r].length; c++) {
+      if (cuenta[r][c] === 0) continue;
+      if (!mejor || grid[r][c] > grid[mejor[0]][mejor[1]]) mejor = [r, c];
+      if (!peor || grid[r][c] < grid[peor[0]][peor[1]]) peor = [r, c];
+    }
+  }
+  if (!mejor || !peor) return `${titulo}. ${es ? "Sin operaciones." : "No trades."}`;
+  if (mejor[0] === peor[0] && mejor[1] === peor[1]) {
+    return `${titulo}. ${es ? "Solo hay operaciones en" : "Trades only in"} ${franja(...mejor)}.`;
+  }
+  return es
+    ? `${titulo}. Mejor franja: ${franja(...mejor)}. Peor franja: ${franja(...peor)}.`
+    : `${titulo}. Best band: ${franja(...mejor)}. Worst band: ${franja(...peor)}.`;
+}
+
 /** Mapa de calor de P&L por día y franja horaria: verde positivo, rojo negativo, intensidad por magnitud. */
 export const Heatmap = memo(function Heatmap({ trades, className = "" }: HeatmapProps) {
   const { lang } = useLang();
   const grid = useMemo(() => heatmap(trades), [trades]);
 
-  // Operaciones por celda, con la misma partición que el mapa (lun–vie, franjas de 4 h).
+  // Operaciones por celda, con la misma partición que el mapa. En UTC, como
+  // `heatmap()`: con husos distintos el recuento de una celda no sería el de su cifra.
   const countGrid = useMemo(() => {
-    const out = Array.from({ length: 5 }, () => Array(6).fill(0));
-    for (const t of trades) {
-      /* En UTC, como `heatmap()`: con husos distintos el recuento de una celda
-         no sería el de su cifra. */
-      const d = t.closedAt.getUTCDay();
-      if (d === 0 || d === 6) continue;
-      const row = d - 1;
-      const col = Math.min(5, Math.floor(t.closedAt.getUTCHours() / 4));
-      out[row][col] += 1;
-    }
+    const out: number[][] = Array.from({ length: 7 }, () => Array(6).fill(0));
+    for (const t of trades) out[filaDeDia(t.closedAt)][Math.floor(t.closedAt.getUTCHours() / 4)] += 1;
     return out;
   }, [trades]);
+
+  // Sábado y domingo solo aparecen si se operó en ellos (cripto): un mercado que cierra no necesita dos filas vacías.
+  const filas = useMemo(
+    () => [0, 1, 2, 3, 4, 5, 6].filter((d) => d < 5 || countGrid[d].some((n) => n > 0)),
+    [countGrid]
+  );
+  const dias = diasCortos(lang);
 
   const maxAbs = useMemo(() => {
     let m = 0;
     for (const row of grid) for (const v of row) m = Math.max(m, Math.abs(v));
     return m || 1;
   }, [grid]);
+
+  const rotulo = useMemo(() => rotuloMapa(grid, countGrid, lang), [grid, countGrid, lang]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   // Celda señalada: coordenadas y punto de anclaje (px, relativo al contenedor).
@@ -48,21 +81,19 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
       className={`tj-realce relative tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] ${className}`}
       ref={containerRef}
       role="img"
-      aria-label={lang === "es"
-        ? "Mapa de calor de rentabilidad por día de la semana y franja horaria"
-        : "Heatmap of profitability by weekday and time band"}
+      aria-label={rotulo}
       style={{ transformOrigin: "center" }}
     >
       <div className="flex gap-1.5">
         <div className="flex flex-col gap-1 justify-around pr-1">
-          {WEEKDAYS_SHORT.map((d) => (
-            <div key={d} className="text-[11px] text-tertiary font-medium h-8 flex items-center">{d}</div>
+          {filas.map((d) => (
+            <div key={d} className="text-[11px] text-tertiary font-medium h-8 flex items-center">{dias[d]}</div>
           ))}
         </div>
-        <div className="flex-1 grid grid-rows-5 gap-1">
-          {grid.map((row, r) => (
+        <div className="flex-1 grid gap-1">
+          {filas.map((r) => (
             <div key={r} className="grid grid-cols-6 gap-1">
-              {row.map((v, c) => {
+              {grid[r].map((v, c) => {
                 const intensity = Math.abs(v) / maxAbs;
                 const pos = v >= 0;
                 // Tinte con tope de 0,30: la cifra es texto de 9 px (pide 4,5:1) y
@@ -123,7 +154,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
           }}
         >
           <div className="text-tertiary text-[11px]">
-            {WEEKDAYS_SHORT[hovered.r]} · {HOUR_LABELS[hovered.c]}
+            {dias[hovered.r]} · {HOUR_LABELS[hovered.c]}
           </div>
           <div
             className={`font-semibold tnum mt-0.5 ${

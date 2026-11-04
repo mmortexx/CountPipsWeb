@@ -1122,6 +1122,8 @@ function LanguagePicker({
   }, [open]);
 
   const actual = TABLA_IDIOMAS.find((l) => l.codigo === lang) ?? TABLA_IDIOMAS[0];
+  // El nombre empieza por el código que se ve (WCAG 2.5.3): quien dicta «ES» llega al botón.
+  const cambiarIdioma = tx(lang, { es: "Cambiar idioma", en: "Change language", pt: "Mudar idioma", fr: "Changer de langue", de: "Sprache ändern", it: "Cambia lingua" });
 
   return (
     <div className="relative flex-none">
@@ -1131,8 +1133,8 @@ function LanguagePicker({
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
-        aria-label={tx(lang, { es: "Cambiar idioma", en: "Change language", pt: "Mudar idioma", fr: "Changer de langue", de: "Sprache ändern", it: "Cambia lingua" })}
-        title={tx(lang, { es: "Cambiar idioma", en: "Change language", pt: "Mudar idioma", fr: "Changer de langue", de: "Sprache ändern", it: "Cambia lingua" })}
+        aria-label={`${actual.code2}: ${cambiarIdioma}`}
+        title={cambiarIdioma}
         className={`inline-flex ${sizeCls} cursor-pointer items-center gap-1.5 rounded-[4px] border-0 bg-transparent px-2.5 text-[12px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]`}
       >
         <GlobeIcon />

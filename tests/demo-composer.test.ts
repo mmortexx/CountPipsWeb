@@ -20,7 +20,12 @@ let raiz: Root;
 /** Los avisos que muestra la demo, leídos del mismo almacén que pinta el Toaster. */
 function Avisos() {
   const { toasts } = useToast();
-  return createElement("div", { id: "avisos" }, toasts.map((a) => createElement("p", { key: a.id }, String(a.title))));
+  return createElement(
+    "div",
+    null,
+    createElement("div", { id: "avisos" }, toasts.map((a) => createElement("p", { key: a.id }, String(a.title)))),
+    createElement("div", { id: "avisos-detalle" }, toasts.map((a) => createElement("p", { key: a.id }, String(a.description ?? "")))),
+  );
 }
 
 function monta() {
@@ -147,7 +152,8 @@ describe("el registro rápido guarda el plan que el visitante tecleó", () => {
   });
 });
 
-const TITULO_ERROR = "Faltan campos obligatorios";
+const TITULO_STOP = "Revisa el campo «Stop»";
+const TITULO_OBJETIVO = "Revisa el campo «Objetivo»";
 const TITULO_OK = "Operación registrada";
 
 const avisos = () => cont.querySelector("#avisos")!.textContent;
@@ -238,7 +244,7 @@ describe("el registro rápido valida el plan según la dirección", () => {
     escribe("d-stop", "64480,0");
     registra();
     expect(getCustomTrades()).toHaveLength(0);
-    expect(avisos()).toBe(TITULO_ERROR);
+    expect(avisos()).toBe(TITULO_STOP);
   });
 
   it("un corto bien planteado se registra y su R:R sale en positivo", () => {
@@ -260,7 +266,7 @@ describe("el registro rápido valida el plan según la dirección", () => {
     expect(rrMostrado()).toBe("−1,92 R");
     registra();
     expect(getCustomTrades()).toHaveLength(0);
-    expect(avisos()).toBe(TITULO_ERROR);
+    expect(avisos()).toBe(TITULO_OBJETIVO);
   });
 
   it("un largo con el stop por encima de la entrada no se registra", () => {
@@ -268,7 +274,7 @@ describe("el registro rápido valida el plan según la dirección", () => {
     escribe("d-stop", "65520,0");
     registra();
     expect(getCustomTrades()).toHaveLength(0);
-    expect(avisos()).toBe(TITULO_ERROR);
+    expect(avisos()).toBe(TITULO_STOP);
   });
 
   it("los valores por defecto de un largo se registran", () => {
@@ -286,5 +292,117 @@ describe("el registro rápido valida el plan según la dirección", () => {
     expect(guardada).toHaveLength(1);
     expect(guardada[0].target).toBeUndefined();
     expect(avisos()).toBe(TITULO_OK);
+  });
+});
+
+describe("el riesgo del registro rápido se anuncia una vez, cuando la cifra se queda quieta", () => {
+  const estado = () => cont.querySelector('[role="status"]')!.textContent;
+  const pasa = (ms: number) =>
+    act(() => {
+      vi.advanceTimersByTime(ms);
+    });
+
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  it.each([
+    ["/demo", `Riesgo: 4,50${NBSP}$`],
+    ["/en/demo", "Risk: $4.50"],
+  ])("en %s: nada al cargar, nada a media escritura y la frase final tras 700 ms", (url, frase) => {
+    ruta = url;
+    monta();
+    expect(estado()).toBe("");
+    // BTC/USDT, multiplicador 1: 1,5 de distancia al stop × 3 de cantidad.
+    escribe("d-entry", "100,0");
+    escribe("d-stop", "98,5");
+    escribe("d-qty", "1");
+    pasa(600);
+    escribe("d-qty", "3");
+    pasa(600);
+    expect(estado()).toBe("");
+    pasa(100);
+    expect(estado()).toBe(frase);
+  });
+});
+
+describe("el registro rápido dice qué campo falla, lo marca y lleva el foco a él", () => {
+  const detalle = () => cont.querySelector("#avisos-detalle")!.textContent;
+  const marcados = () => [...cont.querySelectorAll<HTMLElement>('[aria-invalid="true"]')].map((el) => el.id);
+  const aviso = (id: string) => {
+    const ids = campo(id).getAttribute("aria-describedby");
+    return ids ? document.getElementById(ids)?.textContent : undefined;
+  };
+
+  it("un largo con el stop por encima: aviso con su nombre y su frase, el campo marcado y el foco en él", () => {
+    monta();
+    escribe("d-stop", "65520,0");
+    registra();
+    expect(avisos()).toBe("Revisa el campo «Stop»");
+    expect(detalle()).toBe("En largo va por debajo de la entrada.");
+    expect(marcados()).toEqual(["d-stop"]);
+    expect(aviso("d-stop")).toBe("En largo va por debajo de la entrada.");
+    expect(document.activeElement).toBe(campo("d-stop"));
+  });
+
+  it.each([
+    ["d-entry", "", "Entrada", "Escribe un número."],
+    ["d-exit", "0", "Salida", "Debe ser mayor que cero."],
+    ["d-qty", "0", "Cantidad", "Debe ser mayor que cero."],
+    ["d-qty", "", "Cantidad", "Escribe un número."],
+    ["d-target", "64000,0", "Objetivo", "En largo va por encima de la entrada."],
+    ["d-stop", "65000,0", "Stop", "No puede ser igual a la entrada."],
+  ])("%s con «%s»: el aviso nombra «%s» y el campo lleva el mensaje enlazado", (id, texto, etiqueta, frase) => {
+    monta();
+    escribe(id, texto);
+    registra();
+    expect(getCustomTrades()).toHaveLength(0);
+    expect(avisos()).toBe(`Revisa el campo «${etiqueta}»`);
+    expect(detalle()).toBe(frase);
+    expect(marcados()).toEqual([id]);
+    expect(aviso(id)).toBe(frase);
+    expect(document.activeElement).toBe(campo(id));
+  });
+
+  it("en inglés, el aviso, el campo y la frase salen en inglés", () => {
+    ruta = "/en/demo";
+    monta();
+    escribe("d-stop", "65520,0");
+    registra();
+    expect(avisos()).toBe("Check the “Stop” field");
+    expect(detalle()).toBe("For a long it goes below the entry.");
+    expect(aviso("d-stop")).toBe("For a long it goes below the entry.");
+    expect(document.activeElement).toBe(campo("d-stop"));
+  });
+
+  it("con varios campos mal, el aviso y el foco son del primero que falla", () => {
+    monta();
+    escribe("d-qty", "0");
+    escribe("d-stop", "65520,0");
+    registra();
+    expect(marcados()).toEqual(["d-stop"]);
+    expect(document.activeElement).toBe(campo("d-stop"));
+  });
+
+  it("antes de intentar registrar no hay nada marcado, aunque falte algo; al corregirlo, la marca se va sola", () => {
+    monta();
+    escribe("d-stop", "65520,0");
+    expect(marcados()).toEqual([]);
+    registra();
+    expect(marcados()).toEqual(["d-stop"]);
+    escribe("d-stop", "64480,0");
+    expect(marcados()).toEqual([]);
+    expect(campo("d-stop").hasAttribute("aria-describedby")).toBe(false);
+    expect(document.getElementById("d-stop-error")).toBeNull();
+  });
+
+  it("un registro correcto después de un fallo guarda la operación y no deja marcas", () => {
+    monta();
+    escribe("d-qty", "0");
+    registra();
+    escribe("d-qty", "1");
+    registra();
+    expect(getCustomTrades()).toHaveLength(1);
+    expect(marcados()).toEqual([]);
+    expect(avisos()).toContain(TITULO_OK);
   });
 });

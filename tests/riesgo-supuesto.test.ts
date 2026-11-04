@@ -65,6 +65,7 @@ describe("calculadora de riesgo: el valor por escalón dice qué escalón es", (
     ["forex", "en", "Pip value"],
     ["futures", "es", "Valor del tick"],
     ["futures", "en", "Tick value"],
+    ["crypto", "en", "Value of a 1% move"],
   ] as const)("en %s (%s): «%s»", (mercado, lang, rotulo) => {
     expect(rotuloValorEscalon(mercado, lang)).toBe(rotulo);
   });

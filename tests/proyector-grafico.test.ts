@@ -53,3 +53,24 @@ describe("proyector: el gráfico sigue el ancho de su caja", () => {
     expect(vivos).toHaveLength(1);
   });
 });
+
+describe("proyector: el gráfico y la tabla se dejan leer con tacto y con lector de pantalla", () => {
+  const grafico = () => cont.querySelector<SVGElement>("svg[aria-label='Gráfico interactivo de proyección']")!;
+
+  it("el gráfico es una imagen con nombre", () => {
+    expect(grafico().getAttribute("role")).toBe("img");
+  });
+
+  it("el dedo pasa en vertical por encima del gráfico: la página sigue pudiendo desplazarse", () => {
+    const caja = grafico().parentElement!;
+    expect(caja.classList.contains("touch-pan-y")).toBe(true);
+    expect(caja.classList.contains("touch-none")).toBe(false);
+  });
+
+  it("cada cabecera de la tabla por años lo es de su columna", () => {
+    act(() => boton("Por años").click());
+    const cabeceras = [...cont.querySelectorAll("table th")];
+    expect(cabeceras.length).toBe(5);
+    expect(cabeceras.map((th) => th.getAttribute("scope"))).toEqual(Array(5).fill("col"));
+  });
+});

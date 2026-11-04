@@ -58,7 +58,7 @@ export function ProfileSelector() {
             {tx<ReactNode>(lang, {
               es: (
                 <>
-                  Dos formas de operar. <span className="tj-frase-nueva">Una lectura mejor.</span>
+                  Dos formas de operar. <span className="tj-frase-nueva">Una lectura más clara.</span>
                 </>
               ),
               en: (
@@ -68,7 +68,7 @@ export function ProfileSelector() {
               ),
               pt: (
                 <>
-                  Duas formas de operar. <span className="tj-frase-nueva">Uma leitura melhor.</span>
+                  Duas formas de operar. <span className="tj-frase-nueva">Uma leitura mais clara.</span>
                 </>
               ),
               fr: (

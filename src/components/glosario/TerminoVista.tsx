@@ -118,9 +118,6 @@ export function TerminoVista({ ficha, ampliacion }: { ficha: FichaTermino; ampli
                         >
                           <span className="link-underline">{nombreTermino(t, lang)}</span>
                         </span>
-                        <span className="medida block text-[14px] leading-[1.6] text-secondary">
-                          {es ? t.es : t.en}
-                        </span>
                       </Link>
                     </li>
                   ))}

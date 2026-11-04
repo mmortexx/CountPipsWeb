@@ -69,7 +69,7 @@ export function Integrations() {
                 <span className="text-secondary font-medium">
                   Si exporta a CSV, el asistente la importa con mapeo de columnas.
                 </span>{" "}
-                Mapeas las columnas una vez y la receta queda guardada. Binance puede además sincronizarse en solo lectura con tus propias claves.
+                Binance puede además sincronizarse en solo lectura con tus propias claves.
               </>
             ) : (
               <>
@@ -77,7 +77,7 @@ export function Integrations() {
                 <span className="text-secondary font-medium">
                   If it exports to CSV, the wizard imports it with column mapping.
                 </span>{" "}
-                Map the columns once and the recipe is saved. Binance can also sync in read-only mode with your own keys.
+                Binance can also sync in read-only mode with your own keys.
               </>
             )}
           </p>
