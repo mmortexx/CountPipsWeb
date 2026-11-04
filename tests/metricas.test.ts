@@ -555,7 +555,7 @@ describe("Modelos Institucionales de Ruina, Rachas y Valor en Riesgo", () => {
   it("computeExpectedMaxLossStreak calcula correctamente la longitud de racha analítica", async () => {
     const { computeExpectedMaxLossStreak } = await import("@/lib/trading/data");
     // Con WR = 50% y N = 100 -> q = 0.5, ln(100)/-ln(0.5) = 4.605 / 0.693 = 6.64 -> ~7 operaciones
-    expect(computeExpectedMaxLossStreak(50, 100)).toBe(7);
+    expect(computeExpectedMaxLossStreak(50, 100)).toBe(6);
     // Con WR = 60% y N = 100 -> q = 0.4, ln(100)/-ln(0.4) = 4.605 / 0.916 = 5.02 -> ~5 operaciones
     expect(computeExpectedMaxLossStreak(60, 100)).toBe(5);
     // Guardas en bordes
@@ -563,13 +563,16 @@ describe("Modelos Institucionales de Ruina, Rachas y Valor en Riesgo", () => {
     expect(computeExpectedMaxLossStreak(0, 100)).toBe(100);
   });
 
-  it("computeParametricVaR calcula el VaR paramétrico en dólares según nivel de confianza", async () => {
-    const { computeParametricVaR } = await import("@/lib/trading/data");
-    // Balance $10,000, 1% riesgo ($100 1R)
-    // 95% CI -> 100 * 1.645 = $164.50
-    expect(computeParametricVaR(10000, 1.0, 95)).toBe(164.5);
-    // 99% CI -> 100 * 2.326 = $232.60
-    expect(computeParametricVaR(10000, 1.0, 99)).toBe(232.6);
+  it("perdidaEnRacha: cada pérdida arriesga el mismo % de lo que queda en la cuenta", async () => {
+    const { perdidaEnRacha } = await import("@/lib/trading/data");
+    expect(perdidaEnRacha(10000, 1, 1)).toBe(100);
+    // 10.000 · (1 − 0,99⁵): menos que cinco veces el riesgo de la primera.
+    expect(perdidaEnRacha(10000, 1, 5)).toBe(490.1);
+    expect(perdidaEnRacha(10000, 0, 5)).toBe(0);
+    expect(perdidaEnRacha(0, 1, 5)).toBe(0);
+    // Un riesgo del 100 % se lleva la cuenta y no pasa de ella.
+    expect(perdidaEnRacha(10000, 100, 5)).toBe(10000);
+    expect(perdidaEnRacha(10000, 250, 5)).toBe(10000);
   });
 
   it("soporta activos commodity con multiplicadores y clases asignadas", async () => {

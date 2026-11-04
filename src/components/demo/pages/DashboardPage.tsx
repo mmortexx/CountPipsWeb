@@ -22,7 +22,7 @@ import { fraseOperacionesHoy, operacionesDeHoy, operacionesDelMismoDia } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useTeclaMando } from "@/hooks/use-tecla-mando";
-import { cifraEditable, fmtInt, fmtNum, fmtOperaciones, fmtPct, fmtR, leeCifra, LOCALE_FECHA } from "@/lib/trading/format";
+import { cifraEditable, fmtFactor, fmtInt, fmtNum, fmtOperaciones, fmtPct, fmtR, leeCifra, LOCALE_FECHA } from "@/lib/trading/format";
 import { Reveal } from "@/components/tj/Reveal";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Money } from "@/components/tj/Money";
@@ -65,7 +65,9 @@ export function sliceMetricsByDays(m: Metrics, days: number): Metrics {
   if (startIdx === 0) return m;
   const equityCurve = m.equityCurve.slice(startIdx - 1);
   const drawdownCeiling = m.drawdownCeiling.slice(startIdx - 1);
-  return { ...m, equityCurve, drawdownCeiling };
+  const inicio = equityCurve[0].balance;
+  const roiPct = inicio > 0 ? (equityCurve[equityCurve.length - 1].balance - inicio) / inicio : 0;
+  return { ...m, equityCurve, drawdownCeiling, roiPct };
 }
 
 const inputCls =
@@ -808,7 +810,7 @@ export function DashboardPage() {
                     metrics.profitFactor >= 1 ? "text-pnl-pos" : "text-pnl-neg"
                   }`}
                 >
-                  {fmtNum(metrics.profitFactor, lang, 2)}
+                  {fmtFactor(metrics.profitFactor, lang)}
                 </span>
               }
             />
@@ -888,10 +890,10 @@ export function DashboardPage() {
                       />
                       <span
                         className={`text-xs tnum ${
-                          metrics.roiPct >= 0 ? "text-pnl-pos" : "text-pnl-neg"
+                          slicedMetrics.roiPct >= 0 ? "text-pnl-pos" : "text-pnl-neg"
                         }`}
                       >
-                        {fmtPct(metrics.roiPct, lang, 1)}
+                        {fmtPct(slicedMetrics.roiPct, lang, 1)}
                       </span>
                     </div>
                   </div>

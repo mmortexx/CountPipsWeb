@@ -39,12 +39,13 @@ export function validaPlan(entrada: number, stop: number, objetivo: number): Res
   return { valido: true, motivo: null };
 }
 
-export type MercadoPlan = "equities" | "forex" | "futures";
+export type MercadoPlan = "equities" | "crypto" | "forex" | "futures";
 
-// Topes de apalancamiento de la ESMA para minoristas: acciones 5:1, divisas
-// principales 30:1 e índices 20:1 (el margen de un futuro de índice anda por ahí).
+// Topes de apalancamiento de la ESMA para minoristas: acciones 5:1, cripto 2:1,
+// divisas principales 30:1 e índices 20:1 (el margen de un futuro de índice anda por ahí).
 export const TOPE_APALANCAMIENTO: Record<MercadoPlan, number> = {
   equities: 5,
+  crypto: 2,
   forex: 30,
   futures: 20,
 };

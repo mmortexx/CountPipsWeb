@@ -21,11 +21,12 @@ import {
   computeUlcerIndex,
   medioKellySeleccion,
   computeOmega,
+  factorDeBeneficio,
   INITIAL_BALANCE_CONST,
   type Trade,
   type RankingRow,
 } from "@/lib/trading/data";
-import { fmtMoney, fmtNum, fmtPct, fmtInt, fmtOperaciones, pctSep } from "@/lib/trading/format";
+import { FACTOR_SIN_PERDIDAS, fmtFactor, fmtMoney, fmtNum, fmtPct, fmtInt, fmtOperaciones, pctSep } from "@/lib/trading/format";
 import { filtraOperaciones } from "@/lib/trading/filtros";
 import { useAllTrades } from "@/lib/trading/demoStore";
 import { Eyebrow } from "@/components/tj/Eyebrow";
@@ -587,7 +588,7 @@ interface PeriodRow {
   maxDdPct: number;
 }
 
-function buildPeriodRows(trades: Trade[]): PeriodRow[] {
+export function buildPeriodRows(trades: Trade[]): PeriodRow[] {
   if (trades.length === 0) return [];
   const now = Math.max(...trades.map((t) => t.closedAt.getTime()));
   const dayMs = 86_400_000;
@@ -628,7 +629,7 @@ function buildPeriodRows(trades: Trade[]): PeriodRow[] {
       count: n,
       netPnl,
       winRate: n ? wins.length / n : 0,
-      profitFactor: grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 99 : 0,
+      profitFactor: factorDeBeneficio(grossWin, grossLoss),
       maxDdPct: maxDdPct * 100,
     };
   });
@@ -678,7 +679,7 @@ const MUESTRA_MINIMA = 30;
 /** Veredicto de ventaja con IC del 95 % de la R media (aproximación normal):
  *  inconcluso bajo `MUESTRA_MINIMA`; límite inferior > 0, confirmada; > -0,1,
  *  sugerente; si no, sin ventaja. */
-function computeEdge(trades: Trade[], lang: Lang) {
+export function computeEdge(trades: Trade[], lang: Lang) {
   const n = trades.length;
   if (n < 5) {
     return {
@@ -721,7 +722,7 @@ function computeEdge(trades: Trade[], lang: Lang) {
   const grossLoss = Math.abs(
     trades.filter((t) => t.netPnl < 0).reduce((s, t) => s + t.netPnl, 0)
   );
-  const profitFactor = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 99 : 0;
+  const profitFactor = factorDeBeneficio(grossWin, grossLoss);
 
   let profitFactorCi = "—";
   if (grossLoss > 0 && grossWin > 0 && n >= 5) {
@@ -752,7 +753,7 @@ function computeEdge(trades: Trade[], lang: Lang) {
     hint = lang === "es"
       ? "El intervalo de confianza del 95\u00a0% de la expectativa R excluye al cero: tu ventaja es estadísticamente significativa."
       : "The 95% confidence interval for R expectancy excludes zero: your edge is statistically significant.";
-  } else if (loR > -0.1) {
+  } else if (meanR > 0 && loR > -0.1) {
     verdict = lang === "es" ? "Sugerente" : "Suggestive";
     verdictTone = "warn";
     hint = lang === "es"
@@ -1213,7 +1214,7 @@ export function AnalyticsPage() {
                         {fmtPct(row.winRate, lang, 1)}
                       </td>
                       <td className="px-2 py-2.5 tnum text-secondary text-xs text-right">
-                        {fmtNum(row.profitFactor, lang, 2)}
+                        {fmtFactor(row.profitFactor, lang)}
                       </td>
                       <td className="px-2 py-2.5 tnum text-pnl-neg text-xs text-right">
                         −{fmtNum(row.maxDdPct, lang, 1)}{pctSep(lang)}
@@ -1265,7 +1266,7 @@ export function AnalyticsPage() {
                 showHairline={false}
                 reKey={`pf-${filterSig}`}
               >
-                <CifraDemo to={m.profitFactor} decimals={2} />
+                {m.profitFactor === FACTOR_SIN_PERDIDAS ? fmtFactor(m.profitFactor, lang) : <CifraDemo to={m.profitFactor} decimals={2} />}
               </KpiStripCell>
             </div>
           </div>
@@ -1359,7 +1360,7 @@ export function AnalyticsPage() {
                   hint={desc("Ratio Omega (Keating-Shadwick, umbral L=0)", "Omega ratio (Keating-Shadwick, threshold L=0)")}
                 >
                   <span className={adv.omega >= 1.2 ? "text-pnl-pos" : "text-pnl-warn"}>
-                    {fmtNum(adv.omega, lang, 2)}
+                    {fmtFactor(adv.omega, lang)}
                   </span>
                 </RatioCell>
                 <RatioCell
@@ -1468,7 +1469,7 @@ export function AnalyticsPage() {
                     {t("profitFactor")}
                   </span>
                   <span className={`font-semibold tnum text-lg ${edge.profitFactor >= 1 ? "text-pnl-pos" : "text-pnl-neg"}`}>
-                    {fmtNum(edge.profitFactor, lang, 2)}
+                    {fmtFactor(edge.profitFactor, lang)}
                   </span>
                   <span className="text-[11px] text-tertiary tnum">
                     {edge.profitFactorCi}

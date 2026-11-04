@@ -29,4 +29,14 @@ describe("el Resumen con una operación registrada hoy", () => {
     expect(m.equityCurve.length).toBeGreaterThanOrEqual(2);
     expect(m.drawdownCeiling).toHaveLength(m.equityCurve.length);
   });
+
+  it("la rentabilidad junto a la curva es la de la ventana elegida, no la de toda la cuenta", () => {
+    const todo = computeMetrics(TRADES);
+    const mes = sliceMetricsByDays(todo, 30);
+    const inicio = mes.equityCurve[0].balance;
+    const fin = mes.equityCurve[mes.equityCurve.length - 1].balance;
+    expect(mes.roiPct).toBeCloseTo((fin - inicio) / inicio, 9);
+    expect(mes.roiPct).not.toBeCloseTo(todo.roiPct, 4);
+    expect(sliceMetricsByDays(todo, 100_000).roiPct).toBe(todo.roiPct);
+  });
 });

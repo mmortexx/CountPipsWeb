@@ -3,10 +3,11 @@
 import { useState, useMemo, useCallback, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import type { Lang } from "@/lib/locale";
-import { computeRiskOfRuin, computeParametricVaR, tramosRiesgoBeneficio, UMBRAL_RUINA_PCT } from "@/lib/trading/estadistica";
+import { computeRiskOfRuin, perdidaEnRacha, tramosRiesgoBeneficio, UMBRAL_RUINA_PCT } from "@/lib/trading/estadistica";
 import { TOPE_APALANCAMIENTO, type MercadoPlan } from "@/lib/trading/validaPlan";
 import {
   FUTURES_CONTRACTS,
+  COMISION_CRIPTO_LADO,
   PARES_FOREX,
   UNIDADES_LOTE,
   calculaPlan,
@@ -43,17 +44,19 @@ type AssetMode = MercadoPlan;
 
 /* Una sola lista para el conmutador y para el plan copiado. */
 const MODOS_ACTIVO: { id: AssetMode; labelEs: string; labelEn: string }[] = [
-  { id: "equities", labelEs: "Acciones / cripto", labelEn: "Stocks / Crypto" },
+  { id: "equities", labelEs: "Acciones", labelEn: "Stocks" },
+  { id: "crypto", labelEs: "Cripto", labelEn: "Crypto" },
   { id: "forex", labelEs: "Forex (lotes)", labelEn: "Forex (Lots)" },
   { id: "futures", labelEs: "Futuros (contratos)", labelEn: "Futures (Contracts)" },
 ];
 
 /** Lo que mueve la posición un escalón de precio (`valorPip`, `plan.ts`): un pip,
- *  un tick del contrato o un céntimo. */
+ *  un tick del contrato, un céntimo o, en cripto, un 1 %. */
 export function rotuloValorEscalon(mercado: AssetMode, lang: Lang): string {
   const es = lang === "es";
   if (mercado === "forex") return es ? "Valor del pip" : "Pip value";
   if (mercado === "futures") return es ? "Valor del tick" : "Tick value";
+  if (mercado === "crypto") return es ? `Valor de un 1${pctSep(lang)}` : "Value of a 1% move";
   return es ? "Valor de un céntimo" : "One-cent value";
 }
 
@@ -142,7 +145,7 @@ export function RiskCalculator() {
       profitPct: balance > 0 ? (plan.beneficioNeto / balance) * 100 : 0,
       kelly,
       riskOfRuin: computeRiskOfRuin(kellyWinRate, plan.rr, riskPct, UMBRAL_RUINA_PCT),
-      var95: computeParametricVaR(balance, riskPct, 95),
+      perdidaCinco: perdidaEnRacha(balance, riskPct, 5),
     };
   }, [entry, stop, target, balance, riskPct, assetMode, selectedFutures, forexLotType, parForex, tipoReferencia, includeFriction, kellyWinRate, es]);
 
@@ -156,8 +159,8 @@ export function RiskCalculator() {
   );
 
   const tramos = c.valid ? tramosRiesgoBeneficio(c.riesgoTotal, Math.max(0, c.beneficioNeto)) : { riesgo: 0, beneficio: 0 };
-  /* Sin plan válido no se enseña lo que depende de él. El VaR sí, porque solo
-     depende del balance y del %. */
+  /* Sin plan válido no se enseña lo que depende de él. La racha de pérdidas sí,
+     porque solo depende del balance y del %. */
   const siPlan = (s: string) => (c.valid ? s : "—");
   /* Ruina y medio Kelly salen del win rate de la ficha de Kelly, que va plegada. */
   const conAciertos = es ? `con un ${fmtNum(kellyWinRate, 0)}${PCT} de aciertos` : `at a ${fmtNum(kellyWinRate, 0)}% win rate`;
@@ -186,6 +189,7 @@ export function RiskCalculator() {
       setAssetMode(mode);
       if (mode === "futures") ponPrecios(preciosDeFuturo(futuresContractId));
       else if (mode === "forex") ponPrecios(parForex.precios);
+      else if (mode === "crypto") ponPrecios([60000, 59000, 63000]);
       else ponPrecios([100, 95, 115]);
     },
     [futuresContractId, parForex, ponPrecios],
@@ -229,6 +233,10 @@ export function RiskCalculator() {
         ? es
           ? `Comisión de ${fmtUsd(5)} por lote estándar y un pip de deslizamiento`
           : `${fmtUsd(5)} commission per standard lot and one pip of slippage`
+        : assetMode === "crypto"
+          ? es
+            ? `Comisión del ${fmtNumBase(COMISION_CRIPTO_LADO * 100, lang, 1)}${PCT} del valor nocional al entrar y otra igual al salir`
+            : `${fmtNumBase(COMISION_CRIPTO_LADO * 100, lang, 1)}% fee on the notional value to enter and the same to exit`
         : es
           ? `Comisión de ${fmtMoney(0.005, lang, { decimals: 3 })} por unidad y un céntimo de deslizamiento`
           : `${fmtMoney(0.005, lang, { decimals: 3 })} commission per unit and one cent of slippage`;
@@ -656,7 +664,7 @@ export function RiskCalculator() {
             <Result label={es ? "Fricción estimada" : "Est. friction"} value={siPlan(friccionTxt)} color="var(--ink-2)" />
           </div>
 
-          {/* Stats adicionales: valor posición, apalancamiento, VaR 95% y riesgo de ruina */}
+          {/* Stats adicionales: valor posición, apalancamiento, racha de pérdidas y riesgo de ruina */}
           <div
             /* La clase va en cada celda y no como variante `[&>div]:`: Tailwind
                no genera regla para una clase propia dentro de ese variante. */
@@ -685,10 +693,10 @@ export function RiskCalculator() {
             </div>
             <div className="caja-cifra flex flex-col">
               <div className="tnum text-[12px] leading-[1.3] text-tertiary [hyphens:auto] break-words">
-                {es ? "VaR 95 %" : "95% VaR"}
+                {es ? "5 pérdidas seguidas" : "5 losses in a row"}
               </div>
               <div className="tnum text-sm mt-auto pt-0.5 whitespace-nowrap font-semibold text-primary">
-                {fmtUsd(c.var95)}
+                {c.perdidaCinco > 0 ? `−${fmtUsd(c.perdidaCinco)}` : fmtUsd(0)}
               </div>
             </div>
             <div className="caja-cifra flex flex-col">

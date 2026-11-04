@@ -2,7 +2,7 @@
 
 import { memo, useMemo, useRef, useState } from "react";
 import type { Trade } from "@/lib/trading/data";
-import { heatmap, WEEKDAYS_SHORT } from "@/lib/trading/data";
+import { diasCortos, filaDeDia, heatmap } from "@/lib/trading/data";
 import { useLang } from "@/lib/i18n";
 import { fmtCifraCorta, fmtInt, fmtMoney } from "@/lib/trading/format";
 interface HeatmapProps {
@@ -17,20 +17,20 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
   const { lang } = useLang();
   const grid = useMemo(() => heatmap(trades), [trades]);
 
-  // Operaciones por celda, con la misma partición que el mapa (lun–vie, franjas de 4 h).
+  // Operaciones por celda, con la misma partición que el mapa. En UTC, como
+  // `heatmap()`: con husos distintos el recuento de una celda no sería el de su cifra.
   const countGrid = useMemo(() => {
-    const out = Array.from({ length: 5 }, () => Array(6).fill(0));
-    for (const t of trades) {
-      /* En UTC, como `heatmap()`: con husos distintos el recuento de una celda
-         no sería el de su cifra. */
-      const d = t.closedAt.getUTCDay();
-      if (d === 0 || d === 6) continue;
-      const row = d - 1;
-      const col = Math.min(5, Math.floor(t.closedAt.getUTCHours() / 4));
-      out[row][col] += 1;
-    }
+    const out: number[][] = Array.from({ length: 7 }, () => Array(6).fill(0));
+    for (const t of trades) out[filaDeDia(t.closedAt)][Math.floor(t.closedAt.getUTCHours() / 4)] += 1;
     return out;
   }, [trades]);
+
+  // Sábado y domingo solo aparecen si se operó en ellos (cripto): un mercado que cierra no necesita dos filas vacías.
+  const filas = useMemo(
+    () => [0, 1, 2, 3, 4, 5, 6].filter((d) => d < 5 || countGrid[d].some((n) => n > 0)),
+    [countGrid]
+  );
+  const dias = diasCortos(lang);
 
   const maxAbs = useMemo(() => {
     let m = 0;
@@ -55,14 +55,14 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
     >
       <div className="flex gap-1.5">
         <div className="flex flex-col gap-1 justify-around pr-1">
-          {WEEKDAYS_SHORT.map((d) => (
-            <div key={d} className="text-[11px] text-tertiary font-medium h-8 flex items-center">{d}</div>
+          {filas.map((d) => (
+            <div key={d} className="text-[11px] text-tertiary font-medium h-8 flex items-center">{dias[d]}</div>
           ))}
         </div>
-        <div className="flex-1 grid grid-rows-5 gap-1">
-          {grid.map((row, r) => (
+        <div className="flex-1 grid gap-1">
+          {filas.map((r) => (
             <div key={r} className="grid grid-cols-6 gap-1">
-              {row.map((v, c) => {
+              {grid[r].map((v, c) => {
                 const intensity = Math.abs(v) / maxAbs;
                 const pos = v >= 0;
                 // Tinte con tope de 0,30: la cifra es texto de 9 px (pide 4,5:1) y
@@ -123,7 +123,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
           }}
         >
           <div className="text-tertiary text-[11px]">
-            {WEEKDAYS_SHORT[hovered.r]} · {HOUR_LABELS[hovered.c]}
+            {dias[hovered.r]} · {HOUR_LABELS[hovered.c]}
           </div>
           <div
             className={`font-semibold tnum mt-0.5 ${

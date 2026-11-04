@@ -325,7 +325,7 @@ describe("D1: Quantitative & Financial Math - Tier 2 Boundary & Corner Cases", (
     expect(winMetrics.avgLoss).toBe(0);
     expect(winMetrics.maxDrawdown).toBe(0);
     expect(winMetrics.maxDrawdownPct).toBe(0);
-    expect(winMetrics.profitFactor).toBe(250); // sin pérdidas devuelve la ganancia bruta
+    expect(winMetrics.profitFactor).toBe(100); // sin pérdidas: la convención, no la ganancia en dólares
     expect(winMetrics.sharpe).toBe(0); // con n = 1 la desviación es 0
     expect(winMetrics.sortino).toBe(0);
 
@@ -360,7 +360,7 @@ describe("D1: Quantitative & Financial Math - Tier 2 Boundary & Corner Cases", (
     expect(metrics.maxDrawdownPct).toBe(0);
     expect(metrics.calmar).toBe(0); // drawdown 0: no divide entre 0
     expect(metrics.sortino).toBe(0); // desviación a la baja 0: no divide entre 0
-    expect(metrics.profitFactor).toBe(450); // sin pérdidas devuelve la ganancia bruta
+    expect(metrics.profitFactor).toBe(100); // sin pérdidas: la convención, no la ganancia en dólares
     expect(Number.isFinite(metrics.sharpe)).toBe(true);
   });
 

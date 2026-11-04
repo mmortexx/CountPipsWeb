@@ -38,7 +38,7 @@ import { Reveal } from "@/components/tj/Reveal";
 import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
 import { compararSeleccion, type Comparacion } from "@/lib/trading/comparacion";
-import { coincideOperacion, pasaCumplimiento } from "@/lib/trading/filtros";
+import { coincideOperacion, filtraOperaciones } from "@/lib/trading/filtros";
 
 const DECIMALS: Record<string, number> = Object.fromEntries(
   INSTRUMENTS.map((i) => [i.symbol, i.decimals])
@@ -635,7 +635,9 @@ export function TradesPage() {
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   // Resultado y Setup (TradesPage.xaml L107-213): estado local porque ninguna otra página los comparte.
   const [outcome, setOutcome] = useState<"all" | "win" | "loss" | "be">("all");
-  const [setupSel, setSetupSel] = useState<string>("all");
+  /* El mismo filtro que Analítica: lo elegido allí se sigue viendo aquí, marcado en su botón. */
+  const setupSel = filters.setup;
+  const setSetupSel = (setup: string) => setFilters({ setup });
 
   const handleExport = (format: "csv" | "json") => {
     if (!filtered.length) return;
@@ -728,26 +730,13 @@ export function TradesPage() {
   };
 
   const filtered = useMemo(() => {
-    return allTrades.filter((tr) => {
-      if (filters.instrument !== "all" && tr.instrument !== filters.instrument) return false;
-      if (filters.direction !== "all" && tr.direction !== filters.direction) return false;
-      if (!pasaCumplimiento(tr.compliance, filters.compliance)) return false;
+    return filtraOperaciones(allTrades, filters).filter((tr) => {
       if (outcome === "win" && tr.netPnl <= 0) return false;
       if (outcome === "loss" && tr.netPnl >= 0) return false;
       if (outcome === "be" && tr.netPnl !== 0) return false;
-      if (setupSel !== "all" && tr.setup !== setupSel) return false;
       return coincideOperacion(tr, debounced, nombreSetup(tr.setup, lang), lang);
     });
-  }, [
-    allTrades,
-    debounced,
-    filters.instrument,
-    filters.direction,
-    filters.compliance,
-    outcome,
-    setupSel,
-    lang,
-  ]);
+  }, [allTrades, debounced, filters, outcome, lang]);
 
   const sorted = useMemo(() => {
     const arr = [...filtered];
