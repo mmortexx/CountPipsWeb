@@ -202,10 +202,12 @@ describe("los títulos del glosario caben en el buscador", () => {
   });
 
   it("la ficha española nombra también el término inglés que un trader busca", async () => {
-    const { TERMINOS, nombreConAliasIngles, tituloDeFicha, LARGO_MAXIMO_TITULO } = await import("@/lib/glosario");
+    const { TERMINOS, definicionConAliasIngles, nombreConAliasIngles, tituloDeFicha, LARGO_MAXIMO_TITULO } = await import("@/lib/glosario");
     const ficha = (slug: string) => TERMINOS.find((t) => t.slug === slug)!;
     expect(nombreConAliasIngles(ficha("slippage"))).toBe("Deslizamiento (slippage)");
     expect(tituloDeFicha(ficha("slippage"))).toBe("Deslizamiento (slippage): qué es");
+    expect(definicionConAliasIngles(ficha("slippage"))).toMatch(/ En inglés, slippage\.$/);
+    expect(definicionConAliasIngles(ficha("sharpe-ratio"))).toBe(ficha("sharpe-ratio").es);
     expect(tituloDeFicha(ficha("leverage"))).toContain("leverage");
     expect(tituloDeFicha(ficha("risk-reward-ratio"))).toContain("risk-reward");
     for (const slug of ["long", "short", "liquidity", "volatility", "trend", "margin", "win-rate", "risk-of-ruin", "position-sizing", "limit-order", "market-order"]) {

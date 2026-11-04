@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { TerminoVista } from "@/components/glosario/TerminoVista";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { CATEGORIAS, TERMINOS, descripcionDeTermino, fichaDeTermino, nombreConAliasIngles, nombreTermino, terminoPorSlug, tituloDeFicha } from "@/lib/glosario";
+import { CATEGORIAS, TERMINOS, definicionConAliasIngles, descripcionDeTermino, fichaDeTermino, nombreTermino, terminoPorSlug, tituloDeFicha } from "@/lib/glosario";
 import { AMPLIADO } from "@/lib/glosario-ampliado";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
@@ -103,9 +103,9 @@ export default async function TerminoPage({ params }: Props) {
       <PageHeader
         eyebrowEs={familia.es}
         eyebrowEn={familia.en}
-        titleEs={nombreConAliasIngles(t)}
+        titleEs={nombre}
         titleEn={t.term}
-        subtitleEs={t.es}
+        subtitleEs={definicionConAliasIngles(t)}
         subtitleEn={t.en}
         padre={{ href: "/glosario", es: "Glosario", en: "Glossary" }}
         breadcrumbEs={nombre}

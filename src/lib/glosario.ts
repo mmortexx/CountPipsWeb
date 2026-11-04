@@ -74,6 +74,12 @@ export function nombreConAliasIngles(t: TerminoGlosario): string {
   return alias ? `${nombre} (${alias})` : nombre;
 }
 
+/** La entradilla de la ficha española: la definición y cómo se dice en inglés. */
+export function definicionConAliasIngles(t: TerminoGlosario): string {
+  const alias = ALIAS_INGLES[t.slug];
+  return alias ? `${t.es} En inglés, ${alias}.` : t.es;
+}
+
 /** El `<title>` de la ficha española: con el alias inglés si cabe. */
 export function tituloDeFicha(t: TerminoGlosario): string {
   const nombre = nombreTermino(t, "es");
