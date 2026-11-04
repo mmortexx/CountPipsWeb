@@ -29,3 +29,22 @@ describe("Cobertura de ResultadoAnunciado en las calculadoras", () => {
     });
   }
 });
+
+/**
+ * El «Riesgo» del registro rápido de la demo cambia con cada tecla del stop o la
+ * cantidad: una región `aria-live` directa lo leería a cada pulsación. Pasa por
+ * `ResultadoAnunciado`, que espera a que la cifra se quede quieta. Que lo diga
+ * una sola vez tras teclear lo comprueba `demo-composer.test.ts` en un DOM.
+ */
+describe("Cobertura de ResultadoAnunciado en el registro rápido de la demo", () => {
+  const src = readFileSync(resolve(__dirname, "../src/components/demo/pages/DashboardPage.tsx"), "utf8");
+
+  it("DashboardPage.tsx importa y usa ResultadoAnunciado", () => {
+    expect(src).toMatch(/import\s*\{\s*ResultadoAnunciado\s*\}\s*from\s*"@\/components\/tj\/ResultadoAnunciado"/);
+    expect(src).toMatch(/<ResultadoAnunciado\b/);
+  });
+
+  it("y ninguna región aria-live directa queda en esa página", () => {
+    expect(src).not.toMatch(/aria-live/);
+  });
+});

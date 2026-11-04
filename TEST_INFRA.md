@@ -151,7 +151,7 @@
 | `equivalencia-eur.test.ts` | La tarjeta de precios da la equivalencia en euros con la frase y el mes de cada idioma de la zona euro, y en inglés y portugués no la da |
 | `elision-francesa.test.ts` | En francés «de» se elide delante de vocal o h («d’octobre», «de janvier») en la nota de corte de la portada; cada idioma da su nota de corte exacta |
 | `conexiones.test.ts` | Cada texto que resume lo que se conecta a internet (FAQ, entradilla de seguridad, entradilla de la ficha técnica, `LO_QUE_VA_SOLO`) nombra cada conexión que va sola o, como hoy, dice que nada se conecta solo (la licencia se comprueba sin red); cada fila de la lista dice en su redacción si depende de ti |
-| `resultado-anunciado-cobertura.test.ts` | Las nueve calculadoras de marketing/ envuelven su resultado principal con `ResultadoAnunciado` |
+| `resultado-anunciado-cobertura.test.ts` | Las nueve calculadoras de marketing/ envuelven su resultado principal con `ResultadoAnunciado`, y el «Riesgo» del registro rápido de la demo también (sin `aria-live` directo en `DashboardPage`; que diga la frase una sola vez tras teclear lo comprueba `demo-composer.test.ts`) |
 | `glosario-familias.test.ts` | La ventana del glosario (`GLOSSARY_CATEGORIES`) y la página del glosario (`ORDEN_CATEGORIAS`) enseñan las mismas familias en el mismo orden |
 | `rayas-catalogos.test.ts` | En el texto español de `STR`, el glosario, las dos FAQ y las láminas del producto, la raya de inciso va pegada a su palabra con unión invisible (`⁠`): ni « — » con espacios ni una raya por la que el navegador pueda partir la línea |
 | `idiomas-nuevos.test.ts` | Verifica en `out/` que las páginas de nuevos idiomas (pt, fr, de, it) no sean copias del inglés ni idénticas entre sí, y que tengan el `lang` de HTML correcto |

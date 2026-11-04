@@ -295,6 +295,36 @@ describe("el registro rápido valida el plan según la dirección", () => {
   });
 });
 
+describe("el riesgo del registro rápido se anuncia una vez, cuando la cifra se queda quieta", () => {
+  const estado = () => cont.querySelector('[role="status"]')!.textContent;
+  const pasa = (ms: number) =>
+    act(() => {
+      vi.advanceTimersByTime(ms);
+    });
+
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  it.each([
+    ["/demo", `Riesgo: 4,50${NBSP}$`],
+    ["/en/demo", "Risk: $4.50"],
+  ])("en %s: nada al cargar, nada a media escritura y la frase final tras 700 ms", (url, frase) => {
+    ruta = url;
+    monta();
+    expect(estado()).toBe("");
+    // BTC/USDT, multiplicador 1: 1,5 de distancia al stop × 3 de cantidad.
+    escribe("d-entry", "100,0");
+    escribe("d-stop", "98,5");
+    escribe("d-qty", "1");
+    pasa(600);
+    escribe("d-qty", "3");
+    pasa(600);
+    expect(estado()).toBe("");
+    pasa(100);
+    expect(estado()).toBe(frase);
+  });
+});
+
 describe("el registro rápido dice qué campo falla, lo marca y lleva el foco a él", () => {
   const detalle = () => cont.querySelector("#avisos-detalle")!.textContent;
   const marcados = () => [...cont.querySelectorAll<HTMLElement>('[aria-invalid="true"]')].map((el) => el.id);

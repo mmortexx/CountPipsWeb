@@ -22,7 +22,8 @@ import { fraseOperacionesHoy, operacionesDeHoy, operacionesDelMismoDia } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useTeclaMando } from "@/hooks/use-tecla-mando";
-import { cifraEditable, fmtInt, fmtNum, fmtOperaciones, fmtPct, fmtR, leeCifra, LOCALE_FECHA } from "@/lib/trading/format";
+import { cifraEditable, fmtInt, fmtMoney, fmtNum, fmtOperaciones, fmtPct, fmtR, leeCifra, LOCALE_FECHA } from "@/lib/trading/format";
+import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { Reveal } from "@/components/tj/Reveal";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Money } from "@/components/tj/Money";
@@ -293,12 +294,9 @@ export function DashboardPage() {
             </Reveal>
           </div>
           <Reveal delay={0.08}>
-            {/* La región viva es el contenedor, que no cambia: la cifra se
-                remonta en cada valor (por su `key`) y una región que nace
-                ya rellena no la anuncian los lectores de pantalla. */}
+            {/* La cifra se remonta en cada valor (por su `key`) y no es una región
+                viva: se anuncia aparte, con espera, cuando se queda quieta. */}
             <div
-              aria-live="polite"
-              aria-atomic="true"
               className="flex items-baseline justify-between gap-3 border-t border-[rgb(var(--divider)/0.12)] pt-2.5 sm:block sm:shrink-0 sm:border-0 sm:pt-0 sm:text-right"
             >
               <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
@@ -312,6 +310,7 @@ export function DashboardPage() {
               >
                 <Money value={riskUsdLive} />
               </div>
+              <ResultadoAnunciado texto={`${es ? "Riesgo" : "Risk"}: ${fmtMoney(riskUsdLive, lang, { decimals: 2 })}`} />
             </div>
           </Reveal>
         </div>
