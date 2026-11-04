@@ -861,6 +861,19 @@ export function EquityProjector() {
                 </div>
               )}
 
+              {c.medianaCae && (
+                <div
+                  className="border-y border-[var(--ficha-division)] py-3 text-xs tnum leading-relaxed"
+                  style={{ color: "rgb(var(--pnl-neg))" }}
+                  role="alert"
+                >
+                  ⚠{" "}
+                  {es
+                    ? "Tu expectancy es positiva, pero con este riesgo las rachas se la comen: en compuesto, el camino mediano baja. Prueba con menos riesgo por operación."
+                    : "Your expectancy is positive, but at this risk the streaks eat it: when compounding, the median path falls. Try less risk per trade."}
+                </div>
+              )}
+
               {/* Selector de Pestaña */}
               <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
                 <div className="tj-segmentado" role="group" aria-label={es ? "Vista del resultado" : "Result view"}>

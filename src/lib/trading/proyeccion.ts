@@ -47,6 +47,8 @@ export interface ResultadoProyeccion {
   grossExpectancyR: number;
   netExpectancyR: number;
   hasEdge: boolean;
+  /** En compuesto, hay ventaja pero con este riesgo la variabilidad se la come: la línea baja. */
+  medianaCae: boolean;
   profitFactor: number;
   /** null si no se puede calcular (ver `kellyPct`). */
   fullKellyPct: number | null;
@@ -259,6 +261,7 @@ export function proyectaCapital(p: ParametrosProyeccion): ResultadoProyeccion {
     grossExpectancyR,
     netExpectancyR,
     hasEdge,
+    medianaCae: reinvestMode === "compound" && hasEdge && logPorOperacion <= 0,
     profitFactor,
     fullKellyPct,
     halfKellyPct,

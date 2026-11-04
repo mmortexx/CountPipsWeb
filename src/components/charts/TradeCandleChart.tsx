@@ -62,6 +62,24 @@ export function ladoRotuloSalida(
   return coste(v.alto - 36, v.alto - 12) < coste(v.bajo + 12, v.bajo + 35) ? "encima" : "debajo";
 }
 
+const ALTO_ETIQUETA = 16;
+
+/** Centros de las etiquetas del margen, separados lo justo y sin salirse de [min, max].
+ *  Con un stop ajustado (futuros a un contrato) los niveles caen a pocos píxeles: la
+ *  línea sigue en su precio y es la etiqueta la que se aparta. */
+export function separaEtiquetas(ys: number[], separacion: number, min: number, max: number): number[] {
+  const orden = ys.map((_, i) => i).sort((a, b) => ys[a] - ys[b]);
+  const pos = [...ys];
+  orden.forEach((i, k) => {
+    pos[i] = k === 0 ? Math.max(pos[i], min) : Math.max(pos[i], pos[orden[k - 1]] + separacion);
+  });
+  for (let k = orden.length - 1; k >= 0; k--) {
+    const limite = k === orden.length - 1 ? max : pos[orden[k + 1]] - separacion;
+    pos[orden[k]] = Math.min(pos[orden[k]], limite);
+  }
+  return pos;
+}
+
 export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps) {
   const { lang, t } = useLang();
   const es = lang === "es";
@@ -222,6 +240,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
   const entryY = getY(trade.entry);
   const stopY = getY(trade.initialStop);
   const targetY = getY(trade.target);
+  const [etiquetaStop, etiquetaEntrada, etiquetaObjetivo] = separaEtiquetas([stopY, entryY, targetY], ALTO_ETIQUETA + 1, ALTO_ETIQUETA / 2, H - ALTO_ETIQUETA / 2);
 
   const EXIT_IDX = 26;
   const textoSalida = `${es ? "Salida" : "Exit"} ${fmtR(trade.rMultiple, lang)}`;
@@ -362,7 +381,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
           {[0.2, 0.4, 0.6, 0.8].map((ratio) => {
             const y = padT + ratio * chartH;
             const priceVal = maxPrice - ratio * priceRange;
-            const chocaConNivel = [entryY, stopY, targetY].some((ny) => Math.abs(ny - y) < 16);
+            const chocaConNivel = [etiquetaEntrada, etiquetaStop, etiquetaObjetivo].some((ny) => Math.abs(ny - y) < ALTO_ETIQUETA);
             return (
               <g key={ratio}>
                 <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="rgb(var(--divider)/0.08)" strokeDasharray="3 3" />
@@ -377,24 +396,24 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
 
           <g>
             <line x1={padL} y1={stopY} x2={W - padR} y2={stopY} stroke="rgb(var(--pnl-neg))" strokeWidth="1.2" strokeDasharray="4 2" />
-            <rect x={W - padR + 2} y={stopY - 8} width={padR - 4} height={16} fill="rgb(var(--pnl-neg))" rx="2" />
-            <text x={W - padR + 5} y={stopY + 3.5} fill="rgb(var(--pnl-ink))" fontSize="10" fontWeight="bold" fontFamily="monospace">
+            <rect x={W - padR + 2} y={etiquetaStop - ALTO_ETIQUETA / 2} width={padR - 4} height={ALTO_ETIQUETA} fill="rgb(var(--pnl-neg))" rx="2" />
+            <text x={W - padR + 5} y={etiquetaStop + 3.5} fill="rgb(var(--pnl-ink))" fontSize="10" fontWeight="bold" fontFamily="monospace">
               SL {fmtPrice(trade.initialStop, decimals, lang)}
             </text>
           </g>
 
           <g>
             <line x1={padL} y1={targetY} x2={W - padR} y2={targetY} stroke="rgb(var(--pnl-pos))" strokeWidth="1.2" strokeDasharray="4 2" />
-            <rect x={W - padR + 2} y={targetY - 8} width={padR - 4} height={16} fill="rgb(var(--pnl-pos))" rx="2" />
-            <text x={W - padR + 5} y={targetY + 3.5} fill="rgb(var(--pnl-ink))" fontSize="10" fontWeight="bold" fontFamily="monospace">
+            <rect x={W - padR + 2} y={etiquetaObjetivo - ALTO_ETIQUETA / 2} width={padR - 4} height={ALTO_ETIQUETA} fill="rgb(var(--pnl-pos))" rx="2" />
+            <text x={W - padR + 5} y={etiquetaObjetivo + 3.5} fill="rgb(var(--pnl-ink))" fontSize="10" fontWeight="bold" fontFamily="monospace">
               TP {fmtPrice(trade.target, decimals, lang)}
             </text>
           </g>
 
           <g>
             <line x1={padL} y1={entryY} x2={W - padR} y2={entryY} stroke="rgb(var(--accent-base))" strokeWidth="1" strokeDasharray="2 2" />
-            <rect x={W - padR + 2} y={entryY - 8} width={padR - 4} height={16} fill="color-mix(in oklab, rgb(var(--accent-base)) 30%, transparent)" stroke="rgb(var(--accent-base))" rx="2" />
-            <text x={W - padR + 5} y={entryY + 3.5} fill="var(--ink)" fontSize="10" fontWeight="bold" fontFamily="monospace">
+            <rect x={W - padR + 2} y={etiquetaEntrada - ALTO_ETIQUETA / 2} width={padR - 4} height={ALTO_ETIQUETA} fill="color-mix(in oklab, rgb(var(--accent-base)) 30%, transparent)" stroke="rgb(var(--accent-base))" rx="2" />
+            <text x={W - padR + 5} y={etiquetaEntrada + 3.5} fill="var(--ink)" fontSize="10" fontWeight="bold" fontFamily="monospace">
               IN {fmtPrice(trade.entry, decimals, lang)}
             </text>
           </g>

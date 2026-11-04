@@ -65,7 +65,7 @@ export const FAQ_ES: QAFaq[] = [
   {
     q: "¿Se puede probar antes de pagar?",
     categoria: "access",
-    a: `Sí. La demo de esta web no pide registro y, cuando se abra la venta, el programa funcionará ${PROGRAMA.pruebaDias} días con todo sin clave; después, sin una clave válida, pasa a solo lectura y tus datos siguen siendo tuyos. Las condiciones de licencia, reembolso y soporte se publicarán antes de abrir la venta.`,
+    a: `Sí. La demo de esta web no pide registro y, cuando se abra la venta, el programa funcionará ${PROGRAMA.pruebaDias} días con todo sin clave; después, sin una clave válida, pasa a solo lectura y tus datos siguen siendo tuyos. Las condiciones de licencia, reembolso y soporte se publicarán cuando se abra la venta.`,
   },
   {
     q: "¿Puedo ver el producto antes de solicitar acceso?",
@@ -139,7 +139,7 @@ export const FAQ_EN: QAFaq[] = [
   {
     q: "Can I try it before paying?",
     categoria: "access",
-    a: `Yes. The demo on this site needs no sign-up and, once sales open, the app will run for ${PROGRAMA.pruebaDias} days with everything and no key; after that, without a valid key, it switches to read-only and your data stays yours. Licence, refund and support terms will be published before sales open.`,
+    a: `Yes. The demo on this site needs no sign-up and, once sales open, the app will run for ${PROGRAMA.pruebaDias} days with everything and no key; after that, without a valid key, it switches to read-only and your data stays yours. Licence, refund and support terms will be published when sales open.`,
   },
   {
     q: "Can I see the product before requesting access?",

@@ -94,6 +94,39 @@ describe("proyectaCapital: la tasa anual mide la estrategia, no los ingresos", (
   });
 });
 
+describe("proyectaCapital: ventaja positiva con la línea cayendo", () => {
+  const justa = {
+    startBalance: 10000,
+    tradesPerYear: 200,
+    winRate: 25,
+    avgWinR: 6,
+    avgLossR: 1.9,
+    riskPct: 3,
+    years: 5,
+    reinvestMode: "compound" as const,
+    monthlyContribution: 0,
+    frictionR: 0,
+  };
+
+  it("en compuesto, con el riesgo que se come la ventaja, lo avisa", () => {
+    const r = proyectaCapital(justa);
+    expect(r.hasEdge).toBe(true);
+    expect(r.finalBalance).toBeLessThan(justa.startBalance);
+    expect(r.medianaCae).toBe(true);
+  });
+
+  it("con menos riesgo la línea sube y no avisa", () => {
+    const r = proyectaCapital({ ...justa, riskPct: 0.5 });
+    expect(r.finalBalance).toBeGreaterThan(justa.startBalance);
+    expect(r.medianaCae).toBe(false);
+  });
+
+  it("sin ventaja ya avisa la otra alerta, y en riesgo fijo la línea no cae", () => {
+    expect(proyectaCapital({ ...justa, winRate: 10 }).medianaCae).toBe(false);
+    expect(proyectaCapital({ ...justa, reinvestMode: "linear" }).medianaCae).toBe(false);
+  });
+});
+
 describe("proyectaCapital: el tiempo para duplicar cuadra con la curva", () => {
   for (const reinvestMode of ["compound", "linear"] as const) {
     it(`en modo ${reinvestMode} la curva cruza el doble en el mes que anuncia la casilla`, () => {

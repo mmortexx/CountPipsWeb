@@ -7,11 +7,11 @@ let ruta = "/demo";
 vi.mock("next/navigation", () => ({ usePathname: () => ruta, useRouter: () => ({ push() {}, replace() {} }) }));
 
 import { LanguageProvider } from "@/lib/i18n";
-import { TRADES, type Metrics, type Trade } from "@/lib/trading/data";
+import { INSTRUMENTS, TRADES, type Metrics, type Trade } from "@/lib/trading/data";
 import { EquityCurve } from "@/components/charts/EquityCurve";
 import { Heatmap } from "@/components/charts/Heatmap";
 import { Histogram } from "@/components/charts/Histogram";
-import { TradeCandleChart } from "@/components/charts/TradeCandleChart";
+import { separaEtiquetas, TradeCandleChart } from "@/components/charts/TradeCandleChart";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -133,6 +133,26 @@ describe("Histogram: el rótulo da la moda y el total", () => {
     expect(plano(imagen().getAttribute("aria-label"))).toBe("Histograma sin operaciones");
     monta("/en/demo", createElement(Histogram, { data: [{ x: "a", count: 0 }] }));
     expect(plano(imagen().getAttribute("aria-label"))).toBe("Histogram with no trades");
+  });
+});
+
+describe("TradeCandleChart: las etiquetas de stop, entrada y objetivo no se pisan", () => {
+  it.each(INSTRUMENTS.map((i) => i.symbol))("en %s, con el stop más ajustado de la muestra", (instrumento) => {
+    const delInstrumento = TRADES.filter((t) => t.instrument === instrumento);
+    const trade = delInstrumento.reduce((a, b) => (Math.abs(b.entry - b.initialStop) < Math.abs(a.entry - a.initialStop) ? b : a));
+    monta("/demo", createElement(TradeCandleChart, { trade, decimals: 2 }));
+    const ys = [...cont.querySelectorAll('rect[height="16"]')].map((r) => Number(r.getAttribute("y"))).sort((a, b) => a - b);
+    expect(ys).toHaveLength(3);
+    expect(ys[1] - ys[0]).toBeGreaterThanOrEqual(16);
+    expect(ys[2] - ys[1]).toBeGreaterThanOrEqual(16);
+  });
+
+  it("separaEtiquetas respeta el orden, separa lo justo y no se sale", () => {
+    expect(separaEtiquetas([100, 200, 300], 16, 0, 400)).toEqual([100, 200, 300]);
+    expect(separaEtiquetas([100, 102, 300], 16, 0, 400)).toEqual([100, 116, 300]);
+    expect(separaEtiquetas([300, 100, 102], 16, 0, 400)).toEqual([300, 100, 116]);
+    // Pegadas al borde inferior: suben en lugar de salirse.
+    expect(separaEtiquetas([398, 399, 400], 16, 0, 400)).toEqual([368, 384, 400]);
   });
 });
 
