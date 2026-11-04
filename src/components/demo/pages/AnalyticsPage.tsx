@@ -1217,7 +1217,7 @@ export function AnalyticsPage() {
                         {fmtFactor(row.profitFactor, lang)}
                       </td>
                       <td className="px-2 py-2.5 tnum text-pnl-neg text-xs text-right">
-                        −{fmtNum(row.maxDdPct, lang, 1)}{pctSep(lang)}
+                        {fmtPct(-row.maxDdPct / 100, lang, 1)}
                       </td>
                     </tr>
                   ))}
@@ -1681,7 +1681,7 @@ export function AnalyticsPage() {
             eyebrow={t("heatmapTitle")}
             hint={
               <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary tnum">
-                {lang === "es" ? "Lun–Vie × 4h" : "Mon–Fri × 4h"}
+                {lang === "es" ? "Día × franja de 4 h" : "Day × 4h band"}
               </span>
             }
           >
