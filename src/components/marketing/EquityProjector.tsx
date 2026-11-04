@@ -960,7 +960,7 @@ export function EquityProjector() {
                   {/* SVG Chart con Renderizado Preciso */}
                   <div
                     ref={cajaGraficoRef}
-                    className="relative cursor-crosshair touch-none select-none rounded-[4px] overflow-hidden"
+                    className="relative cursor-crosshair touch-pan-y select-none rounded-[4px] overflow-hidden"
                     style={{ boxShadow: "inset 0 0 0 1px var(--ficha-division)" }}
                     onMouseMove={(e) => handleSvgMove(e.clientX)}
                     onTouchMove={(e) => {
@@ -976,6 +976,7 @@ export function EquityProjector() {
                       viewBox={`0 0 ${svgW} ${svgH}`}
                       className="w-full"
                       style={{ height: "auto", display: "block", shapeRendering: "geometricPrecision", textRendering: "geometricPrecision" }}
+                      role="img"
                       aria-label={es ? "Gráfico interactivo de proyección" : "Interactive projection chart"}
                     >
                       {/* Rejilla Horizontal con Labels a la Izquierda */}
@@ -1110,11 +1111,11 @@ export function EquityProjector() {
                   <table className="w-full text-left tnum text-xs">
                     <thead>
                       <tr className="text-[12px] text-[var(--ink-3)]">
-                        <th className="tj-matriz-cab py-2.5 px-3 font-medium">{es ? "Año" : "Year"}</th>
-                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Balance inicial" : "Start balance"}</th>
-                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Resultado del año" : "Year P&L"}</th>
-                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Rentabilidad" : "Return"}</th>
-                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Balance final" : "End balance"}</th>
+                        <th scope="col" className="tj-matriz-cab py-2.5 px-3 font-medium">{es ? "Año" : "Year"}</th>
+                        <th scope="col" className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Balance inicial" : "Start balance"}</th>
+                        <th scope="col" className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Resultado del año" : "Year P&L"}</th>
+                        <th scope="col" className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Rentabilidad" : "Return"}</th>
+                        <th scope="col" className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Balance final" : "End balance"}</th>
                       </tr>
                     </thead>
                     <tbody>

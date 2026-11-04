@@ -1166,22 +1166,22 @@ export function AnalyticsPage() {
               <table className="w-full text-sm min-w-[560px]">
                 <thead>
                   <tr className="text-left">
-                    <th className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium">
+                    <th scope="col" className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium">
                       {lang === "es" ? "Periodo" : "Period"}
                     </th>
-                    <th className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
+                    <th scope="col" className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
                       {lang === "es" ? "Ops." : "Trades"}
                     </th>
-                    <th className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
+                    <th scope="col" className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
                       {lang === "es" ? "Neto" : "Net"}
                     </th>
-                    <th className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
+                    <th scope="col" className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
                       {t("winRate")}
                     </th>
-                    <th className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
+                    <th scope="col" className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
                       {t("profitFactor")}
                     </th>
-                    <th className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
+                    <th scope="col" className="px-2 py-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
                       {t("maxDrawdown")}
                     </th>
                   </tr>
