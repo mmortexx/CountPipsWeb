@@ -121,8 +121,8 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
     });
 
     it("D4-T1-4: FAQ parity across main FAQs and pricing FAQs", () => {
-      expect(FAQ_ES.length).toBe(13);
-      expect(FAQ_EN.length).toBe(13);
+      expect(FAQ_ES.length).toBe(14);
+      expect(FAQ_EN.length).toBe(14);
 
       for (let i = 0; i < FAQ_ES.length; i++) {
         const es = FAQ_ES[i];

@@ -57,8 +57,8 @@ export function DemoConversionPanel() {
               <h3 className="mt-3 t-h4 text-primary">{es ? "Datos de muestra, cero riesgo." : "Sample data, zero risk."}</h3>
               <ul className="mt-5 m-0 list-none p-0 text-sm leading-relaxed text-secondary">
                 {(es
-                  ? ["No pide email ni tarjeta para explorar.", "Las operaciones no salen del navegador.", "Las funciones no visibles se etiquetan, no se simulan."]
-                  : ["No email or card required to explore.", "Trades never leave the browser.", "Unavailable features are labelled, not faked."]
+                  ? ["Explorar no pide email ni tarjeta.", "Las operaciones no salen del navegador.", "Lo que aún no funciona aquí lo indicamos; no lo simulamos."]
+                  : ["Exploring needs no email or card.", "Trades never leave the browser.", "What doesn’t work here yet is labelled, not faked."]
                 ).map((item) => (
                   <li key={item} className="border-t border-[var(--line)] py-3 leading-[1.6] last:pb-0">
                     {item}

@@ -17,12 +17,12 @@ export function Hero({ producto }: { producto?: ReactNode }) {
   /* Las tres diferencias frente a otros diarios, juntas y en voz baja.
      «Previsto» porque la venta no está abierta. */
   const datos = tx(lang, {
-    es: "Pago único previsto, sin suscripción. Sin servidores de CountPips: tus operaciones, en tu equipo. Demo sin registro.",
-    en: "Planned one-time payment, no subscription. No CountPips servers: your trades, on your machine. Demo without sign-up.",
-    pt: "Pagamento único previsto, sem assinatura. Sem servidores do CountPips: suas operações, na sua máquina. Demo sem cadastro.",
-    fr: "Paiement unique prévu, sans abonnement. Aucun serveur CountPips\u00a0: vos opérations, sur votre machine. Démo sans inscription.",
-    de: "Geplante Einmalzahlung, kein Abo. Keine CountPips-Server: Ihre Trades bleiben auf Ihrem Rechner. Demo ohne Registrierung.",
-    it: "Pagamento unico previsto, nessun abbonamento. Nessun server CountPips: le tue operazioni restano sul tuo computer. Demo senza registrazione.",
+    es: "Aún no está a la venta: pago único previsto, sin suscripción. Sin servidores de CountPips: tus operaciones, en tu equipo. Demo sin registro.",
+    en: "Not on sale yet: planned one-time payment, no subscription. No CountPips servers: your trades, on your machine. Demo without sign-up.",
+    pt: "Ainda não está à venda: pagamento único previsto, sem assinatura. Sem servidores do CountPips: suas operações, na sua máquina. Demo sem cadastro.",
+    fr: "Pas encore en vente\u00a0: paiement unique prévu, sans abonnement. Aucun serveur CountPips\u00a0: vos opérations, sur votre machine. Démo sans inscription.",
+    de: "Noch nicht im Verkauf: geplante Einmalzahlung, kein Abo. Keine CountPips-Server: Ihre Trades bleiben auf Ihrem Rechner. Demo ohne Registrierung.",
+    it: "Non ancora in vendita: pagamento unico previsto, nessun abbonamento. Nessun server CountPips: le tue operazioni restano sul tuo computer. Demo senza registrazione.",
   });
 
   return (

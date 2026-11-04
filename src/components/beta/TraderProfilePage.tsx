@@ -127,7 +127,7 @@ export function TraderProfileBody({ profile, terminos }: { profile: TraderProfil
             <SectionHeader
               etiqueta={es ? "Reglas de evaluación y fondeo" : "Evaluation & funding rules"}
               titulo={es ? "Las reglas de tu firma, con cada operación." : "Your firm’s rules, with every trade."}
-              entradilla={es ? "Elige firma y tamaño de cuenta. El modo prop firm aplica la plantilla de la firma y sigue la pérdida diaria, el drawdown y el objetivo con cada operación que registras. Ejemplo con valores de muestra." : "Pick a firm and account size. Prop firm mode applies the firm template and tracks daily loss, drawdown and the target with every trade you log. Example with sample values."}
+              entradilla={es ? "Elige firma y tamaño de cuenta. El modo prop firm, incluido en Pro, aplica la plantilla de la firma y sigue la pérdida diaria, el drawdown y el objetivo con cada operación que registras. Ejemplo con valores de muestra." : "Pick a firm and account size. Prop firm mode applies the firm template and tracks daily loss, drawdown and the target with every trade you log. Example with sample values."}
               className="mb-10"
             />
 

@@ -251,11 +251,11 @@ export function BetaApplication() {
     return (
       <div ref={exitoRef} tabIndex={-1} className="tj-ficha p-7 sm:p-10 outline-none" role="status">
         <div className="max-w-xl">
-          <h2 className="t-h3 text-primary">{es ? "Solicitud recibida." : "Application received."}</h2>
+          <h2 className="t-h3 text-primary">{es ? "Solicitud recibida." : "Request received."}</h2>
           <p className="mt-3 text-secondary leading-relaxed">
             {es
               ? "Revisaremos las solicitudes por perfil y fase del producto. Te escribiremos solo si encaja con el piloto privado; no necesitas tarjeta."
-              : "We review applications by profile and product phase. We will write only if you fit the private pilot; no card is required."}
+              : "We review requests by profile and product phase. We will write only if you fit the private pilot; no card is required."}
           </p>
           <Link href="/demo" className="cta cta--secundario mt-6 hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]">
             {es ? "Mientras tanto, ver la demo" : "In the meantime, see the demo"}
@@ -279,8 +279,8 @@ export function BetaApplication() {
           <h2 className="t-h3 text-primary">{es ? "Cuéntanos cómo operas." : "Tell us how you trade."}</h2>
           <p className="mt-3 max-w-md text-secondary leading-[1.7]">
             {es
-              ? "Buscamos un piloto pequeño y útil. Con lo que nos cuentes aquí vemos si encaja; no hace falta que tengas una cuenta."
-              : "We are building a small, useful private pilot. What you tell us here is how we see whether it fits; you don’t need an account."}
+              ? "El piloto es pequeño. Con lo que nos cuentes aquí vemos si encaja; no hace falta que tengas una cuenta."
+              : "The pilot is small. What you tell us here is how we see whether it fits; you don’t need an account."}
           </p>
           <ul className="mt-6 space-y-2 p-0 text-sm text-secondary">
             {[es ? "Piloto privado, por invitación." : "Private pilot, invite only.", es ? "Tus operaciones, en tu equipo." : "Your trades, on your machine.", es ? "Sin spam ni boletines por defecto." : "No spam or newsletter by default."].map((item) => (

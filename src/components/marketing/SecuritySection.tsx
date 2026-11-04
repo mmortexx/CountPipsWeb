@@ -22,7 +22,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
     { l: es ? "Modelo" : "Model", tj: es ? "Pago único previsto" : "Planned one-time payment", cloud: es ? "Suscripción mensual o anual" : "Monthly or annual subscription" },
     { l: es ? "Funciona sin internet" : "Works offline", tj: true, cloud: false },
     { l: es ? "Sin crear una cuenta" : "No account to create", tj: true, cloud: false },
-    { l: es ? "Tu historial si dejas de pagar" : "Your history if you stop paying", tj: es ? "Legible y exportable" : "Readable and exportable", cloud: es ? "Depende del proveedor" : "Up to the vendor" },
+    { l: es ? "Tu historial si dejas de pagar" : "Your history if you stop paying", tj: es ? "Legible y exportable" : "Readable and exportable", cloud: es ? "Depende del proveedor" : "Depends on the vendor" },
   ];
   const conexiones = CONEXIONES.map((c) => (es ? c.es : c.en));
   return (

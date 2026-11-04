@@ -176,8 +176,8 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
       const faqLdEn = jsonLdFaq(FAQ_EN);
 
       expect(faqLdEs["@type"]).toBe("FAQPage");
-      expect(faqLdEs.mainEntity.length).toBe(13);
-      expect(faqLdEn.mainEntity.length).toBe(13);
+      expect(faqLdEs.mainEntity.length).toBe(14);
+      expect(faqLdEn.mainEntity.length).toBe(14);
 
       for (const item of faqLdEs.mainEntity) {
         expect(item["@type"]).toBe("Question");

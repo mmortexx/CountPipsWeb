@@ -126,7 +126,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
               {
                 t: tx(lang, {
                   es: "Semáforo antes de registrar",
-                  en: "A light before you log",
+                  en: "A signal before you log",
                   pt: "Semáforo antes de registrar",
                   fr: "Un feu avant d’enregistrer",
                   de: "Ampel vor der Erfassung",
@@ -162,7 +162,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
               {
                 t: tx(lang, {
                   es: "Saltárselo cuesta un motivo",
-                  en: "Skipping it costs a reason",
+                  en: "Skipping it takes a reason",
                   pt: "Pular a regra exige um motivo",
                   fr: "Passer outre exige une raison",
                   de: "Übergehen erfordert eine Begründung",

@@ -63,6 +63,11 @@ export const FAQ_ES: QAFaq[] = [
     a: "Todavía ninguno: la compra no está abierta y nada en esta web cobra. Los métodos de pago se publicarán aquí cuando se abra la venta, junto con la licencia y el soporte. El acceso anticipado no es una preventa y no pide tarjeta.",
   },
   {
+    q: "¿Se puede probar antes de pagar?",
+    categoria: "access",
+    a: `Sí. La demo de esta web no pide registro y, cuando se abra la venta, el programa funcionará ${PROGRAMA.pruebaDias} días con todo sin clave; después, sin una clave válida, pasa a solo lectura y tus datos siguen siendo tuyos. Las condiciones de licencia, reembolso y soporte se publicarán antes de abrir la venta.`,
+  },
+  {
     q: "¿Puedo ver el producto antes de solicitar acceso?",
     categoria: "access",
     a: "Sí. Puedes explorar la demo en vivo con datos deterministas, sin registro y sin descargar nada. La aplicación instalada se entrega solo a participantes del piloto privado invitados.",
@@ -132,6 +137,11 @@ export const FAQ_EN: QAFaq[] = [
     a: "None yet: purchases are not open and nothing on this site takes payment. Payment methods will be listed here when sales open, together with licensing and support. Early access is not a pre-order and asks for no card.",
   },
   {
+    q: "Can I try it before paying?",
+    categoria: "access",
+    a: `Yes. The demo on this site needs no sign-up and, once sales open, the app will run for ${PROGRAMA.pruebaDias} days with everything and no key; after that, without a valid key, it switches to read-only and your data stays yours. Licence, refund and support terms will be published before sales open.`,
+  },
+  {
     q: "Can I see the product before requesting access?",
     categoria: "access",
     a: "Yes. Explore the live demo with deterministic data, no sign-up and nothing to download. The desktop installer is delivered only to invited private-pilot participants.",
@@ -192,7 +202,7 @@ export const PRICING_FAQ_EN: QA[] = [
     a: `Core is planned at ${core("en")} and Pro at ${pro("en")}. Both are indicative launch prices until commercial delivery, licensing and support go live.`,
   },
   {
-    q: "What data do you not request?",
+    q: "What data will you never ask me for?",
     a: "We never ask for credentials, capital, statements or financial data. We only ask what we need to choose who joins the pilot and how you keep your journal today.",
   },
 ];
