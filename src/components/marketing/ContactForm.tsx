@@ -69,6 +69,18 @@ export function ContactForm() {
   useEffect(() => {
     if (sent) enviadoRef.current?.focus();
   }, [sent]);
+
+  /* Al fallar el envío, el botón se desactivó con el foco y este cae a `<body>`:
+     va al aviso. `setError` solo programa el repintado y el aviso aún no existe,
+     así que la bandera aplaza el foco a después del render (como en /beta). */
+  const errorRef = useRef<HTMLDivElement>(null);
+  const pedirFocoAviso = useRef(false);
+  useEffect(() => {
+    if (pedirFocoAviso.current && errorRef.current) {
+      pedirFocoAviso.current = false;
+      errorRef.current.focus();
+    }
+  });
   const sending = status === "sending";
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -123,6 +135,7 @@ export function ContactForm() {
     setStatus("idle");
     setError(failureCopy(result.reason, es));
     setShowFallback(result.reason !== "network");
+    pedirFocoAviso.current = true;
   }
 
   return (
@@ -240,7 +253,9 @@ export function ContactForm() {
                       {error && (
                           <div
                             id="cf-error"
-                            className="tj-sube-ya text-sm text-pnl-neg"
+                            ref={errorRef}
+                            tabIndex={-1}
+                            className="tj-sube-ya text-sm text-pnl-neg outline-none"
                             role="alert"
                           >
                             {error}

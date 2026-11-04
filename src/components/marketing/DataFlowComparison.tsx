@@ -50,7 +50,7 @@ export function DataFlowComparison() {
           type="button"
           onClick={send}
           className="cta cta--primario mb-8"
-          aria-label={es ? "Añadir una operación y ver el flujo de datos" : "Add a trade and see the data flow"}
+          aria-label={es ? "Añadir operación y ver el flujo de datos" : "Add trade and see the data flow"}
         >
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />

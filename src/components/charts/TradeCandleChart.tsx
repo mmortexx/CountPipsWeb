@@ -63,8 +63,14 @@ export function ladoRotuloSalida(
 }
 
 export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps) {
-  const { lang } = useLang();
+  const { lang, t } = useLang();
   const es = lang === "es";
+
+  /* Las velas son sintéticas y no se leen una a una: el nombre cuenta la operación que pintan. */
+  const resultado = `${fmtMoney(trade.netPnl, lang, { sign: true, decimals: 0 })} (${fmtR(trade.rMultiple, lang, 2)})`;
+  const rotulo = es
+    ? `Gráfico de velas de ${trade.instrument}, ${t(trade.direction)}: entrada ${fmtPrice(trade.entry, decimals, lang)}, salida ${fmtPrice(trade.exit, decimals, lang)}, resultado ${resultado}`
+    : `Candlestick chart of ${trade.instrument}, ${t(trade.direction)}: entry ${fmtPrice(trade.entry, decimals, lang)}, exit ${fmtPrice(trade.exit, decimals, lang)}, result ${resultado}`;
 
   const [timeframe, setTimeframe] = useState<"1m" | "5m" | "15m">("5m");
   const [isPlaying, setIsPlaying] = useState(false);
@@ -326,6 +332,8 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
         <svg
           viewBox={`0 0 ${W} ${H}`}
           className="block w-full h-full select-none"
+          role="img"
+          aria-label={rotulo}
         >
           <defs>
             <linearGradient id="volGrad" x1="0" y1="0" x2="0" y2="1">

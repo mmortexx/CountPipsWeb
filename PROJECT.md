@@ -114,7 +114,7 @@ node scripts/arranque.mjs --serve out --cpu 4  # tiempo hasta titular legible
 node scripts/metadatos.mjs out             # título (con su búsqueda), descripción, canónico, hreflang, lang, ld+json
 node scripts/enlaces.mjs out               # enlaces rotos, que cambian de idioma o que faltan (madre → hija, herramienta → glosario)
 node scripts/cifras.mjs out                # convenciones de idioma y restos de plantilla
-node scripts/rotulos.mjs out               # lo que oye un lector de pantalla (y ningún título que repita el h1)
+node scripts/rotulos.mjs out               # lo que oye un lector de pantalla (y ningún título que repita el h1); el nombre de cada botón o enlace contiene su texto visible (WCAG 2.5.3; lo que solo se pinta en el navegador, la demo, lo vigila tests/etiqueta-en-nombre.test.ts)
 node scripts/equipaje.mjs out              # JS que cada página carga sin pedirlo y su tope comprimido; solo se precargan la sans y la serif
 node scripts/copiado.mjs --serve out       # texto de los botones «Copiar»
 node scripts/medida.mjs --serve out        # caracteres por línea

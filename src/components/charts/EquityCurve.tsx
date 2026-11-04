@@ -97,6 +97,9 @@ export const EquityCurve = memo(function EquityCurve({
 
   const locale = LOCALE_FECHA[lang];
   const hoverPoint = hover && points[hover.idx];
+  const inicial = equityCurve[0].balance;
+  const final = equityCurve[equityCurve.length - 1].balance;
+  const dinero = (v: number) => fmtMoney(v, lang, { decimals: 0 });
 
   // La X del tooltip sigue al puntero sin salirse por los lados (~180 px de ancho).
   const TOOLTIP_HALF = 92;
@@ -143,8 +146,8 @@ export const EquityCurve = memo(function EquityCurve({
         preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label={lang === "es"
-          ? `Curva de capital desde ${fmtMoney(minBal, lang, { decimals: 0 })} hasta ${fmtMoney(maxBal, lang, { decimals: 0 })}`
-          : `Equity curve from ${fmtMoney(minBal, lang, { decimals: 0 })} to ${fmtMoney(maxBal, lang, { decimals: 0 })}`}
+          ? `Curva de capital: balance inicial ${dinero(inicial)}, balance final ${dinero(final)}, balance mínimo ${dinero(minBal)} y balance máximo ${dinero(maxBal)}`
+          : `Equity curve: starting balance ${dinero(inicial)}, final balance ${dinero(final)}, lowest balance ${dinero(minBal)} and highest balance ${dinero(maxBal)}`}
         onMouseLeave={() => setHover(null)}
         onMouseMove={(e) => updateHover(e.clientX, e.currentTarget as SVGElement)}
         onTouchStart={(e) => {
