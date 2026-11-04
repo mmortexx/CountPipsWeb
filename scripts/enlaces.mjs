@@ -11,9 +11,9 @@
  * código. No cuentan los recursos (`/_next/…`, imágenes, fuentes), las
  * direcciones externas, los `mailto:` ni las anclas sueltas.
  *
- * El selector de idioma, el único enlace correcto al otro idioma, no aparece
- * en el HTML estático. Si algún día lo acusa, hay que marcarlo
- * (`data-cambio-idioma`) y exceptuarlo aquí, no relajar la regla.
+ * Los enlaces de idioma del pie, los únicos correctos a otro idioma, llevan
+ * `data-cambio-idioma`: tienen que existir, pero las reglas de idioma no se
+ * les aplican. Cualquier otro enlace sigue sujeto a ellas.
  *
  * Uso:  node scripts/enlaces.mjs [out]
  */
@@ -62,9 +62,18 @@ function cuerpo(html) {
 
 const RECURSOS = /^\/(?:_next\/|favicon|icon|apple-|manifest|robots|sitemap|opengraph|twitter)/;
 
+const CAMBIO_DE_IDIOMA = /<a\b[^>]*\bdata-cambio-idioma\b[^>]*>/g;
+
+function hrefsDeCambioDeIdioma(html) {
+  return [...cuerpo(html).matchAll(CAMBIO_DE_IDIOMA)].map((m) => {
+    const h = m[0].match(/href="([^"]+)"/)?.[1] ?? "";
+    return PREFIJO && h.startsWith(PREFIJO) ? h.slice(PREFIJO.length) || "/" : h;
+  });
+}
+
 function enlacesInternos(html) {
   const salida = new Set();
-  for (const m of cuerpo(html).matchAll(/href="([^"]+)"/g)) {
+  for (const m of cuerpo(html).replace(CAMBIO_DE_IDIOMA, " ").matchAll(/href="([^"]+)"/g)) {
     let h = m[1];
     if (!h.startsWith("/") || h.startsWith("//")) continue; // externa, mailto:, ancla
     if (PREFIJO && h.startsWith(PREFIJO)) h = h.slice(PREFIJO.length) || "/";
@@ -114,6 +123,13 @@ for await (const f of htmls(RAIZ)) {
 
   for (const h of llamadasASiMisma(html, ruta)) {
     fallos.push({ ruta, regla: "botón de acción que lleva a la misma página", detalle: h });
+  }
+
+  for (const h of hrefsDeCambioDeIdioma(html)) {
+    enlaces++;
+    if (!(await existe(h))) {
+      fallos.push({ ruta, regla: "enlace de idioma que no lleva a ninguna parte", detalle: h });
+    }
   }
 
   for (const h of enlacesInternos(html)) {

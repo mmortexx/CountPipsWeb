@@ -49,6 +49,39 @@ export function tituloDeTermino(term: string, lang: Lang): string {
   return sigla;
 }
 
+/** Voces que un trader hispano busca en inglés: la ficha española las nombra también así. */
+const ALIAS_INGLES: Record<string, string> = {
+  long: "long",
+  short: "short",
+  liquidity: "liquidity",
+  volatility: "volatility",
+  trend: "trend",
+  margin: "margin",
+  leverage: "leverage",
+  slippage: "slippage",
+  "win-rate": "win rate",
+  "risk-of-ruin": "risk of ruin",
+  "position-sizing": "position sizing",
+  "risk-reward-ratio": "risk-reward",
+  "limit-order": "limit order",
+  "market-order": "market order",
+};
+
+/** El nombre español con su alias inglés, si lo tiene: «Deslizamiento (slippage)». */
+export function nombreConAliasIngles(t: TerminoGlosario): string {
+  const nombre = nombreTermino(t, "es");
+  const alias = ALIAS_INGLES[t.slug];
+  return alias ? `${nombre} (${alias})` : nombre;
+}
+
+/** El `<title>` de la ficha española: con el alias inglés si cabe. */
+export function tituloDeFicha(t: TerminoGlosario): string {
+  const nombre = nombreTermino(t, "es");
+  const conAlias = nombreConAliasIngles(t);
+  const corto = `${conAlias}: qué es`;
+  return conAlias !== nombre && `${corto} — CountPips`.length <= LARGO_MAXIMO_TITULO ? corto : tituloDeTermino(nombre, "es");
+}
+
 /**
  * Descripción de la ficha de un término (meta description, og y twitter): la
  * definición recortada por frases enteras, entre 70 y 155 caracteres. Si

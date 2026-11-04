@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { TerminoVista } from "@/components/glosario/TerminoVista";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { CATEGORIAS, TERMINOS, descripcionDeTermino, fichaDeTermino, nombreTermino, terminoPorSlug, tituloDeTermino } from "@/lib/glosario";
+import { CATEGORIAS, TERMINOS, descripcionDeTermino, fichaDeTermino, nombreConAliasIngles, nombreTermino, terminoPorSlug, tituloDeFicha } from "@/lib/glosario";
 import { AMPLIADO } from "@/lib/glosario-ampliado";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   // El título lleva «qué es» porque así se busca; se recorta solo en las voces
   // con la expansión dentro (MAE, MFE) para no pasar de 60 caracteres.
-  const titulo = `${tituloDeTermino(nombreTermino(t, "es"), "es")} — CountPips`;
+  const titulo = `${tituloDeFicha(t)} — CountPips`;
   const desc = descripcionDeTermino(t, "es");
 
   return {
@@ -103,7 +103,7 @@ export default async function TerminoPage({ params }: Props) {
       <PageHeader
         eyebrowEs={familia.es}
         eyebrowEn={familia.en}
-        titleEs={nombre}
+        titleEs={nombreConAliasIngles(t)}
         titleEn={t.term}
         subtitleEs={t.es}
         subtitleEn={t.en}

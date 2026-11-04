@@ -2,7 +2,6 @@ import type { MetadataRoute } from "next";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { TERMINOS } from "@/lib/glosario";
 import { HERRAMIENTAS } from "@/lib/herramientas";
-import { ULTIMA_ACTUALIZACION } from "@/lib/fechas";
 
 export const dynamic = "force-static";
 
@@ -62,7 +61,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const tieneAlt = TABLA_IDIOMAS.some((i) => i.codigo !== "es" && tieneVersion(path, i.codigo));
     return {
       url: `${SITE_URL}${path === "/" ? "/" : `${path}/`}`,
-      lastModified: ULTIMA_ACTUALIZACION,
       changeFrequency,
       priority,
       ...(tieneAlt ? { alternates: { languages: hreflangDe(path) } } : {}),
@@ -78,7 +76,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
           path === "/"
             ? `${SITE_URL}${idioma.prefijo}/`
             : `${SITE_URL}${idioma.prefijo}${path}/`,
-        lastModified: ULTIMA_ACTUALIZACION,
         changeFrequency,
         priority,
         alternates: { languages: hreflangDe(path) },

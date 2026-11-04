@@ -203,7 +203,8 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
         expect(["always", "hourly", "daily", "weekly", "monthly", "yearly", "never"]).toContain(
           entry.changeFrequency,
         );
-        expect(entry.lastModified).toBeInstanceOf(Date);
+        // La fecha sería la del último commit para todas: sin fecha real por página, ninguna.
+        expect(entry.lastModified).toBeUndefined();
       }
 
       const rb = robots();
