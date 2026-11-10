@@ -104,7 +104,12 @@ export const PRESETS: PresetConfig[] = [
 /** Botones de «Costes por operación», en R. */
 export const COSTES_POR_OPERACION = [0, 0.02, 0.04, 0.06];
 
-const CAPITAL_CHIPS = [5000, 10000, 25000, 50000, 100000, 250000].map((v) => ({ v }));
+/* Rótulo de cada casilla de cifras. A dos columnas (móvil) reserva dos renglones
+   y se apoya abajo: «Drawdown máx. est. (99 %)» parte y, sin la reserva, su
+   cifra caía más baja que la de la casilla vecina. */
+const ROTULO_CASILLA = "tnum flex min-h-[36px] items-end text-[12px] leading-[18px] font-semibold text-[var(--ink-3)] sm:block sm:min-h-0";
+
+const CAPITAL_CHIPS =[5000, 10000, 25000, 50000, 100000, 250000].map((v) => ({ v }));
 
 const HORIZON_CHIPS = [1, 2, 3, 5, 10];
 
@@ -685,7 +690,7 @@ export function EquityProjector() {
                   <span id={idCostes} className="tj-deslizador-etiqueta">
                     {es ? "Costes por operación" : "Costs per trade"}
                   </span>
-                  <div className="tj-segmentado" role="group" aria-labelledby={idCostes}>
+                  <div className="tj-segmentado grow sm:grow-0" role="group" aria-labelledby={idCostes}>
                     {COSTES_POR_OPERACION.map((f) => {
                       const active = frictionR === f;
                       return (
@@ -1204,7 +1209,7 @@ export function EquityProjector() {
                 <div
                   className="caja-cifra p-3.5"
                 >
-                  <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
+                  <div className={ROTULO_CASILLA}>
                     {es ? "Balance proyectado" : "Projected balance"}
                   </div>
                   <div className="tnum cifra-lg mt-1 whitespace-nowrap font-semibold text-[rgb(var(--accent-base))]">
@@ -1224,11 +1229,11 @@ export function EquityProjector() {
                 <div
                   className="caja-cifra p-3.5"
                 >
-                  <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
+                  <div className={ROTULO_CASILLA}>
                     CAGR ({es ? "tasa anual" : "annual rate"})
                   </div>
                   <div
-                    className="tnum text-lg sm:text-xl font-semibold mt-1"
+                    className="tnum cifra-lg mt-1 whitespace-nowrap font-semibold"
                     style={{ color: c.fueraDeEscala ? "var(--ink)" : c.cagr >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
                   >
                     {c.fueraDeEscala ? "—" : fmtPct(c.cagr * 100, 1)}
@@ -1243,11 +1248,11 @@ export function EquityProjector() {
                 <div
                   className="caja-cifra p-3.5"
                 >
-                  <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
+                  <div className={ROTULO_CASILLA}>
                     {es ? "Retorno total" : "Total return"}
                   </div>
                   <div
-                    className="tnum text-lg sm:text-xl font-semibold mt-1"
+                    className="tnum cifra-lg mt-1 whitespace-nowrap font-semibold"
                     style={{
                       color: c.fueraDeEscala ? "var(--ink)" : c.totalReturnPct >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
                     }}
@@ -1276,7 +1281,7 @@ export function EquityProjector() {
                 <div
                   className="caja-cifra p-3.5"
                 >
-                  <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
+                  <div className={ROTULO_CASILLA}>
                     {es
                       ? `Drawdown máx. est. (${fmtPct(CONFIANZA_RACHA * 100, 0)})`
                       : `Est. max DD (${fmtPct(CONFIANZA_RACHA * 100, 0)})`}
@@ -1294,7 +1299,7 @@ export function EquityProjector() {
                 <div
                   className="caja-cifra p-3.5"
                 >
-                  <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
+                  <div className={ROTULO_CASILLA}>
                     {es ? "Tiempo para duplicar" : "Time to double"}
                   </div>
                   <div className="tnum cifra-lg mt-1 whitespace-nowrap font-semibold text-[var(--ink)]">
@@ -1316,7 +1321,7 @@ export function EquityProjector() {
                 <div
                   className="caja-cifra p-3.5"
                 >
-                  <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
+                  <div className={ROTULO_CASILLA}>
                     Profit factor
                   </div>
                   <div className="tnum cifra-lg mt-1 whitespace-nowrap font-semibold text-[var(--ink)]">

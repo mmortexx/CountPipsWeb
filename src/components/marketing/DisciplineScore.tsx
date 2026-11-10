@@ -129,7 +129,12 @@ export function puntuar(answers: (number | null)[]) {
 }
 
 /** Dónde se recuerdan las respuestas (solo en el navegador de quien responde). */
-const CLAVE_GUARDADO = "tj-test-disciplina-v1";
+/* «Siguiente» / «Ver resultado». En móvil comparte línea con «Anterior» y ocupa
+   el resto: `.cta--primario` se ensancha al 100 % por debajo de 480 px y, sin
+   `w-auto!`, echaba a «Anterior» a una línea propia. */
+const CLASE_AVANZAR = "cta cta--primario order-3 w-auto! flex-1 sm:order-none sm:flex-none";
+
+const CLAVE_GUARDADO ="tj-test-disciplina-v1";
 
 /** `enPagina`: bajo un PageHeader que ya titula, la cabecera propia solo queda para lectores de pantalla. */
 export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {}) {
@@ -472,12 +477,12 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                   type="button"
                   onClick={() => irA(actual + 1)}
                   /* Se puede seguir sin responder; el resultado avisa de las que faltan. */
-                  className="cta cta--primario order-3 sm:order-none"
+                  className={CLASE_AVANZAR}
                 >
                   {es ? "Siguiente" : "Next"} <span aria-hidden>→</span>
                 </button>
               ) : (
-                <button type="button" onClick={verResultado} className="cta cta--primario order-3 sm:order-none">
+                <button type="button" onClick={verResultado} className={CLASE_AVANZAR}>
                   {es ? "Ver resultado" : "See result"} <span aria-hidden>→</span>
                 </button>
               )}
