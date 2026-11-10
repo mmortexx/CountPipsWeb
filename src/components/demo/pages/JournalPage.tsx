@@ -432,11 +432,16 @@ function DivergingBar({
 function PnlBarChart({ data }: { data: { label: string; pnl: number }[] }) {
   const { lang } = useLang();
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
-  const maxAbs = Math.max(...data.map((d) => Math.abs(d.pnl)), 1);
+  /* El cero se coloca según lo que hay a cada lado: con una semana toda en verde
+     las barras ocupan el alto entero en vez de dejar media gráfica vacía. */
+  const maxPos = Math.max(...data.map((d) => d.pnl), 0);
+  const maxNeg = Math.max(...data.map((d) => -d.pnl), 0);
+  const recorrido = maxPos + maxNeg || 1;
+  const cero = (maxNeg / recorrido) * 100;
   return (
     <div className="flex items-stretch gap-1.5 sm:gap-2 h-44">
       {data.map((d, i) => {
-        const pct = (Math.abs(d.pnl) / maxAbs) * 100;
+        const alto = (Math.abs(d.pnl) / recorrido) * 100;
         const isPos = d.pnl >= 0;
         return (
           <div
@@ -447,28 +452,30 @@ function PnlBarChart({ data }: { data: { label: string; pnl: number }[] }) {
             }
           >
             <div className="relative w-full flex-1">
-              <div className="absolute left-0 right-0 top-1/2 h-px bg-[rgb(var(--divider)/0.1)] -translate-y-1/2" />
-              <div
-                style={{ height: `${pct / 2}%`, "--dm-origen": isPos ? "50% 100%" : "50% 0", "--dm-retardo": `calc(var(--escalon) * ${Math.min(i, 8)})` } as CSSProperties}
-                className={`tj-dm-alto absolute left-1/2 -translate-x-1/2 w-2/3 rounded-[2px] ${
-                  isPos
-                    ? "bottom-1/2 bg-pnl-pos/80 group-hover:bg-pnl-pos"
-                    : "top-1/2 bg-pnl-neg/80 group-hover:bg-pnl-neg"
-                }`}
-              />
-              <div
-                className={`absolute left-1/2 -translate-x-1/2 text-[11px] tnum whitespace-nowrap ${
-                  isPos
-                    ? "bottom-[calc(50%+6px)]"
-                    : "top-[calc(50%+6px)]"
-                } text-tertiary transition-opacity ${
-                  activeIdx === i
-                    ? "opacity-100"
-                    : "opacity-0 group-hover:opacity-100"
-                }`}
-              >
-                {isPos ? "+" : "−"}
-                {fmtInt(Math.abs(d.pnl), lang)}
+              {/* El margen de arriba y de abajo es el sitio de la cifra que asoma al pasar. */}
+              <div className={`absolute inset-x-0 top-5 ${maxNeg > 0 ? "bottom-5" : "bottom-0"}`}>
+                <div className="absolute left-0 right-0 h-px bg-[rgb(var(--divider)/0.1)] translate-y-1/2" style={{ bottom: `${cero}%` }} />
+                <div
+                  style={{
+                    height: `${alto}%`,
+                    bottom: isPos ? `${cero}%` : undefined,
+                    top: isPos ? undefined : `${100 - cero}%`,
+                    "--dm-origen": isPos ? "50% 100%" : "50% 0",
+                    "--dm-retardo": `calc(var(--escalon) * ${Math.min(i, 8)})`,
+                  } as CSSProperties}
+                  className={`tj-dm-alto absolute left-1/2 -translate-x-1/2 w-2/3 rounded-[2px] ${
+                    isPos ? "bg-pnl-pos/80 group-hover:bg-pnl-pos" : "bg-pnl-neg/80 group-hover:bg-pnl-neg"
+                  }`}
+                />
+                <div
+                  style={isPos ? { bottom: `calc(${cero + alto}% + 4px)` } : { top: `calc(${100 - cero + alto}% + 4px)` }}
+                  className={`absolute left-1/2 -translate-x-1/2 text-[11px] leading-none tnum whitespace-nowrap text-tertiary transition-opacity ${
+                    activeIdx === i ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                  }`}
+                >
+                  {isPos ? "+" : "−"}
+                  {fmtInt(Math.abs(d.pnl), lang)}
+                </div>
               </div>
             </div>
             <div className="text-[11px] uppercase tracking-wider text-tertiary tnum truncate">
@@ -1266,21 +1273,21 @@ export function JournalPage() {
                 <thead>
                   <tr className="text-[11px] uppercase tracking-[0.14em] text-tertiary border-b border-[rgb(var(--divider)/0.1)]">
                     <th scope="col" className="px-2 pb-2 text-left font-normal">{L("Cumplimiento", "Compliance")}</th>
-                    <th scope="col" className="px-2 pb-2 text-right font-normal">{L("Operaciones", "Trades")}</th>
-                    <th scope="col" className="px-2 pb-2 text-right font-normal">%</th>
+                    <th scope="col" className="px-1 sm:px-2 pb-2 text-right font-normal">{L("Ops.", "Trades")}</th>
+                    <th scope="col" className="pl-1 pr-2 sm:px-2 pb-2 text-right font-normal">%</th>
                   </tr>
                 </thead>
                 <tbody>
                   {reparto.map((r) => (
                     <tr key={r.key} className="border-b border-dashed border-[rgb(var(--divider)/0.1)]">
                       <th scope="row" className="px-2 py-2.5 text-left font-normal text-secondary">
-                        <span className="flex items-center gap-2">
-                          <span aria-hidden className={`inline-block h-1.5 w-1.5 rounded-[1px] ${r.tono}`} />
+                        <span className="flex items-center gap-2 whitespace-nowrap">
+                          <span aria-hidden className={`inline-block h-1.5 w-1.5 shrink-0 rounded-[1px] ${r.tono}`} />
                           {lang === "es" ? r.es : r.en}
                         </span>
                       </th>
-                      <td className="px-2 py-2.5 text-right text-secondary">{fmtInt(r.count, lang)}</td>
-                      <td className="px-2 py-2.5 text-right text-tertiary">
+                      <td className="px-1 sm:px-2 py-2.5 text-right text-secondary">{fmtInt(r.count, lang)}</td>
+                      <td className="pl-1 pr-2 sm:px-2 py-2.5 text-right text-tertiary">
                         {fmtPct(totalReparto ? r.count / totalReparto : 0, lang, 0)}
                       </td>
                     </tr>
