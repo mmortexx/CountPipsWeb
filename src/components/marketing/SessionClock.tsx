@@ -271,7 +271,7 @@ export function SessionClock() {
           {ventanas.map((v) => {
             const activa = v.activa;
             return (
-              <li key={v.id} className="border-t border-[var(--line)] py-4 md:pr-6">
+              <li key={v.id} className="border-t border-[var(--line)] py-4 md:pr-6 md:[&:nth-child(3n)]:pr-0">
                 <div className="flex items-baseline justify-between gap-3">
                   <span className="text-[15px] font-medium text-primary">
                     {nombre(v)}
